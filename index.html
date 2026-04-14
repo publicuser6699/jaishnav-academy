@@ -3,571 +3,571 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Jaishnav's Space Academy</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Space Academy & Hero HQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bangers&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --space-dark: #050a1a;
-    --space-mid: #0d1b3e;
-    --space-blue: #1a3a6e;
-    --accent-gold: #f5c842;
-    --accent-cyan: #00e5ff;
-    --accent-purple: #a855f7;
-    --accent-green: #22c55e;
-    --accent-coral: #ff6b6b;
-    --accent-orange: #ff9f43;
-    --text-bright: #ffffff;
-    --text-dim: #8ba3cc;
-    --card-bg: rgba(255,255,255,0.04);
-    --card-border: rgba(255,255,255,0.1);
-    --font-display: 'Orbitron', monospace;
-    --font-body: 'Nunito', sans-serif;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html, body { width:100%; min-height:100vh; background:var(--space-dark); color:var(--text-bright); font-family:var(--font-body); overflow-x:hidden; }
+:root {
+  /* Shared */
+  --font-body: 'Nunito', sans-serif;
+  --font-space: 'Orbitron', monospace;
+  --font-hero: 'Bangers', cursive;
+  /* Jaishnav — Space */
+  --j-dark: #050a1a;
+  --j-mid: #0d1b3e;
+  --j-blue: #1a3a6e;
+  --j-gold: #f5c842;
+  --j-cyan: #00e5ff;
+  --j-purple: #a855f7;
+  --j-green: #22c55e;
+  --j-coral: #ff6b6b;
+  --j-orange: #ff9f43;
+  /* Sakshi — Spider-Man */
+  --s-dark: #0a0000;
+  --s-mid: #1a0000;
+  --s-red: #cc0000;
+  --s-red2: #ff1a1a;
+  --s-blue: #003366;
+  --s-blue2: #0055aa;
+  --s-gold: #ffd700;
+  --s-white: #f0f0f0;
+  --s-web: rgba(255,255,255,0.12);
+  /* Shared UI */
+  --text-bright: #ffffff;
+  --text-dim: #8ba3cc;
+  --card-bg: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-height:100vh;background:#050a1a;color:#fff;font-family:var(--font-body);overflow-x:hidden;}
 
-  /* STARFIELD */
-  #starfield { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden; }
-  .star { position:absolute; border-radius:50%; background:#fff; animation:twinkle var(--d,3s) ease-in-out infinite; opacity:0; }
-  @keyframes twinkle { 0%,100%{opacity:0} 50%{opacity:var(--o,0.8)} }
-  .nebula { position:absolute; border-radius:50%; filter:blur(60px); opacity:0.07; pointer-events:none; }
+/* ── BACKGROUNDS ── */
+#bg-j{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;display:none;}
+#bg-s{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;display:none;background:var(--s-dark);}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite;opacity:0;}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--o,.8)}}
+.nebula{position:absolute;border-radius:50%;filter:blur(60px);opacity:.07;pointer-events:none;}
+/* Spider web lines */
+.web-line{position:absolute;background:rgba(255,255,255,0.06);transform-origin:top left;}
 
-  /* SCREENS */
-  .screen { display:none; min-height:100vh; position:relative; z-index:1; }
-  .screen.active { display:flex; flex-direction:column; }
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;position:relative;z-index:1;}
+.screen.active{display:flex;flex-direction:column;}
 
-  /* ===== LOGIN SCREEN ===== */
-  #login-screen { align-items:center; justify-content:center; padding:2rem; }
-  .login-card {
-    background: rgba(13,27,62,0.85);
-    border: 1px solid rgba(0,229,255,0.25);
-    border-radius: 24px;
-    padding: 3rem 2.5rem;
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 60px rgba(0,229,255,0.08), 0 0 120px rgba(168,85,247,0.06);
-  }
-  .rocket-logo { font-size: 64px; margin-bottom: 1rem; animation: float 3s ease-in-out infinite; display:block; }
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-  .login-title { font-family:var(--font-display); font-size:1.4rem; font-weight:900; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:0.25rem; }
-  .login-sub { color:var(--text-dim); font-size:0.9rem; margin-bottom:2rem; }
-  .login-input {
-    width:100%; padding:0.85rem 1.2rem; border-radius:12px;
-    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15);
-    color:#fff; font-size:1rem; font-family:var(--font-body); letter-spacing:3px;
-    text-align:center; outline:none; transition:border 0.2s;
-    margin-bottom:1rem;
-  }
-  .login-input:focus { border-color:var(--accent-cyan); }
-  .login-btn {
-    width:100%; padding:0.9rem; border-radius:12px; border:none; cursor:pointer;
-    background: linear-gradient(135deg, #00e5ff, #a855f7);
-    color:#fff; font-family:var(--font-display); font-size:0.9rem; font-weight:700;
-    letter-spacing:2px; transition:transform 0.15s, opacity 0.15s;
-  }
-  .login-btn:hover { transform:scale(1.02); }
-  .login-btn:active { transform:scale(0.98); }
-  .login-error { color:var(--accent-coral); font-size:0.85rem; margin-top:0.5rem; min-height:1.2rem; }
+/* ══════════════════════════════════════
+   FAMILY LOGIN SCREEN
+══════════════════════════════════════ */
+#family-screen{align-items:center;justify-content:center;padding:2rem;background:linear-gradient(180deg,#050a1a 0%,#0d1b3e 100%);}
+.family-title{font-family:var(--font-space);font-size:1rem;color:#8ba3cc;letter-spacing:4px;text-align:center;margin-bottom:0.5rem;}
+.family-sub{font-size:0.85rem;color:#4a6080;text-align:center;margin-bottom:2.5rem;letter-spacing:1px;}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:420px;}
+.profile-card{border-radius:20px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;}
+.profile-card:hover{transform:translateY(-4px);}
+.profile-card:active{transform:scale(.97);}
+/* Jaishnav card */
+.pcard-j{background:linear-gradient(135deg,#0d1b3e,#1a3a6e);border:1px solid rgba(0,229,255,.25);box-shadow:0 0 30px rgba(0,229,255,.08);}
+/* Sakshi card */
+.pcard-s{background:linear-gradient(135deg,#1a0000,#3a0000);border:1px solid rgba(204,0,0,.35);box-shadow:0 0 30px rgba(204,0,0,.12);}
+.pcard-icon{font-size:52px;display:block;margin-bottom:.75rem;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.pcard-name-j{font-family:var(--font-space);font-size:1rem;font-weight:900;color:var(--j-cyan);letter-spacing:1px;}
+.pcard-name-s{font-family:var(--font-hero);font-size:1.4rem;letter-spacing:2px;color:var(--s-red2);}
+.pcard-grade{font-size:.72rem;color:#8ba3cc;margin-top:3px;letter-spacing:1px;}
 
-  /* ===== HOME SCREEN ===== */
-  #home-screen { padding:0; }
-  .home-header {
-    padding:1.5rem 1.5rem 1rem;
-    background: linear-gradient(180deg, rgba(13,27,62,0.95) 0%, transparent 100%);
-    position:sticky; top:0; z-index:10; backdrop-filter:blur(10px);
-  }
-  .home-top { display:flex; align-items:center; justify-content:space-between; }
-  .home-greeting { font-family:var(--font-display); }
-  .home-greeting .hey { font-size:0.75rem; color:var(--text-dim); letter-spacing:2px; }
-  .home-greeting .name { font-size:1.3rem; font-weight:900; color:var(--accent-gold); letter-spacing:1px; }
-  .xp-badge {
-    background:rgba(245,200,66,0.12); border:1px solid rgba(245,200,66,0.3);
-    border-radius:20px; padding:0.4rem 0.9rem;
-    font-family:var(--font-display); font-size:0.75rem; color:var(--accent-gold);
-    display:flex; align-items:center; gap:6px;
-  }
-  .xp-star { font-size:14px; }
-  .streak-bar { margin-top:0.75rem; display:flex; align-items:center; gap:8px; }
-  .streak-label { font-size:0.75rem; color:var(--text-dim); }
-  .streak-dots { display:flex; gap:4px; }
-  .streak-dot { width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,0.12); transition:background 0.3s; }
-  .streak-dot.lit { background:var(--accent-gold); box-shadow:0 0 6px var(--accent-gold); }
+/* ── LOGIN CARD (shared) ── */
+#login-screen{align-items:center;justify-content:center;padding:2rem;}
+.login-card{border-radius:24px;padding:2.5rem 2rem;width:100%;max-width:380px;text-align:center;backdrop-filter:blur(20px);}
+.login-card-j{background:rgba(13,27,62,.9);border:1px solid rgba(0,229,255,.2);}
+.login-card-s{background:rgba(26,0,0,.92);border:1px solid rgba(204,0,0,.35);}
+.login-avatar{font-size:64px;display:block;margin-bottom:1rem;animation:float 3s ease-in-out infinite;}
+.login-title-j{font-family:var(--font-space);font-size:1.2rem;font-weight:900;color:var(--j-cyan);letter-spacing:2px;margin-bottom:.25rem;}
+.login-title-s{font-family:var(--font-hero);font-size:2rem;letter-spacing:3px;color:var(--s-red2);margin-bottom:.25rem;}
+.login-sub{color:#8ba3cc;font-size:.85rem;margin-bottom:1.5rem;}
+.login-input{width:100%;padding:.85rem 1.2rem;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:1rem;font-family:var(--font-body);letter-spacing:3px;text-align:center;outline:none;transition:border .2s;margin-bottom:1rem;}
+.login-input:focus{border-color:var(--j-cyan);}
+.login-input-s:focus{border-color:var(--s-red2);}
+.login-btn-j{width:100%;padding:.9rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#00e5ff,#a855f7);color:#fff;font-family:var(--font-space);font-size:.85rem;font-weight:700;letter-spacing:2px;transition:transform .15s;}
+.login-btn-s{width:100%;padding:.9rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#cc0000,#0055aa);color:#fff;font-family:var(--font-hero);font-size:1.2rem;letter-spacing:3px;transition:transform .15s;}
+.login-btn-j:hover,.login-btn-s:hover{transform:scale(1.02);}
+.back-to-family{margin-top:1rem;background:none;border:none;color:#8ba3cc;font-size:.8rem;cursor:pointer;text-decoration:underline;font-family:var(--font-body);}
+.login-error{color:#ff6b6b;font-size:.82rem;margin-top:.4rem;min-height:1.1rem;}
 
-  .home-body { padding:1rem 1.5rem 6rem; }
-  .section-title { font-family:var(--font-display); font-size:0.7rem; letter-spacing:3px; color:var(--text-dim); margin:1.5rem 0 0.75rem; text-transform:uppercase; }
+/* ══════════════════════════════════════
+   SHARED HOME / NAV
+══════════════════════════════════════ */
+#home-screen{padding:0;}
+.home-header{padding:1.25rem 1.5rem .75rem;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);}
+.home-header-j{background:linear-gradient(180deg,rgba(5,10,26,.95) 0%,transparent 100%);}
+.home-header-s{background:linear-gradient(180deg,rgba(10,0,0,.95) 0%,transparent 100%);}
+.home-top{display:flex;align-items:center;justify-content:space-between;}
+.home-greeting .hey{font-size:.7rem;color:#8ba3cc;letter-spacing:2px;}
+.home-greeting-j .name{font-family:var(--font-space);font-size:1.2rem;font-weight:900;color:var(--j-gold);}
+.home-greeting-s .name{font-family:var(--font-hero);font-size:1.6rem;letter-spacing:2px;color:var(--s-red2);}
+.xp-badge-j{background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.3);border-radius:20px;padding:.35rem .8rem;font-family:var(--font-space);font-size:.72rem;color:var(--j-gold);display:flex;align-items:center;gap:5px;}
+.xp-badge-s{background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:.35rem .8rem;font-family:var(--font-hero);font-size:1rem;color:var(--s-gold);display:flex;align-items:center;gap:5px;letter-spacing:1px;}
+.streak-bar{margin-top:.6rem;display:flex;align-items:center;gap:8px;}
+.streak-label{font-size:.72rem;color:#8ba3cc;}
+.streak-dots{display:flex;gap:4px;}
+.streak-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.1);transition:background .3s;}
+.streak-dot-j.lit{background:var(--j-gold);box-shadow:0 0 6px var(--j-gold);}
+.streak-dot-s.lit{background:var(--s-red2);box-shadow:0 0 6px var(--s-red2);}
+.home-body{padding:.75rem 1.5rem 6rem;}
+.section-title{font-size:.68rem;letter-spacing:3px;color:#8ba3cc;margin:1.25rem 0 .65rem;text-transform:uppercase;}
+.section-title-j{font-family:var(--font-space);}
+.section-title-s{font-family:var(--font-hero);font-size:.85rem;letter-spacing:2px;}
 
-  /* Today's mission */
-  .mission-card {
-    background: linear-gradient(135deg, rgba(0,229,255,0.1), rgba(168,85,247,0.1));
-    border:1px solid rgba(0,229,255,0.2); border-radius:20px; padding:1.25rem;
-    margin-bottom:0.5rem; cursor:pointer; transition:transform 0.2s;
-    position:relative; overflow:hidden;
-  }
-  .mission-card::before {
-    content:''; position:absolute; top:-50%; right:-20%; width:200px; height:200px;
-    background:radial-gradient(circle, rgba(0,229,255,0.08), transparent 70%);
-    pointer-events:none;
-  }
-  .mission-card:hover { transform:scale(1.01); }
-  .mission-tag { font-size:0.7rem; letter-spacing:2px; color:var(--accent-cyan); font-family:var(--font-display); margin-bottom:0.4rem; }
-  .mission-title { font-size:1.1rem; font-weight:800; margin-bottom:0.25rem; }
-  .mission-sub { font-size:0.8rem; color:var(--text-dim); }
-  .mission-xp { position:absolute; top:1rem; right:1rem; background:rgba(245,200,66,0.15); border:1px solid rgba(245,200,66,0.3); border-radius:10px; padding:0.2rem 0.6rem; font-size:0.75rem; color:var(--accent-gold); font-family:var(--font-display); }
+/* Mission card */
+.mission-card{border-radius:18px;padding:1.1rem;margin-bottom:.5rem;cursor:pointer;transition:transform .2s;position:relative;overflow:hidden;}
+.mission-card-j{background:linear-gradient(135deg,rgba(0,229,255,.1),rgba(168,85,247,.1));border:1px solid rgba(0,229,255,.2);}
+.mission-card-s{background:linear-gradient(135deg,rgba(204,0,0,.2),rgba(0,51,102,.2));border:1px solid rgba(204,0,0,.3);}
+.mission-card:hover{transform:scale(1.01);}
+.mission-tag-j{font-size:.68rem;letter-spacing:2px;color:var(--j-cyan);font-family:var(--font-space);margin-bottom:.3rem;}
+.mission-tag-s{font-size:.9rem;letter-spacing:2px;color:var(--s-red2);font-family:var(--font-hero);margin-bottom:.3rem;}
+.mission-title{font-size:1rem;font-weight:800;margin-bottom:.2rem;}
+.mission-sub{font-size:.78rem;color:#8ba3cc;}
+.mission-xp-j{position:absolute;top:.9rem;right:.9rem;background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.3);border-radius:8px;padding:.18rem .55rem;font-size:.72rem;color:var(--j-gold);font-family:var(--font-space);}
+.mission-xp-s{position:absolute;top:.9rem;right:.9rem;background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.3);border-radius:8px;padding:.18rem .55rem;font-size:.9rem;color:var(--s-gold);font-family:var(--font-hero);letter-spacing:1px;}
 
-  /* Subject grid */
-  .subject-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .subject-card {
-    border-radius:18px; padding:1.2rem 1rem; cursor:pointer;
-    transition:transform 0.2s, box-shadow 0.2s;
-    position:relative; overflow:hidden; min-height:130px;
-    display:flex; flex-direction:column; justify-content:space-between;
-  }
-  .subject-card:hover { transform:translateY(-3px); }
-  .subject-card:active { transform:scale(0.97); }
-  .subj-maths  { background:linear-gradient(135deg, #1a3a6e, #0d2550); border:1px solid rgba(0,229,255,0.2); }
-  .subj-english{ background:linear-gradient(135deg, #2d1b4e, #1a0d38); border:1px solid rgba(168,85,247,0.2); }
-  .subj-science{ background:linear-gradient(135deg, #0d3320, #071d12); border:1px solid rgba(34,197,94,0.2); }
-  .subj-tamil  { background:linear-gradient(135deg, #3a1a00, #1f0e00); border:1px solid rgba(255,159,67,0.2); }
-  .subj-iq     { background:linear-gradient(135deg, #3a001a, #200010); border:1px solid rgba(255,107,107,0.2); }
-  .subj-icon { font-size:32px; display:block; margin-bottom:0.5rem; }
-  .subj-name { font-weight:800; font-size:0.95rem; }
-  .subj-maths .subj-name  { color:var(--accent-cyan); }
-  .subj-english .subj-name{ color:var(--accent-purple); }
-  .subj-science .subj-name{ color:var(--accent-green); }
-  .subj-tamil .subj-name  { color:var(--accent-orange); }
-  .subj-iq .subj-name     { color:var(--accent-coral); }
-  .subj-count { font-size:0.72rem; color:var(--text-dim); margin-top:2px; }
-  .subj-progress { height:3px; border-radius:2px; background:rgba(255,255,255,0.08); margin-top:0.75rem; overflow:hidden; }
-  .subj-progress-fill { height:100%; border-radius:2px; transition:width 0.6s ease; }
-  .subj-maths  .subj-progress-fill { background:var(--accent-cyan); }
-  .subj-english .subj-progress-fill { background:var(--accent-purple); }
-  .subj-science .subj-progress-fill { background:var(--accent-green); }
-  .subj-tamil  .subj-progress-fill { background:var(--accent-orange); }
-  .subj-iq     .subj-progress-fill { background:var(--accent-coral); }
+/* Subject grid */
+.subject-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.subject-card{border-radius:16px;padding:1.1rem .9rem;cursor:pointer;transition:transform .2s;position:relative;overflow:hidden;min-height:120px;display:flex;flex-direction:column;justify-content:space-between;}
+.subject-card:hover{transform:translateY(-3px);}
+.subject-card:active{transform:scale(.97);}
+/* Jaishnav subjects */
+.subj-j-maths{background:linear-gradient(135deg,#1a3a6e,#0d2550);border:1px solid rgba(0,229,255,.2);}
+.subj-j-english{background:linear-gradient(135deg,#2d1b4e,#1a0d38);border:1px solid rgba(168,85,247,.2);}
+.subj-j-science{background:linear-gradient(135deg,#0d3320,#071d12);border:1px solid rgba(34,197,94,.2);}
+.subj-j-tamil{background:linear-gradient(135deg,#3a1a00,#1f0e00);border:1px solid rgba(255,159,67,.2);}
+.subj-j-iq{background:linear-gradient(135deg,#3a001a,#200010);border:1px solid rgba(255,107,107,.2);}
+/* Sakshi subjects */
+.subj-s-maths{background:linear-gradient(135deg,#2a0000,#440000);border:1px solid rgba(204,0,0,.3);}
+.subj-s-english{background:linear-gradient(135deg,#001a33,#003366);border:1px solid rgba(0,85,170,.35);}
+.subj-s-tamil{background:linear-gradient(135deg,#1a1a00,#2a2a00);border:1px solid rgba(255,215,0,.25);}
+.subj-s-drawing{background:linear-gradient(135deg,#001a1a,#002a2a);border:1px solid rgba(0,200,200,.25);}
+.subj-s-gk{background:linear-gradient(135deg,#1a0033,#2d0055);border:1px solid rgba(150,80,255,.25);}
+.subj-icon{font-size:28px;display:block;margin-bottom:.4rem;}
+.subj-name{font-weight:800;font-size:.9rem;}
+.subj-count{font-size:.68rem;color:#8ba3cc;margin-top:1px;}
+.subj-progress{height:3px;border-radius:2px;background:rgba(255,255,255,.07);margin-top:.6rem;overflow:hidden;}
+.subj-progress-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+/* subject name colours */
+.subj-j-maths .subj-name{color:var(--j-cyan);}
+.subj-j-english .subj-name{color:var(--j-purple);}
+.subj-j-science .subj-name{color:var(--j-green);}
+.subj-j-tamil .subj-name{color:var(--j-orange);}
+.subj-j-iq .subj-name{color:var(--j-coral);}
+.subj-s-maths .subj-name{color:var(--s-red2);}
+.subj-s-english .subj-name{color:#4da6ff;}
+.subj-s-tamil .subj-name{color:var(--s-gold);}
+.subj-s-drawing .subj-name{color:#00e5e5;}
+.subj-s-gk .subj-name{color:#b06aff;}
+/* progress fill colours */
+.subj-j-maths .subj-progress-fill{background:var(--j-cyan);}
+.subj-j-english .subj-progress-fill{background:var(--j-purple);}
+.subj-j-science .subj-progress-fill{background:var(--j-green);}
+.subj-j-tamil .subj-progress-fill{background:var(--j-orange);}
+.subj-j-iq .subj-progress-fill{background:var(--j-coral);}
+.subj-s-maths .subj-progress-fill{background:var(--s-red2);}
+.subj-s-english .subj-progress-fill{background:#4da6ff;}
+.subj-s-tamil .subj-progress-fill{background:var(--s-gold);}
+.subj-s-drawing .subj-progress-fill{background:#00e5e5;}
+.subj-s-gk .subj-progress-fill{background:#b06aff;}
 
-  /* BOTTOM NAV */
-  .bottom-nav {
-    position:fixed; bottom:0; left:0; right:0; z-index:20;
-    background:rgba(5,10,26,0.95); backdrop-filter:blur(20px);
-    border-top:1px solid rgba(255,255,255,0.08);
-    display:flex; justify-content:space-around; padding:0.6rem 0 calc(0.6rem + env(safe-area-inset-bottom));
-  }
-  .nav-btn { background:none; border:none; color:var(--text-dim); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:0.6rem; font-family:var(--font-body); letter-spacing:1px; padding:0.3rem 1rem; transition:color 0.2s; }
-  .nav-btn .nav-icon { font-size:20px; }
-  .nav-btn.active { color:var(--accent-cyan); }
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:20;backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-around;padding:.55rem 0 calc(.55rem + env(safe-area-inset-bottom));}
+.bottom-nav-j{background:rgba(5,10,26,.95);}
+.bottom-nav-s{background:rgba(10,0,0,.95);}
+.nav-btn{background:none;border:none;color:#8ba3cc;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.58rem;font-family:var(--font-body);letter-spacing:1px;padding:.25rem .9rem;transition:color .2s;}
+.nav-btn .nav-icon{font-size:18px;}
+.nav-btn-j.active{color:var(--j-cyan);}
+.nav-btn-s.active{color:var(--s-red2);}
 
-  /* ===== ACTIVITY LIST SCREEN ===== */
-  #activity-screen { padding-bottom:5rem; }
-  .screen-header { padding:1.5rem 1.5rem 1rem; display:flex; align-items:center; gap:1rem; background:rgba(5,10,26,0.9); backdrop-filter:blur(10px); position:sticky; top:0; z-index:10; }
-  .back-btn { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:1.2rem; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .screen-header-title { font-family:var(--font-display); font-size:1rem; font-weight:700; }
-  .activity-list { padding:0.5rem 1.5rem; display:flex; flex-direction:column; gap:10px; }
-  .activity-item {
-    background:var(--card-bg); border:1px solid var(--card-border);
-    border-radius:16px; padding:1rem 1.2rem; cursor:pointer;
-    display:flex; align-items:center; gap:1rem; transition:background 0.2s, transform 0.15s;
-  }
-  .activity-item:hover { background:rgba(255,255,255,0.07); transform:translateX(4px); }
-  .act-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
-  .act-info { flex:1; }
-  .act-title { font-weight:700; font-size:0.95rem; margin-bottom:2px; }
-  .act-meta { font-size:0.75rem; color:var(--text-dim); }
-  .act-status { font-size:1.2rem; }
-  .act-locked { opacity:0.4; cursor:not-allowed; }
-  .act-locked:hover { transform:none; }
+/* ── ACTIVITY LIST ── */
+#activity-screen{padding-bottom:5rem;}
+.screen-header{padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:10;backdrop-filter:blur(10px);}
+.screen-header-j{background:rgba(5,10,26,.92);}
+.screen-header-s{background:rgba(10,0,0,.92);}
+.back-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:1.2rem;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.screen-header-title-j{font-family:var(--font-space);font-size:.95rem;font-weight:700;}
+.screen-header-title-s{font-family:var(--font-hero);font-size:1.3rem;letter-spacing:2px;}
+.activity-list{padding:.5rem 1.5rem;display:flex;flex-direction:column;gap:9px;}
+.activity-item{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:.9rem 1.1rem;cursor:pointer;display:flex;align-items:center;gap:.9rem;transition:background .2s,transform .15s;}
+.activity-item:hover{background:rgba(255,255,255,.07);transform:translateX(4px);}
+.act-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.act-info{flex:1;}
+.act-title-j{font-weight:700;font-size:.92rem;margin-bottom:2px;}
+.act-title-s{font-family:var(--font-hero);font-size:1.05rem;letter-spacing:1px;margin-bottom:2px;}
+.act-meta{font-size:.72rem;color:#8ba3cc;}
+.act-locked{opacity:.35;cursor:not-allowed;}
+.act-locked:hover{transform:none;}
 
-  /* ===== ACTIVITY PLAYER SCREEN ===== */
-  #player-screen { padding-bottom:5rem; }
-  .player-header { padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; background:rgba(5,10,26,0.9); backdrop-filter:blur(10px); position:sticky; top:0; z-index:10; }
-  .player-title { font-family:var(--font-display); font-size:0.85rem; font-weight:700; }
-  .player-xp { background:rgba(245,200,66,0.12); border:1px solid rgba(245,200,66,0.3); border-radius:8px; padding:0.25rem 0.6rem; font-size:0.75rem; color:var(--accent-gold); font-family:var(--font-display); }
-  .player-body { padding:1rem 1.5rem; }
+/* ── PLAYER ── */
+#player-screen{padding-bottom:5rem;}
+.player-header{padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;backdrop-filter:blur(10px);}
+.player-header-j{background:rgba(5,10,26,.92);}
+.player-header-s{background:rgba(10,0,0,.92);}
+.player-title-j{font-family:var(--font-space);font-size:.82rem;font-weight:700;}
+.player-title-s{font-family:var(--font-hero);font-size:1.1rem;letter-spacing:1px;}
+.player-xp-j{background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.3);border-radius:8px;padding:.22rem .55rem;font-size:.72rem;color:var(--j-gold);font-family:var(--font-space);}
+.player-xp-s{background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:8px;padding:.22rem .55rem;font-size:.9rem;color:var(--s-gold);font-family:var(--font-hero);letter-spacing:1px;}
+.player-body{padding:1rem 1.5rem;}
 
-  /* ===== ABACUS ACTIVITY ===== */
-  .abacus-wrap { text-align:center; }
-  .abacus-question { font-size:1.5rem; font-weight:800; margin-bottom:0.25rem; }
-  .abacus-hint { font-size:0.8rem; color:var(--text-dim); margin-bottom:1.5rem; }
-  .abacus-frame {
-    background:rgba(13,27,62,0.8); border:2px solid rgba(255,159,67,0.3);
-    border-radius:20px; padding:1.2rem 1rem; margin:0 auto 1.5rem;
-    max-width:360px; position:relative;
-  }
-  .abacus-rod-row { display:flex; align-items:center; gap:6px; margin-bottom:10px; justify-content:center; }
-  .abacus-label { font-family:var(--font-display); font-size:0.65rem; color:var(--text-dim); width:30px; text-align:right; flex-shrink:0; }
-  .abacus-rod { display:flex; align-items:center; gap:5px; flex:1; justify-content:flex-start; }
-  .abacus-bead {
-    width:28px; height:28px; border-radius:50%; cursor:pointer;
-    transition:all 0.15s; position:relative; flex-shrink:0;
-    border:2px solid rgba(255,255,255,0.15);
-    background:rgba(255,255,255,0.06);
-    display:flex; align-items:center; justify-content:center;
-  }
-  .abacus-bead.active { background:var(--accent-orange); border-color:rgba(255,159,67,0.8); box-shadow:0 0 10px rgba(255,159,67,0.5); }
-  .abacus-bead:hover:not(.active) { background:rgba(255,255,255,0.12); transform:scale(1.1); }
-  .abacus-total { font-family:var(--font-display); font-size:1.2rem; color:var(--accent-cyan); margin-bottom:1.2rem; }
-  .abacus-total span { font-size:1.8rem; font-weight:900; }
-  .answer-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-  .answer-btn {
-    padding:0.7rem 1.5rem; border-radius:12px; border:1px solid rgba(255,255,255,0.15);
-    background:rgba(255,255,255,0.05); color:#fff; font-family:var(--font-body); font-size:1rem; font-weight:700;
-    cursor:pointer; transition:all 0.15s; min-width:80px;
-  }
-  .answer-btn:hover { background:rgba(255,255,255,0.1); transform:scale(1.05); }
-  .answer-btn.correct { background:rgba(34,197,94,0.2); border-color:var(--accent-green); color:var(--accent-green); }
-  .answer-btn.wrong { background:rgba(255,107,107,0.2); border-color:var(--accent-coral); color:var(--accent-coral); animation:shake 0.3s; }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-  .feedback-box { padding:1rem; border-radius:14px; text-align:center; margin-top:1rem; font-weight:700; font-size:1rem; }
-  .feedback-box.good { background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); color:var(--accent-green); }
-  .feedback-box.bad  { background:rgba(255,107,107,0.12); border:1px solid rgba(255,107,107,0.3); color:var(--accent-coral); }
-  .next-btn {
-    margin-top:1rem; width:100%; padding:0.9rem; border-radius:14px; border:none; cursor:pointer;
-    background:linear-gradient(135deg, #00e5ff, #a855f7); color:#fff;
-    font-family:var(--font-display); font-size:0.85rem; font-weight:700; letter-spacing:1px;
-    transition:transform 0.15s;
-  }
-  .next-btn:hover { transform:scale(1.02); }
-  .progress-row { display:flex; align-items:center; gap:10px; margin-bottom:1.5rem; }
-  .progress-bar { flex:1; height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden; }
-  .progress-fill { height:100%; background:linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); border-radius:3px; transition:width 0.4s ease; }
-  .progress-label { font-size:0.75rem; color:var(--text-dim); font-family:var(--font-display); white-space:nowrap; }
+/* Quiz UI */
+.progress-row{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;}
+.progress-bar{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;}
+.progress-fill-j{height:100%;background:linear-gradient(90deg,var(--j-cyan),var(--j-purple));border-radius:3px;transition:width .4s ease;}
+.progress-fill-s{height:100%;background:linear-gradient(90deg,var(--s-red2),var(--s-blue2));border-radius:3px;transition:width .4s ease;}
+.progress-label{font-size:.72rem;color:#8ba3cc;white-space:nowrap;}
+.q-card{border-radius:16px;padding:1.25rem;margin-bottom:1rem;}
+.q-card-j{background:var(--card-bg);border:1px solid var(--card-border);}
+.q-card-s{background:rgba(204,0,0,.08);border:1px solid rgba(204,0,0,.2);}
+.q-text{font-size:1rem;font-weight:700;line-height:1.5;}
+.q-text-s{font-family:var(--font-hero);font-size:1.2rem;letter-spacing:1px;line-height:1.4;}
+.opts-list{display:flex;flex-direction:column;gap:9px;}
+.answer-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:#fff;font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;transition:all .15s;border-radius:12px;padding:.8rem 1.1rem;text-align:left;}
+.answer-btn-s{font-family:var(--font-hero);font-size:1.1rem;letter-spacing:1px;}
+.answer-btn:hover{background:rgba(255,255,255,.1);transform:scale(1.02);}
+.answer-btn.correct{background:rgba(34,197,94,.2);border-color:#22c55e;color:#22c55e;}
+.answer-btn.wrong{background:rgba(255,107,107,.2);border-color:#ff6b6b;color:#ff6b6b;animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.feedback-good{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:.9rem;text-align:center;font-weight:700;color:#22c55e;margin-top:.9rem;}
+.feedback-bad{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.3);border-radius:12px;padding:.9rem;text-align:center;font-weight:700;color:#ff6b6b;margin-top:.9rem;}
+.next-btn-j{margin-top:.9rem;width:100%;padding:.85rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#00e5ff,#a855f7);color:#fff;font-family:var(--font-space);font-size:.82rem;font-weight:700;letter-spacing:1px;transition:transform .15s;}
+.next-btn-s{margin-top:.9rem;width:100%;padding:.85rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#cc0000,#0055aa);color:#fff;font-family:var(--font-hero);font-size:1.1rem;letter-spacing:2px;transition:transform .15s;}
+.next-btn-j:hover,.next-btn-s:hover{transform:scale(1.02);}
 
-  /* COMPLETION SCREEN */
-  .complete-card { text-align:center; padding:2rem 1rem; }
-  .complete-icon { font-size:72px; margin-bottom:1rem; animation:pop 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
-  @keyframes pop { 0%{transform:scale(0)} 80%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  .complete-title { font-family:var(--font-display); font-size:1.5rem; font-weight:900; color:var(--accent-gold); margin-bottom:0.5rem; }
-  .complete-score { font-size:1rem; color:var(--text-dim); margin-bottom:1.5rem; }
-  .xp-earned { display:inline-block; background:rgba(245,200,66,0.12); border:1px solid rgba(245,200,66,0.3); border-radius:20px; padding:0.5rem 1.5rem; font-family:var(--font-display); font-size:1.1rem; color:var(--accent-gold); margin-bottom:2rem; }
-  .home-return-btn { width:100%; max-width:280px; padding:0.9rem; border-radius:14px; border:none; cursor:pointer; background:linear-gradient(135deg,#f5c842,#ff9f43); color:#000; font-family:var(--font-display); font-size:0.85rem; font-weight:700; letter-spacing:1px; }
+/* Completion */
+.complete-card{text-align:center;padding:2rem 1rem;}
+.complete-icon{font-size:68px;margin-bottom:.9rem;animation:pop .4s cubic-bezier(.36,.07,.19,.97);}
+@keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
+.complete-title-j{font-family:var(--font-space);font-size:1.3rem;font-weight:900;color:var(--j-gold);margin-bottom:.5rem;}
+.complete-title-s{font-family:var(--font-hero);font-size:2rem;letter-spacing:2px;color:var(--s-red2);margin-bottom:.5rem;}
+.complete-score{font-size:.95rem;color:#8ba3cc;margin-bottom:1.2rem;}
+.xp-earned-j{display:inline-block;background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.3);border-radius:20px;padding:.45rem 1.2rem;font-family:var(--font-space);font-size:1rem;color:var(--j-gold);margin-bottom:1.5rem;}
+.xp-earned-s{display:inline-block;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:.45rem 1.2rem;font-family:var(--font-hero);font-size:1.3rem;letter-spacing:1px;color:var(--s-gold);margin-bottom:1.5rem;}
+.home-return-btn-j{width:100%;max-width:260px;padding:.85rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#f5c842,#ff9f43);color:#000;font-family:var(--font-space);font-size:.8rem;font-weight:700;letter-spacing:1px;}
+.home-return-btn-s{width:100%;max-width:260px;padding:.85rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#cc0000,#0055aa);color:#fff;font-family:var(--font-hero);font-size:1.1rem;letter-spacing:2px;}
 
-  /* ===== PROGRESS SCREEN ===== */
-  #progress-screen { padding:1rem 1.5rem 6rem; }
-  .progress-screen-title { font-family:var(--font-display); font-size:1.1rem; font-weight:900; color:var(--accent-cyan); margin:1rem 0 1.5rem; }
-  .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1.5rem; }
-  .stat-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:1rem; text-align:center; }
-  .stat-num { font-family:var(--font-display); font-size:1.8rem; font-weight:900; }
-  .stat-label { font-size:0.72rem; color:var(--text-dim); letter-spacing:1px; margin-top:2px; }
-  .recent-title { font-family:var(--font-display); font-size:0.7rem; letter-spacing:2px; color:var(--text-dim); margin-bottom:0.75rem; }
-  .recent-item { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:0.75rem 1rem; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
-  .recent-name { font-size:0.85rem; font-weight:600; }
-  .recent-score { font-family:var(--font-display); font-size:0.8rem; color:var(--accent-green); }
+/* Progress & Parent screens */
+#progress-screen{padding:1rem 1.5rem 6rem;}
+#parent-screen{padding:1rem 1.5rem 6rem;}
+.progress-screen-title-j{font-family:var(--font-space);font-size:1rem;font-weight:900;color:var(--j-cyan);margin:1rem 0 1.2rem;}
+.progress-screen-title-s{font-family:var(--font-hero);font-size:1.5rem;letter-spacing:2px;color:var(--s-red2);margin:1rem 0 1.2rem;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:1.2rem;}
+.stat-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:.9rem;text-align:center;}
+.stat-num-j{font-family:var(--font-space);font-size:1.6rem;font-weight:900;}
+.stat-num-s{font-family:var(--font-hero);font-size:2rem;letter-spacing:1px;}
+.stat-label{font-size:.68rem;color:#8ba3cc;letter-spacing:1px;margin-top:2px;}
+.recent-item{background:var(--card-bg);border:1px solid var(--card-border);border-radius:11px;padding:.65rem .9rem;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;}
+.recent-name{font-size:.82rem;font-weight:600;}
+.recent-score-j{font-family:var(--font-space);font-size:.75rem;color:#22c55e;}
+.recent-score-s{font-family:var(--font-hero);font-size:.95rem;color:#22c55e;}
 
-  /* ===== PARENT SCREEN ===== */
-  #parent-screen { padding:1rem 1.5rem 6rem; }
-  .parent-login { max-width:300px; margin:2rem auto; text-align:center; }
-  .parent-title { font-family:var(--font-display); font-size:1rem; color:var(--accent-gold); margin-bottom:1.5rem; letter-spacing:2px; }
-  .parent-unlock-btn { width:100%; padding:0.85rem; border-radius:12px; border:none; cursor:pointer; background:linear-gradient(135deg,#f5c842,#ff9f43); color:#000; font-family:var(--font-display); font-size:0.8rem; font-weight:700; letter-spacing:1px; margin-top:0.75rem; }
-  .parent-dashboard { display:none; }
-  .parent-dashboard.visible { display:block; }
-  .pdash-title { font-family:var(--font-display); font-size:1.1rem; color:var(--accent-gold); margin-bottom:1.5rem; }
-  .pdash-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1.5rem; }
-  .pdash-card { background:rgba(245,200,66,0.06); border:1px solid rgba(245,200,66,0.2); border-radius:16px; padding:1rem; text-align:center; }
-  .pdash-num { font-family:var(--font-display); font-size:2rem; font-weight:900; color:var(--accent-gold); }
-  .pdash-label { font-size:0.7rem; color:var(--text-dim); letter-spacing:1px; }
-  .subject-breakdown { background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:1rem; margin-bottom:1rem; }
-  .breakdown-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .breakdown-subject { font-size:0.8rem; font-weight:600; width:70px; flex-shrink:0; }
-  .breakdown-bar { flex:1; height:8px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden; }
-  .breakdown-fill { height:100%; border-radius:4px; }
-  .breakdown-pct { font-family:var(--font-display); font-size:0.7rem; color:var(--text-dim); width:30px; text-align:right; }
-  .log-table { width:100%; border-collapse:collapse; font-size:0.8rem; }
-  .log-table th { color:var(--text-dim); font-size:0.7rem; letter-spacing:1px; text-align:left; padding:0.4rem 0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); }
-  .log-table td { padding:0.5rem 0.5rem; border-bottom:1px solid rgba(255,255,255,0.04); }
+/* Parent dashboard */
+.parent-login{max-width:300px;margin:2rem auto;text-align:center;}
+.parent-title-j{font-family:var(--font-space);font-size:.9rem;color:var(--j-gold);margin-bottom:1.2rem;letter-spacing:2px;}
+.parent-title-s{font-family:var(--font-hero);font-size:1.3rem;letter-spacing:2px;color:var(--s-red2);margin-bottom:1.2rem;}
+.parent-unlock-btn-j{width:100%;padding:.8rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#f5c842,#ff9f43);color:#000;font-family:var(--font-space);font-size:.78rem;font-weight:700;letter-spacing:1px;margin-top:.75rem;}
+.parent-unlock-btn-s{width:100%;padding:.8rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#cc0000,#0055aa);color:#fff;font-family:var(--font-hero);font-size:1rem;letter-spacing:2px;margin-top:.75rem;}
+.parent-dashboard{display:none;}
+.parent-dashboard.visible{display:block;}
+.pdash-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:1.2rem;}
+.pdash-card-j{background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);border-radius:14px;padding:.9rem;text-align:center;}
+.pdash-card-s{background:rgba(204,0,0,.08);border:1px solid rgba(204,0,0,.25);border-radius:14px;padding:.9rem;text-align:center;}
+.pdash-num-j{font-family:var(--font-space);font-size:1.8rem;font-weight:900;color:var(--j-gold);}
+.pdash-num-s{font-family:var(--font-hero);font-size:2.2rem;color:var(--s-red2);}
+.pdash-label{font-size:.68rem;color:#8ba3cc;letter-spacing:1px;}
+.breakdown-row{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+.breakdown-subject{font-size:.75rem;font-weight:600;width:80px;flex-shrink:0;}
+.breakdown-bar{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+.breakdown-fill{height:100%;border-radius:4px;}
+.breakdown-pct{font-size:.68rem;color:#8ba3cc;width:28px;text-align:right;}
+.log-table{width:100%;border-collapse:collapse;font-size:.78rem;}
+.log-table th{color:#8ba3cc;font-size:.68rem;letter-spacing:1px;text-align:left;padding:.35rem .45rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.log-table td{padding:.45rem .45rem;border-bottom:1px solid rgba(255,255,255,.04);}
 
-  /* TOAST */
-  #toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px); background:rgba(13,27,62,0.95); border:1px solid rgba(0,229,255,0.3); border-radius:12px; padding:0.6rem 1.2rem; font-size:0.85rem; color:var(--accent-cyan); opacity:0; transition:all 0.3s; z-index:100; white-space:nowrap; pointer-events:none; }
-  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+/* Abacus */
+.abacus-wrap{text-align:center;}
+.abacus-question{font-size:1.4rem;font-weight:800;margin-bottom:.2rem;}
+.abacus-question-s{font-family:var(--font-hero);font-size:1.6rem;letter-spacing:1px;}
+.abacus-hint{font-size:.78rem;color:#8ba3cc;margin-bottom:1.2rem;}
+.abacus-frame{border-radius:18px;padding:1.1rem .9rem;margin:0 auto 1.2rem;max-width:340px;}
+.abacus-frame-j{background:rgba(13,27,62,.8);border:2px solid rgba(255,159,67,.3);}
+.abacus-frame-s{background:rgba(26,0,0,.8);border:2px solid rgba(204,0,0,.4);}
+.abacus-rod-row{display:flex;align-items:center;gap:5px;margin-bottom:9px;justify-content:center;}
+.abacus-label{font-size:.62rem;color:#8ba3cc;width:28px;text-align:right;flex-shrink:0;}
+.abacus-rod{display:flex;align-items:center;gap:4px;flex:1;justify-content:flex-start;}
+.abacus-bead{width:26px;height:26px;border-radius:50%;cursor:pointer;transition:all .15s;flex-shrink:0;border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;}
+.abacus-bead.active-j{background:var(--j-orange);border-color:rgba(255,159,67,.8);box-shadow:0 0 8px rgba(255,159,67,.5);}
+.abacus-bead.active-s{background:var(--s-red2);border-color:rgba(255,26,26,.8);box-shadow:0 0 8px rgba(255,26,26,.5);}
+.abacus-bead:hover:not(.active-j):not(.active-s){background:rgba(255,255,255,.1);transform:scale(1.1);}
+.abacus-total-j{font-family:var(--font-space);font-size:1.1rem;color:var(--j-cyan);margin-bottom:1rem;}
+.abacus-total-s{font-family:var(--font-hero);font-size:1.3rem;color:var(--s-red2);margin-bottom:1rem;letter-spacing:1px;}
+.abacus-total span{font-size:1.7rem;font-weight:900;}
+.answer-row{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;}
 
-  /* Responsive */
-  @media(min-width:500px) { .subject-grid { grid-template-columns:1fr 1fr 1fr; } }
-  @media(min-width:700px) {
-    .login-card { max-width:440px; }
-    .home-body { max-width:600px; margin:0 auto; }
-    .activity-list { max-width:600px; margin:0 auto; }
-    .player-body { max-width:600px; margin:0 auto; }
-  }
+/* Sheet missions */
+#sheet-missions-j .mission-card,
+#sheet-missions-s .mission-card{cursor:default;}
+
+/* Toast */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);border-radius:12px;padding:.55rem 1.1rem;font-size:.82rem;opacity:0;transition:all .3s;z-index:100;white-space:nowrap;pointer-events:none;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.toast-j{background:rgba(13,27,62,.96);border:1px solid rgba(0,229,255,.3);color:var(--j-cyan);}
+#toast.toast-s{background:rgba(26,0,0,.96);border:1px solid rgba(204,0,0,.4);color:var(--s-red2);}
+
+@media(min-width:500px){.subject-grid{grid-template-columns:1fr 1fr 1fr;}}
+@media(min-width:700px){.home-body,.activity-list,.player-body{max-width:600px;margin-left:auto;margin-right:auto;}}
 </style>
 </head>
 <body>
 
-<!-- STARFIELD -->
-<div id="starfield"></div>
+<div id="bg-j"></div>
+<div id="bg-s">
+  <!-- Spider-Man web pattern drawn via JS -->
+</div>
 <div id="toast"></div>
 
-<!-- =================== LOGIN =================== -->
-<div id="login-screen" class="screen active">
-  <div class="login-card">
-    <span class="rocket-logo">🚀</span>
-    <div class="login-title">SPACE ACADEMY</div>
-    <div class="login-sub">Jaishnav's Learning Mission — Grade 4</div>
-    <input class="login-input" type="password" id="pwd-input" placeholder="Enter your secret code" maxlength="20">
-    <button class="login-btn" onclick="tryLogin()">LAUNCH ›</button>
-    <div class="login-error" id="login-error"></div>
+<!-- ═══════════════════ FAMILY LOGIN ═══════════════════ -->
+<div id="family-screen" class="screen active">
+  <div class="family-title">CHOOSE YOUR HERO</div>
+  <div class="family-sub">TAP YOUR NAME TO BEGIN</div>
+  <div class="profile-grid">
+    <div class="profile-card pcard-j" onclick="selectProfile('j')">
+      <span class="pcard-icon" style="animation-delay:0s">🚀</span>
+      <div class="pcard-name-j">JAISHNAV</div>
+      <div class="pcard-grade">GRADE 4 · SPACE ACADEMY</div>
+    </div>
+    <div class="profile-card pcard-s" onclick="selectProfile('s')">
+      <span class="pcard-icon" style="animation-delay:.5s">🕷️</span>
+      <div class="pcard-name-s">SHAKSHU</div>
+      <div class="pcard-grade">GRADE 2 · HERO HQ</div>
+    </div>
   </div>
 </div>
 
-<!-- =================== HOME =================== -->
+<!-- ═══════════════════ LOGIN ═══════════════════ -->
+<div id="login-screen" class="screen">
+  <div class="login-card" id="login-card">
+    <span class="login-avatar" id="login-avatar">🚀</span>
+    <div id="login-title">SPACE ACADEMY</div>
+    <div class="login-sub" id="login-sub">Enter your secret code</div>
+    <input class="login-input" id="pwd-input" type="password" placeholder="••••••••••" maxlength="20">
+    <button id="login-btn" onclick="tryLogin()">LAUNCH</button>
+    <div class="login-error" id="login-error"></div>
+    <button class="back-to-family" onclick="showScreen('family-screen');resetBg()">← Back</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ HOME ═══════════════════ -->
 <div id="home-screen" class="screen">
-  <div class="home-header">
+  <div class="home-header" id="home-header">
     <div class="home-top">
-      <div class="home-greeting">
-        <div class="hey">WELCOME BACK, EXPLORER</div>
-        <div class="name" id="home-name">JAISHNAV 🌟</div>
+      <div class="home-greeting" id="home-greeting">
+        <div class="hey" id="home-hey">WELCOME BACK</div>
+        <div class="name" id="home-name">JAISHNAV</div>
       </div>
-      <div class="xp-badge"><span class="xp-star">⭐</span><span id="xp-display">0 XP</span></div>
+      <div id="xp-badge">0 XP</div>
     </div>
     <div class="streak-bar">
       <span class="streak-label">🔥 Daily streak</span>
       <div class="streak-dots" id="streak-dots"></div>
     </div>
   </div>
-  <div class="home-body">
-    <div id="sheet-missions"></div>
-    <div class="section-title">📡 Today's Mission</div>
-    <div class="mission-card" onclick="openActivity('maths','abacus')">
-      <div class="mission-tag">DAILY CHALLENGE</div>
-      <div class="mission-title">Abacus Maths Master</div>
-      <div class="mission-sub">Use the abacus to solve addition problems</div>
-      <div class="mission-xp">+30 XP</div>
-    </div>
-    <div class="section-title">🪐 Mission Control</div>
-    <div class="subject-grid">
-      <div class="subject-card subj-maths" onclick="openSubject('maths')">
-        <div>
-          <span class="subj-icon">🔢</span>
-          <div class="subj-name">Maths</div>
-          <div class="subj-count">4 activities</div>
-        </div>
-        <div class="subj-progress"><div class="subj-progress-fill" id="prog-maths" style="width:25%"></div></div>
-      </div>
-      <div class="subject-card subj-english" onclick="openSubject('english')">
-        <div>
-          <span class="subj-icon">📚</span>
-          <div class="subj-name">English</div>
-          <div class="subj-count">3 activities</div>
-        </div>
-        <div class="subj-progress"><div class="subj-progress-fill" id="prog-english" style="width:0%"></div></div>
-      </div>
-      <div class="subject-card subj-science" onclick="openSubject('science')">
-        <div>
-          <span class="subj-icon">🔭</span>
-          <div class="subj-name">Science</div>
-          <div class="subj-count">3 activities</div>
-        </div>
-        <div class="subj-progress"><div class="subj-progress-fill" id="prog-science" style="width:0%"></div></div>
-      </div>
-      <div class="subject-card subj-tamil" onclick="openSubject('tamil')">
-        <div>
-          <span class="subj-icon">✍️</span>
-          <div class="subj-name">Tamil / Hindi</div>
-          <div class="subj-count">2 activities</div>
-        </div>
-        <div class="subj-progress"><div class="subj-progress-fill" id="prog-tamil" style="width:0%"></div></div>
-      </div>
-      <div class="subject-card subj-iq" onclick="openSubject('iq')">
-        <div>
-          <span class="subj-icon">🧠</span>
-          <div class="subj-name">IQ Boost</div>
-          <div class="subj-count">3 activities</div>
-        </div>
-        <div class="subj-progress"><div class="subj-progress-fill" id="prog-iq" style="width:0%"></div></div>
-      </div>
-    </div>
-  </div>
-  <nav class="bottom-nav">
-    <button class="nav-btn active" onclick="showScreen('home-screen');setActiveNav(this)">
-      <span class="nav-icon">🏠</span>HOME
+  <div class="home-body" id="home-body"></div>
+  <nav class="bottom-nav" id="home-nav">
+    <button class="nav-btn" id="nav-home" onclick="showScreen('home-screen');setActiveNav('nav-home')">
+      <span class="nav-icon">🏠</span><span id="nav-home-label">HOME</span>
     </button>
-    <button class="nav-btn" onclick="showScreen('progress-screen');setActiveNav(this);renderProgress()">
+    <button class="nav-btn" id="nav-progress" onclick="showScreen('progress-screen');setActiveNav('nav-progress');renderProgress()">
       <span class="nav-icon">📊</span>PROGRESS
     </button>
-    <button class="nav-btn" onclick="showScreen('parent-screen');setActiveNav(this)">
+    <button class="nav-btn" id="nav-parent" onclick="showScreen('parent-screen');setActiveNav('nav-parent')">
       <span class="nav-icon">🔐</span>PARENT
     </button>
   </nav>
 </div>
 
-<!-- =================== ACTIVITY LIST =================== -->
+<!-- ═══════════════════ ACTIVITY LIST ═══════════════════ -->
 <div id="activity-screen" class="screen">
-  <div class="screen-header">
+  <div class="screen-header" id="act-header">
     <button class="back-btn" onclick="showScreen('home-screen')">‹</button>
-    <div class="screen-header-title" id="activity-screen-title">Maths</div>
+    <div id="activity-screen-title">Activities</div>
   </div>
   <div class="activity-list" id="activity-list"></div>
-  <nav class="bottom-nav">
-    <button class="nav-btn" onclick="showScreen('home-screen');setActiveNav(this)"><span class="nav-icon">🏠</span>HOME</button>
-    <button class="nav-btn" onclick="showScreen('progress-screen');setActiveNav(this);renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
-    <button class="nav-btn" onclick="showScreen('parent-screen');setActiveNav(this)"><span class="nav-icon">🔐</span>PARENT</button>
-  </nav>
-</div>
-
-<!-- =================== PLAYER =================== -->
-<div id="player-screen" class="screen">
-  <div class="player-header">
-    <button class="back-btn" onclick="exitActivity()">‹</button>
-    <div class="player-title" id="player-title">Activity</div>
-    <div class="player-xp" id="player-xp-label">+30 XP</div>
-  </div>
-  <div class="player-body" id="player-body"></div>
-  <nav class="bottom-nav">
+  <nav class="bottom-nav" id="act-nav">
     <button class="nav-btn" onclick="showScreen('home-screen')"><span class="nav-icon">🏠</span>HOME</button>
     <button class="nav-btn" onclick="showScreen('progress-screen');renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
     <button class="nav-btn" onclick="showScreen('parent-screen')"><span class="nav-icon">🔐</span>PARENT</button>
   </nav>
 </div>
 
-<!-- =================== PROGRESS =================== -->
-<div id="progress-screen" class="screen">
-  <div class="progress-screen-title">📊 My Progress</div>
-  <div id="progress-content"></div>
-  <nav class="bottom-nav">
-    <button class="nav-btn" onclick="showScreen('home-screen');setActiveNav(this)"><span class="nav-icon">🏠</span>HOME</button>
-    <button class="nav-btn active" onclick="showScreen('progress-screen');setActiveNav(this);renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
-    <button class="nav-btn" onclick="showScreen('parent-screen');setActiveNav(this)"><span class="nav-icon">🔐</span>PARENT</button>
+<!-- ═══════════════════ PLAYER ═══════════════════ -->
+<div id="player-screen" class="screen">
+  <div class="player-header" id="player-header">
+    <button class="back-btn" onclick="showScreen('home-screen')">‹</button>
+    <div id="player-title">Activity</div>
+    <div id="player-xp-label">+30 XP</div>
+  </div>
+  <div class="player-body" id="player-body"></div>
+  <nav class="bottom-nav" id="player-nav">
+    <button class="nav-btn" onclick="showScreen('home-screen')"><span class="nav-icon">🏠</span>HOME</button>
+    <button class="nav-btn" onclick="showScreen('progress-screen');renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
+    <button class="nav-btn" onclick="showScreen('parent-screen')"><span class="nav-icon">🔐</span>PARENT</button>
   </nav>
 </div>
 
-<!-- =================== PARENT =================== -->
+<!-- ═══════════════════ PROGRESS ═══════════════════ -->
+<div id="progress-screen" class="screen">
+  <div id="progress-title"></div>
+  <div id="progress-content" style="padding:0 1.5rem 6rem;"></div>
+  <nav class="bottom-nav" id="prog-nav">
+    <button class="nav-btn" onclick="showScreen('home-screen');setActiveNav('nav-home')"><span class="nav-icon">🏠</span>HOME</button>
+    <button class="nav-btn active" id="nav-prog2" onclick="showScreen('progress-screen');renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
+    <button class="nav-btn" onclick="showScreen('parent-screen')"><span class="nav-icon">🔐</span>PARENT</button>
+  </nav>
+</div>
+
+<!-- ═══════════════════ PARENT ═══════════════════ -->
 <div id="parent-screen" class="screen">
   <div class="parent-login" id="parent-login-area">
-    <div class="parent-title">🔐 PARENT DASHBOARD</div>
-    <input class="login-input" type="password" id="parent-pwd" placeholder="Enter parent PIN" maxlength="20">
-    <button class="parent-unlock-btn" onclick="tryParentLogin()">UNLOCK DASHBOARD</button>
+    <div id="parent-title-el"></div>
+    <input class="login-input" id="parent-pwd" type="password" placeholder="Parent PIN" maxlength="20">
+    <button id="parent-unlock-btn" onclick="tryParentLogin()">UNLOCK</button>
     <div class="login-error" id="parent-error"></div>
   </div>
   <div class="parent-dashboard" id="parent-dashboard">
-    <div class="pdash-title">👨‍👦 Jaishnav's Report</div>
-    <div id="pdash-content"></div>
+    <div id="pdash-title-el" style="padding:0 1.5rem;margin-bottom:1rem;"></div>
+    <div id="pdash-content" style="padding:0 1.5rem 6rem;"></div>
   </div>
-  <nav class="bottom-nav">
-    <button class="nav-btn" onclick="showScreen('home-screen');setActiveNav(this)"><span class="nav-icon">🏠</span>HOME</button>
-    <button class="nav-btn" onclick="showScreen('progress-screen');setActiveNav(this);renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
-    <button class="nav-btn active" onclick="showScreen('parent-screen');setActiveNav(this)"><span class="nav-icon">🔐</span>PARENT</button>
+  <nav class="bottom-nav" id="par-nav">
+    <button class="nav-btn" onclick="showScreen('home-screen');setActiveNav('nav-home')"><span class="nav-icon">🏠</span>HOME</button>
+    <button class="nav-btn" onclick="showScreen('progress-screen');renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
+    <button class="nav-btn active" onclick="showScreen('parent-screen')"><span class="nav-icon">🔐</span>PARENT</button>
   </nav>
 </div>
 
 <script>
-// ===================== CONFIG =====================
-const STUDENT_PWD = 'Jaishnav@123';
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+const PROFILES = {
+  j: { name:'Jaishnav', nick:'Jaishnav', pwd:'Jaishnav@123', grade:'Grade 4', theme:'j', avatar:'🚀', stateKey:'state_jaishnav' },
+  s: { name:'Shakshu',  nick:'Shakshu',  pwd:'Shakshi@123',  grade:'Grade 2', theme:'s', avatar:'🕷️', stateKey:'state_shakshu'  }
+};
 const PARENT_PWD  = 'Parent@999';
 const SHEETS_URL  = 'https://script.google.com/macros/s/AKfycbyvF0Hq-nGvp6NvNJdRQMOVvyPBLtUpfpQ7YQBJCTqqktdh3pHDP1qcd_qbLESxMOEj2g/exec';
-const STUDENT_NAME = 'Jaishnav';
 
-// ===================== STATE =====================
-let state = {
-  xp: 0,
-  streak: 0,
-  log: [],
-  completed: {}
-};
+let currentProfile = null;
+let state = { xp:0, streak:0, log:[], completed:{} };
 
-function loadState() {
-  try {
-    const s = localStorage.getItem('jaishnav_state');
-    if (s) state = JSON.parse(s);
-  } catch(e){}
-}
-function saveState() {
-  try { localStorage.setItem('jaishnav_state', JSON.stringify(state)); } catch(e){}
-}
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+function loadState()  { try { const s=localStorage.getItem(currentProfile.stateKey); if(s) state=JSON.parse(s); } catch(e){} }
+function saveState()  { try { localStorage.setItem(currentProfile.stateKey, JSON.stringify(state)); } catch(e){} }
 
-function syncToSheet(logEntry) {
-  if (!SHEETS_URL) return;
-  const payload = {
-    type:     'log',
-    date:     logEntry.date,
-    subject:  catalog[logEntry.subj]?.name || logEntry.subj,
-    activity: catalog[logEntry.subj]?.activities.find(a=>a.id===logEntry.actId)?.title || logEntry.actId,
-    score:    logEntry.score,
-    total:    logEntry.total,
-    pct:      (logEntry.pct/100).toFixed(2),
-    xp:       logEntry.earned,
-    duration: '—'
-  };
-  fetch(SHEETS_URL, {
-    method:  'POST',
-    mode:    'no-cors',
-    headers: {'Content-Type':'application/json'},
-    body:    JSON.stringify(payload)
-  }).catch(()=>{});
-}
-
-async function fetchAssignments() {
-  if (!SHEETS_URL) return;
-  try {
-    const res  = await fetch(SHEETS_URL + '?t=' + Date.now());
-    const data = await res.json();
-    if (data.status === 'ok' && data.assignments?.length) {
-      renderSheetAssignments(data.assignments);
-    }
-  } catch(e) {}
-}
-
-function renderSheetAssignments(assignments) {
-  const container = document.getElementById('sheet-missions');
-  if (!container) return;
-  container.innerHTML = '';
-  if (!assignments.length) return;
-  const title = document.createElement('div');
-  title.className = 'section-title';
-  title.textContent = '📨 New from Dad';
-  container.appendChild(title);
-  assignments.forEach(a => {
-    const card = document.createElement('div');
-    card.className = 'mission-card';
-    card.style.cursor = 'default';
-    card.innerHTML = `
-      <div class="mission-tag">${a.subject} · ${a.type} · ${a.difficulty || 'Normal'}</div>
-      <div class="mission-title">${a.question}</div>
-      <div class="mission-sub">Due: ${a.due}</div>
-      <div class="mission-xp">+${a.xp||20} XP</div>`;
-    container.appendChild(card);
-  });
-}
-
-// ===================== STARFIELD =====================
-(function(){
-  const sf = document.getElementById('starfield');
+// ═══════════════════════════════════════════════
+// BACKGROUNDS
+// ═══════════════════════════════════════════════
+(function buildSpaceStars(){
+  const bg=document.getElementById('bg-j');
   for(let i=0;i<160;i++){
-    const s=document.createElement('div');
-    s.className='star';
-    const sz=Math.random()*2.5+0.5;
-    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--o:${0.4+Math.random()*0.6};animation-delay:${Math.random()*5}s`;
-    sf.appendChild(s);
+    const s=document.createElement('div'); s.className='star';
+    const sz=Math.random()*2.5+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--o:${.4+Math.random()*.6};animation-delay:${Math.random()*5}s`;
+    bg.appendChild(s);
   }
-  const nebColors=['rgba(0,229,255','rgba(168,85,247','rgba(245,200,66'];
-  for(let i=0;i<4;i++){
-    const n=document.createElement('div');
-    n.className='nebula';
-    const c=nebColors[i%3];
-    n.style.cssText=`width:${200+Math.random()*300}px;height:${200+Math.random()*300}px;top:${Math.random()*100}%;left:${Math.random()*100}%;background:${c},0.5)`;
-    sf.appendChild(n);
-  }
+  ['rgba(0,229,255','rgba(168,85,247','rgba(245,200,66'].forEach(c=>{
+    const n=document.createElement('div'); n.className='nebula';
+    n.style.cssText=`width:${220+Math.random()*280}px;height:${220+Math.random()*280}px;top:${Math.random()*100}%;left:${Math.random()*100}%;background:${c},.5)`;
+    bg.appendChild(n);
+  });
 })();
 
-// ===================== SCREENS =====================
-function showScreen(id) {
+(function buildWebLines(){
+  const bg=document.getElementById('bg-s');
+  // Draw spider web effect with div lines
+  for(let i=0;i<12;i++){
+    const line=document.createElement('div'); line.className='web-line';
+    const angle=i*(180/12);
+    const len=Math.sqrt(window.innerWidth**2+window.innerHeight**2);
+    line.style.cssText=`width:1px;height:${len}px;top:0;left:50%;transform:rotate(${angle}deg);transform-origin:top center;`;
+    bg.appendChild(line);
+  }
+  // Concentric arcs (circles)
+  [80,160,260,380,520].forEach(r=>{
+    const c=document.createElement('div');
+    c.style.cssText=`position:absolute;border:1px solid rgba(255,255,255,0.05);border-radius:50%;width:${r*2}px;height:${r*2}px;top:50%;left:50%;transform:translate(-50%,-50%);`;
+    bg.appendChild(c);
+  });
+})();
+
+function resetBg(){
+  document.getElementById('bg-j').style.display='none';
+  document.getElementById('bg-s').style.display='none';
+  document.body.style.background='#050a1a';
+}
+
+function applyTheme(t){
+  document.getElementById('bg-j').style.display = t==='j'?'block':'none';
+  document.getElementById('bg-s').style.display = t==='s'?'block':'none';
+  document.body.style.background = t==='j'?'var(--j-dark)':'var(--s-dark)';
+}
+
+// ═══════════════════════════════════════════════
+// SCREENS & NAV
+// ═══════════════════════════════════════════════
+function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
-function setActiveNav(btn) {
-  const nav=btn.closest('nav');
-  nav.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function setActiveNav(id){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active','nav-btn-j','nav-btn-s'));
+  const btn=document.getElementById(id);
+  if(btn){
+    btn.classList.add('active');
+    btn.classList.add(currentProfile?.theme==='s'?'nav-btn-s':'nav-btn-j');
+  }
 }
 
-// ===================== LOGIN =====================
-function tryLogin() {
+// ═══════════════════════════════════════════════
+// PROFILE SELECT & LOGIN
+// ═══════════════════════════════════════════════
+function selectProfile(key){
+  currentProfile = PROFILES[key];
+  const t = currentProfile.theme;
+  applyTheme(t);
+  // Style login screen
+  const card = document.getElementById('login-card');
+  card.className = `login-card login-card-${t}`;
+  document.getElementById('login-avatar').textContent = currentProfile.avatar;
+  if(t==='j'){
+    document.getElementById('login-title').className='login-title-j';
+    document.getElementById('login-title').textContent='SPACE ACADEMY';
+    document.getElementById('login-btn').className='login-btn-j';
+    document.getElementById('login-btn').textContent='LAUNCH ›';
+    document.getElementById('pwd-input').className='login-input';
+  } else {
+    document.getElementById('login-title').className='login-title-s';
+    document.getElementById('login-title').textContent='HERO HQ';
+    document.getElementById('login-btn').className='login-btn-s';
+    document.getElementById('login-btn').textContent='SUIT UP!';
+    document.getElementById('pwd-input').className='login-input login-input-s';
+    document.getElementById('pwd-input').style.borderColor='rgba(204,0,0,.3)';
+  }
+  document.getElementById('login-sub').textContent = `Enter your secret code, ${currentProfile.nick}!`;
+  document.getElementById('pwd-input').value='';
+  document.getElementById('login-error').textContent='';
+  showScreen('login-screen');
+}
+
+function tryLogin(){
   const v=document.getElementById('pwd-input').value;
-  if(v===STUDENT_PWD) {
-    loadState();
+  if(v===currentProfile.pwd){
+    loadState(); renderHomeForProfile(); fetchAssignments();
     showScreen('home-screen');
-    renderHome();
-    fetchAssignments();
-    showToast('Welcome back, '+STUDENT_NAME+'! 🚀');
+    showToast('Welcome back, '+currentProfile.nick+'! '+currentProfile.avatar);
   } else {
     document.getElementById('login-error').textContent='Wrong password! Try again.';
     document.getElementById('pwd-input').value='';
@@ -576,9 +576,726 @@ function tryLogin() {
 }
 document.getElementById('pwd-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
 
-function tryParentLogin() {
-  const v=document.getElementById('parent-pwd').value;
-  if(v===PARENT_PWD) {
+// ═══════════════════════════════════════════════
+// RENDER HOME
+// ═══════════════════════════════════════════════
+function renderHomeForProfile(){
+  const t=currentProfile.theme;
+  const p=currentProfile;
+  // Header
+  document.getElementById('home-header').className=`home-header home-header-${t}`;
+  document.getElementById('home-greeting').className=`home-greeting home-greeting-${t}`;
+  document.getElementById('home-hey').textContent=t==='j'?'WELCOME BACK, EXPLORER':'HEY SUPERHERO!';
+  document.getElementById('home-name').textContent=p.nick+(t==='j'?' 🌟':' 🕷️');
+  // XP badge
+  const xpb=document.getElementById('xp-badge');
+  xpb.className=`xp-badge-${t}`;
+  xpb.innerHTML=`<span>⭐</span><span id="xp-display">${state.xp} XP</span>`;
+  // Streak
+  const dots=document.getElementById('streak-dots'); dots.innerHTML='';
+  for(let i=0;i<7;i++){
+    const d=document.createElement('div');
+    d.className=`streak-dot streak-dot-${t}`+(i<state.streak?' lit':'');
+    dots.appendChild(d);
+  }
+  // Nav
+  const nav=document.getElementById('home-nav');
+  nav.className=`bottom-nav bottom-nav-${t}`;
+  ['act-nav','player-nav','prog-nav','par-nav'].forEach(id=>{
+    const n=document.getElementById(id);
+    if(n) n.className=`bottom-nav bottom-nav-${t}`;
+  });
+  // Build body
+  const body=document.getElementById('home-body');
+  const cat=t==='j'?catalogJ:catalogS;
+  const missionCard=t==='j'
+    ?`<div class="mission-card mission-card-j" onclick="openActivity('maths','abacus')">
+        <div class="mission-tag-j">DAILY CHALLENGE</div>
+        <div class="mission-title">Abacus Maths Master</div>
+        <div class="mission-sub">Use the abacus to solve addition problems</div>
+        <div class="mission-xp-j">+30 XP</div>
+      </div>`
+    :`<div class="mission-card mission-card-s" onclick="openActivity('maths','count')">
+        <div class="mission-tag-s">TODAY'S MISSION</div>
+        <div class="mission-title" style="font-family:var(--font-hero);letter-spacing:1px">Counting Adventure!</div>
+        <div class="mission-sub">Count objects and match numbers</div>
+        <div class="mission-xp-s">+20 XP</div>
+      </div>`;
+
+  let subjectGrid='<div class="subject-grid">';
+  Object.entries(cat).forEach(([key,subj])=>{
+    const done=Object.keys(state.completed).filter(k=>k.startsWith(key+'_')).length;
+    const total=subj.activities.length;
+    const pct=Math.round((done/total)*100);
+    subjectGrid+=`<div class="subject-card subj-${t}-${key}" onclick="openSubject('${key}')">
+      <div>
+        <span class="subj-icon">${subj.icon}</span>
+        <div class="subj-name">${subj.name}</div>
+        <div class="subj-count">${total} activities</div>
+      </div>
+      <div class="subj-progress"><div class="subj-progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  });
+  subjectGrid+='</div>';
+
+  const sectionClass=t==='j'?'section-title section-title-j':'section-title section-title-s';
+  const missionLabel=t==='j'?"📡 Today's Mission":"🕷️ Today's Mission";
+  const missionControl=t==='j'?"🪐 Mission Control":"🦸 Hero Training";
+
+  body.innerHTML=`
+    <div id="sheet-missions-${t}"></div>
+    <div class="${sectionClass}">${missionLabel}</div>
+    ${missionCard}
+    <div class="${sectionClass}">${missionControl}</div>
+    ${subjectGrid}`;
+}
+
+// ═══════════════════════════════════════════════
+// CATALOGS
+// ═══════════════════════════════════════════════
+const catalogJ = {
+  maths:   { name:'Maths',         icon:'🔢', activities:[
+    {id:'abacus',       title:'Abacus Master',         icon:'🧮', meta:'Multi-step addition & subtraction',   xp:30, type:'abacus'},
+    {id:'tables',       title:'Times Tables Blitz',    icon:'✖️',  meta:'Mixed multiplication up to 15×15',   xp:35, type:'quiz', bank:'jMaths'},
+    {id:'shapes',       title:'Shapes & Geometry',     icon:'📐', meta:'Angles, area, perimeter & 3D shapes', xp:35, type:'quiz', bank:'jShapes'},
+    {id:'fractions',    title:'Fractions & Decimals',  icon:'🍕', meta:'Compare, add and simplify fractions', xp:40, type:'quiz', bank:'jFractions'},
+    {id:'word_problems',title:'Word Problems',         icon:'🧩', meta:'Real-world multi-step maths',         xp:45, type:'quiz', bank:'jWord'},
+    {id:'division',     title:'Division Duel',         icon:'➗', meta:'Long division and remainders',        xp:40, type:'quiz', bank:'jDivision'},
+  ]},
+  english: { name:'English',       icon:'📚', activities:[
+    {id:'spelling',   title:'Advanced Spelling',  icon:'🔤', meta:'Tricky Grade 4-5 words',              xp:30, type:'quiz', bank:'jSpelling'},
+    {id:'grammar',    title:'Grammar Challenge',  icon:'✏️', meta:'Tenses, clauses, sentence structure',  xp:35, type:'quiz', bank:'jGrammar'},
+    {id:'vocabulary', title:'Word Power',         icon:'💬', meta:'Synonyms, antonyms and meanings',      xp:35, type:'quiz', bank:'jVocab'},
+  ]},
+  science: { name:'Science',       icon:'🔭', activities:[
+    {id:'solar',      title:'Solar System Deep Dive', icon:'🪐', meta:'Moons, orbits, gravity and space',  xp:35, type:'quiz', bank:'jSolar'},
+    {id:'animals',    title:'Animal Kingdom',         icon:'🦁', meta:'Food chains and adaptations',       xp:30, type:'quiz', bank:'jAnimals'},
+    {id:'human_body', title:'Human Body Systems',     icon:'🫀', meta:'Organs, bones, how body works',     xp:35, type:'quiz', bank:'jBody'},
+  ]},
+  tamil:   { name:'Tamil / Hindi', icon:'✍️', activities:[
+    {id:'tamil_letters',   title:'Tamil Script & Words', icon:'அ',  meta:'Vowels, consonants & Tamil words',  xp:30, type:'quiz', bank:'jTamil'},
+    {id:'hindi_letters',   title:'Hindi Alphabet',       icon:'क',  meta:'Devanagari letters and words',      xp:30, type:'quiz', bank:'jHindi'},
+    {id:'hindi_sentences', title:'Hindi Sentences',      icon:'🗣️', meta:'Common Hindi phrases',              xp:35, type:'quiz', bank:'jHindiSent'},
+    {id:'tamil_numbers',   title:'Tamil Numbers',        icon:'௧',  meta:'Numbers 1–100 in Tamil script',    xp:30, type:'quiz', bank:'jTamilNum'},
+  ]},
+  iq:      { name:'IQ Boost',      icon:'🧠', activities:[
+    {id:'pattern',   title:'Pattern Master',    icon:'🔮', meta:'Number, letter and visual sequences', xp:40, type:'quiz', bank:'jPattern'},
+    {id:'riddles',   title:'Hard Riddles',       icon:'❓', meta:'Challenging brain teasers',           xp:35, type:'quiz', bank:'jRiddles'},
+    {id:'logic',     title:'Logic Grid',         icon:'♟️', meta:'Deductive reasoning puzzles',        xp:45, type:'quiz', bank:'jLogic'},
+    {id:'analogies', title:'Word Analogies',     icon:'🔗', meta:'A is to B as C is to ___?',          xp:40, type:'quiz', bank:'jAnalogies'},
+    {id:'spatial',   title:'Spatial Reasoning',  icon:'🔷', meta:'Rotate, fold and visualise shapes',  xp:45, type:'quiz', bank:'jSpatial'},
+  ]},
+};
+
+const catalogS = {
+  maths:   { name:'Maths',              icon:'🔢', activities:[
+    {id:'count',    title:'Count with Spidey!',    icon:'🕷️', meta:'Count objects up to 20',          xp:20, type:'quiz', bank:'sMaths'},
+    {id:'add',      title:'Super Addition',         icon:'➕', meta:'Add numbers up to 50',             xp:20, type:'quiz', bank:'sAdd'},
+    {id:'subtract', title:'Minus Mission',          icon:'➖', meta:'Subtract numbers up to 30',        xp:20, type:'quiz', bank:'sSub'},
+    {id:'shapes2d', title:'Shape Hero',             icon:'⭐', meta:'2D shapes and their properties',   xp:20, type:'quiz', bank:'sShapes'},
+    {id:'tables2',  title:'2s, 5s and 10s Tables',  icon:'✖️',  meta:'Easy multiplication tables',      xp:25, type:'quiz', bank:'sTables'},
+  ]},
+  english: { name:'English',            icon:'📚', activities:[
+    {id:'letters',  title:'Alphabet Adventure',    icon:'🔤', meta:'Letters, sounds and simple words',  xp:20, type:'quiz', bank:'sLetters'},
+    {id:'spelling2',title:'Spell It!',             icon:'✏️', meta:'Grade 1-2 spelling words',          xp:20, type:'quiz', bank:'sSpelling'},
+    {id:'sentences',title:'Build a Sentence',      icon:'💬', meta:'Arrange words to make sentences',   xp:25, type:'quiz', bank:'sSentences'},
+  ]},
+  tamil:   { name:'Tamil / Hindi',      icon:'✍️', activities:[
+    {id:'tamil2',   title:'Tamil Letters',         icon:'அ',  meta:'Basic Tamil vowels and words',      xp:20, type:'quiz', bank:'sTamil'},
+    {id:'hindi2',   title:'Hindi Letters',         icon:'क',  meta:'Basic Hindi letters and words',     xp:20, type:'quiz', bank:'sHindi'},
+    {id:'hindi_words2', title:'Hindi Words',       icon:'🗣️', meta:'Simple Hindi words and meanings',   xp:20, type:'quiz', bank:'sHindiWords'},
+  ]},
+  drawing: { name:'Drawing & Colours',  icon:'🎨', activities:[
+    {id:'colours',  title:'Colour Match!',         icon:'🌈', meta:'Match colours and learn their names', xp:20, type:'quiz', bank:'sColours'},
+    {id:'mixcolour',title:'Colour Mixing',         icon:'🎨', meta:'What colour do you get when you mix?', xp:25, type:'quiz', bank:'sMixColour'},
+    {id:'patterns2',title:'Pattern Spotter',       icon:'🔵', meta:'Complete the colour and shape pattern', xp:25, type:'quiz', bank:'sPatterns'},
+  ]},
+  gk:      { name:'General Knowledge',  icon:'🌍', activities:[
+    {id:'animals2', title:'Animal World',          icon:'🦁', meta:'Animals, sounds and habitats',      xp:20, type:'quiz', bank:'sAnimals'},
+    {id:'body2',    title:'My Body',               icon:'👋', meta:'Body parts and their uses',         xp:20, type:'quiz', bank:'sBody'},
+    {id:'world',    title:'Around the World',      icon:'🌍', meta:'Countries, flags and capitals',     xp:25, type:'quiz', bank:'sWorld'},
+    {id:'science2', title:'Mini Scientist',        icon:'🔬', meta:'Simple science questions',          xp:25, type:'quiz', bank:'sScience'},
+  ]},
+};
+
+// ═══════════════════════════════════════════════
+// QUIZ BANKS
+// ═══════════════════════════════════════════════
+const qb = {
+  // ── JAISHNAV ──────────────────────────────────
+  jMaths:[
+    {q:'What is 13 × 7?',opts:['81','91','89','84'],a:1},
+    {q:'What is 14 × 8?',opts:['112','102','122','108'],a:0},
+    {q:'What is 144 ÷ 12?',opts:['11','13','12','14'],a:2},
+    {q:'What is 15 × 15?',opts:['215','225','235','205'],a:1},
+    {q:'What is 9 × 9 × 2?',opts:['142','162','152','172'],a:1},
+    {q:'What is 256 ÷ 8?',opts:['28','34','32','36'],a:2},
+    {q:'What is 11 × 13?',opts:['133','143','123','153'],a:1},
+    {q:'What is 625 ÷ 25?',opts:['20','30','25','15'],a:2},
+    {q:'What is 12 × 12 − 44?',opts:['104','100','108','96'],a:0},
+    {q:'A number multiplied by itself gives 196. What is it?',opts:['12','16','14','18'],a:2},
+  ],
+  jShapes:[
+    {q:'What is the area of a rectangle 9 cm long and 6 cm wide?',opts:['54 cm²','48 cm²','45 cm²','63 cm²'],a:0},
+    {q:'What is the perimeter of a square with side 8 cm?',opts:['24 cm','32 cm','16 cm','28 cm'],a:1},
+    {q:'How many edges does a triangular prism have?',opts:['6','9','12','8'],a:1},
+    {q:'What angle is in an equilateral triangle?',opts:['90°','45°','60°','72°'],a:2},
+    {q:'Area of a triangle: base 10 cm, height 6 cm?',opts:['30 cm²','60 cm²','45 cm²','20 cm²'],a:0},
+    {q:'How many vertices does a hexagonal prism have?',opts:['8','10','12','14'],a:2},
+    {q:'An angle between 90° and 180° is called?',opts:['Acute','Right','Obtuse','Reflex'],a:2},
+    {q:'Perimeter of triangle with sides 7, 8, 9 cm?',opts:['22 cm','24 cm','26 cm','20 cm'],a:1},
+  ],
+  jFractions:[
+    {q:'Which fraction is the largest?',opts:['1/2','3/8','2/3','5/12'],a:2},
+    {q:'What is 1/4 + 1/4?',opts:['1/8','1/2','2/8','3/4'],a:1},
+    {q:'What is 3/4 − 1/4?',opts:['2/4','1/2','1/4','3/8'],a:1},
+    {q:'What is 0.75 as a fraction?',opts:['3/5','7/10','3/4','2/3'],a:2},
+    {q:'What is 1/3 of 90?',opts:['20','25','30','35'],a:2},
+    {q:'Simplify 12/16.',opts:['2/3','3/4','4/5','5/6'],a:1},
+    {q:'What is 1.25 as a fraction?',opts:['5/4','6/5','4/3','7/5'],a:0},
+    {q:'What fraction of 24 is 8?',opts:['1/2','1/4','1/3','1/6'],a:2},
+  ],
+  jWord:[
+    {q:'A train travels 75 km/h for 4 hours. How far?',opts:['275 km','300 km','350 km','250 km'],a:1},
+    {q:'Riya has ₹500 and spends ₹175. How much left?',opts:['₹235','₹315','₹325','₹300'],a:2},
+    {q:'12 chocolates per box × 15 boxes = ?',opts:['170','180','160','190'],a:1},
+    {q:'48 students in groups of 6 = how many groups?',opts:['6','7','8','9'],a:2},
+    {q:'Rectangle perimeter 38 cm, one side 11 cm. Other side?',opts:['6 cm','7 cm','8 cm','9 cm'],a:3},
+    {q:'₹120/hour × 8 hours = ?',opts:['₹840','₹960','₹1020','₹900'],a:1},
+    {q:'240-litre tank, 3/4 full. Litres inside?',opts:['160 L','180 L','200 L','220 L'],a:1},
+    {q:'320-page book, 45 pages/day. Days to finish?',opts:['6','7','8','9'],a:1},
+  ],
+  jDivision:[
+    {q:'What is 189 ÷ 9?',opts:['19','21','23','17'],a:1},
+    {q:'What is 252 ÷ 7?',opts:['34','36','38','32'],a:1},
+    {q:'What is 375 ÷ 15?',opts:['20','25','30','35'],a:1},
+    {q:'Remainder when 47 ÷ 5?',opts:['1','2','3','4'],a:1},
+    {q:'What is 504 ÷ 12?',opts:['38','40','42','44'],a:2},
+    {q:'Remainder when 100 ÷ 7?',opts:['1','2','3','6'],a:3},
+    {q:'336 pens in boxes of 8. How many boxes?',opts:['40','42','44','46'],a:1},
+    {q:'What is 1000 ÷ 25?',opts:['30','35','40','45'],a:2},
+  ],
+  jSpelling:[
+    {q:'Correct spelling?',opts:['Accomodate','Accommodate','Acomodate','Accommadate'],a:1},
+    {q:'Correct spelling?',opts:['Embaras','Embarras','Embarrass','Embarrss'],a:2},
+    {q:'Correct spelling?',opts:['Occurance','Occurence','Occurrence','Occurrance'],a:2},
+    {q:'Correct spelling?',opts:['Independant','Independint','Independent','Independint'],a:2},
+    {q:'Correct spelling?',opts:['Recieve','Receive','Recive','Receeve'],a:1},
+    {q:'Correct spelling?',opts:['Seperate','Separete','Separate','Seprate'],a:2},
+    {q:'Correct spelling?',opts:['Priviledge','Privilege','Privelege','Privlege'],a:1},
+    {q:'Correct spelling?',opts:['Concious','Conscious','Consious','Conscous'],a:1},
+  ],
+  jGrammar:[
+    {q:'Tense of "She has been reading for two hours."',opts:['Simple past','Present perfect continuous','Past perfect','Future continuous'],a:1},
+    {q:'"Neither the boys nor the girl ___ present."',opts:['were','are','is','be'],a:2},
+    {q:'Passive of "The chef cooked the meal"?',opts:['The meal was cooked by the chef','The meal is cooked by the chef','The meal cooked by the chef','The chef had the meal cooked'],a:0},
+    {q:'"quickly" in "He ran quickly" is a?',opts:['Adjective','Adverb','Preposition','Conjunction'],a:1},
+    {q:'Correct superlative of "good"?',opts:['More good','Gooder','Best','Better'],a:2},
+    {q:'Correct sentence?',opts:['Between you and I, this is wrong','Between you and me, this is right','Between you and me, this is wrong','Between you and I, this is right'],a:1},
+  ],
+  jVocab:[
+    {q:'Synonym of "Enormous"?',opts:['Tiny','Gigantic','Average','Moderate'],a:1},
+    {q:'Antonym of "Transparent"?',opts:['Clear','Visible','Opaque','Shiny'],a:2},
+    {q:'What does "Benevolent" mean?',opts:['Cruel','Kind and generous','Angry','Lazy'],a:1},
+    {q:'Synonym of "Perplexed"?',opts:['Confident','Confused','Pleased','Bored'],a:1},
+    {q:'What does "Diligent" mean?',opts:['Careless','Lazy','Hard-working','Noisy'],a:2},
+    {q:'Antonym of "Courageous"?',opts:['Bold','Brave','Cowardly','Strong'],a:2},
+    {q:'What does "Arduous" mean?',opts:['Easy','Enjoyable','Very difficult','Expensive'],a:2},
+    {q:'Antonym of "Serene"?',opts:['Calm','Peaceful','Turbulent','Quiet'],a:2},
+  ],
+  jSolar:[
+    {q:'Which planet has the most moons?',opts:['Jupiter','Saturn','Uranus','Neptune'],a:1},
+    {q:'Distance from Earth to the Sun?',opts:['50 million km','150 million km','250 million km','100 million km'],a:1},
+    {q:'Which planet rotates on its side?',opts:['Neptune','Saturn','Uranus','Mars'],a:2},
+    {q:'What causes a lunar eclipse?',opts:["Moon blocks Sun's light","Earth's shadow falls on Moon","Sun goes behind Moon","Moon moves away"],a:1},
+    {q:'Our galaxy is called?',opts:['Andromeda','Milky Way','Triangulum','Sombrero'],a:1},
+    {q:'Planet known as Earth\'s twin?',opts:['Mars','Mercury','Venus','Neptune'],a:2},
+    {q:'Rocky bodies between Mars and Jupiter?',opts:['Comets','Meteors','Asteroids','Satellites'],a:2},
+    {q:'Correct planet order from Sun?',opts:['Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune','Mercury Earth Venus Mars Jupiter Saturn Neptune Uranus','Venus Mercury Earth Mars Jupiter Saturn Uranus Neptune','Mercury Venus Mars Earth Jupiter Saturn Uranus Neptune'],a:0},
+  ],
+  jAnimals:[
+    {q:'Cold-blooded AND lays eggs?',opts:['Bat','Dolphin','Crocodile','Whale'],a:2},
+    {q:'Caterpillar to butterfly process?',opts:['Germination','Metamorphosis','Photosynthesis','Evolution'],a:1},
+    {q:'Eagle in: Grass→Grasshopper→Frog→Snake→Eagle is a?',opts:['Producer','Primary consumer','Secondary consumer','Tertiary consumer'],a:3},
+    {q:'Fastest running bird?',opts:['Penguin','Emu','Ostrich','Kiwi'],a:2},
+    {q:'Eats both plants and animals?',opts:['Herbivore','Carnivore','Omnivore','Decomposer'],a:2},
+    {q:'Which mammal lays eggs?',opts:['Bat','Whale','Platypus','Dolphin'],a:2},
+    {q:'Scientific study of animals?',opts:['Botany','Zoology','Geology','Ecology'],a:1},
+  ],
+  jBody:[
+    {q:'How many bones in the adult body?',opts:['186','206','226','246'],a:1},
+    {q:'Largest organ in the human body?',opts:['Brain','Liver','Skin','Stomach'],a:2},
+    {q:'Blood cells that carry oxygen?',opts:['White blood cells','Platelets','Red blood cells','Plasma'],a:2},
+    {q:'Kidneys function?',opts:['Digest food','Filter blood and produce urine','Pump blood','Absorb oxygen'],a:1},
+    {q:'How many chambers does the heart have?',opts:['2','3','4','5'],a:2},
+    {q:'Vitamin made from sunlight?',opts:['Vitamin A','Vitamin B12','Vitamin C','Vitamin D'],a:3},
+    {q:'Longest bone in the body?',opts:['Spine','Femur','Tibia','Humerus'],a:1},
+    {q:'Normal body temperature in Celsius?',opts:['35°C','36°C','37°C','38°C'],a:2},
+  ],
+  jTamil:[
+    {q:'What does "நன்றி" mean?',opts:['Hello','Goodbye','Thank you','Please'],a:2},
+    {q:'Which is a Tamil consonant (மெய் எழுத்து)?',opts:['அ','இ','உ','க'],a:3},
+    {q:'What does "வணக்கம்" mean?',opts:['Thank you','Greetings/Hello','Goodbye','Sorry'],a:1},
+    {q:'Tamil word for "school"?',opts:['வீடு','பள்ளி','மரம்','நீர்'],a:1},
+    {q:'What does "அம்மா" mean?',opts:['Father','Sister','Mother','Brother'],a:2},
+    {q:'Tamil word for "sun"?',opts:['நிலா','நட்சத்திரம்','சூரியன்','மழை'],a:2},
+    {q:'What does "புத்தகம்" mean?',opts:['Pen','Bag','Book','Table'],a:2},
+  ],
+  jHindi:[
+    {q:'What does "नमस्ते" mean?',opts:['Goodbye','Thank you','Hello/Greetings','Sorry'],a:2},
+    {q:'Hindi vowel (स्वर)?',opts:['क','ख','अ','ग'],a:2},
+    {q:'What does "पानी" mean?',opts:['Food','Fire','Water','Sky'],a:2},
+    {q:'Hindi word for "book"?',opts:['कलम','किताब','थैला','मेज'],a:1},
+    {q:'What does "सूरज" mean?',opts:['Moon','Star','Cloud','Sun'],a:3},
+    {q:'Hindi word for "school"?',opts:['घर','विद्यालय','बाज़ार','मंदिर'],a:1},
+    {q:'Hindi word for "friend"?',opts:['दुश्मन','भाई','दोस्त','बहन'],a:2},
+  ],
+  jHindiSent:[
+    {q:'What does "मेरा नाम जयश्नव है" mean?',opts:['My name is Jaishnav','I am from India','I go to school','My friend is Jaishnav'],a:0},
+    {q:'What does "मुझे भूख लगी है" mean?',opts:['I am thirsty','I am hungry','I am tired','I am happy'],a:1},
+    {q:'"How are you?" in Hindi?',opts:['तुम कहाँ हो?','तुम क्या करते हो?','तुम कैसे हो?','तुम कौन हो?'],a:2},
+    {q:'What does "शुभ रात्रि" mean?',opts:['Good morning','Good afternoon','Good evening','Good night'],a:3},
+    {q:'What does "मेरा घर बड़ा है" mean?',opts:['My school is big','My friend is tall','My house is big','My bag is heavy'],a:2},
+  ],
+  jTamilNum:[
+    {q:'What is "௧" in numbers?',opts:['2','1','3','4'],a:1},
+    {q:'What is "௫" in numbers?',opts:['3','4','5','6'],a:2},
+    {q:'What is "௨௫" in numbers?',opts:['20','25','52','30'],a:1},
+    {q:'Tamil word for 100?',opts:['நூறு','ஆயிரம்','பத்து','நாற்பது'],a:0},
+    {q:'What is "௩௦" in numbers?',opts:['13','30','33','3'],a:1},
+    {q:'Tamil word for "thousand"?',opts:['நூறு','பத்து','ஆயிரம்','இலட்சம்'],a:2},
+  ],
+  jPattern:[
+    {q:'Next: 3, 6, 12, 24, 48, ___',opts:['72','84','96','86'],a:2},
+    {q:'Next: 1, 1, 2, 3, 5, 8, 13, ___',opts:['18','19','20','21'],a:3},
+    {q:'Next: 100, 95, 85, 70, 50, ___',opts:['30','25','20','15'],a:1},
+    {q:'Next: 2, 6, 12, 20, 30, ___',opts:['40','42','44','46'],a:1},
+    {q:'Next: Z, X, V, T, R, ___',opts:['P','Q','O','S'],a:0},
+    {q:'Next: 1, 8, 27, 64, ___',opts:['100','121','125','128'],a:2},
+    {q:'Missing: 4, 9, 16, ___, 36',opts:['20','24','25','30'],a:2},
+    {q:'Next: AZ, BY, CX, DW, ___',opts:['EU','EV','FV','EW'],a:1},
+  ],
+  jRiddles:[
+    {q:'I have cities but no houses, mountains but no trees. What am I?',opts:['A painting','A globe','A map','A dream'],a:2},
+    {q:'The more you have of it, the less you see. What is it?',opts:['Money','Darkness','Time','Light'],a:1},
+    {q:'I have a tail and a head but no body. What am I?',opts:['A snake','A comet','A coin','An arrow'],a:2},
+    {q:'What gets wetter the more it dries?',opts:['A sponge','Ice','A towel','Soap'],a:2},
+    {q:'I have keys but no locks, space but no room. What am I?',opts:['A safe','A piano','A keyboard','A door'],a:2},
+    {q:'Runs but never walks, has a mouth but never talks. What am I?',opts:['A clock','A river','A road','A train'],a:1},
+  ],
+  jLogic:[
+    {q:'All roses are flowers. Some flowers fade quickly. Therefore?',opts:['All roses fade quickly','Some roses may fade quickly','No roses fade quickly','Roses are not flowers'],a:1},
+    {q:'If A > B and B > C, which is true?',opts:['C > A','A > C','B > A','C = A'],a:1},
+    {q:'Anand finished before Bala. Bala before Charu. Who came last?',opts:['Anand','Bala','Charu','Cannot say'],a:2},
+    {q:'If today is Wednesday, what day was it 10 days ago?',opts:['Sunday','Saturday','Monday','Tuesday'],a:0},
+    {q:'If MANGO is coded as NBOHI, how is APPLE coded?',opts:['BQQMF','BQPMF','BQQLF','CQPMF'],a:0},
+    {q:'There are 5 apples and you take away 3. How many do YOU have?',opts:['2','3','5','0'],a:1},
+  ],
+  jAnalogies:[
+    {q:'Fish : Water :: Bird : ___',opts:['Nest','Sky','Tree','Wing'],a:1},
+    {q:'Doctor : Hospital :: Teacher : ___',opts:['Blackboard','Book','School','Student'],a:2},
+    {q:'Hot : Cold :: Fast : ___',opts:['Quick','Slow','Speed','Race'],a:1},
+    {q:'Pen : Write :: Knife : ___',opts:['Sharp','Metal','Cut','Blade'],a:2},
+    {q:'Chapter : Book :: Scene : ___',opts:['Movie','Actor','Director','Stage'],a:0},
+    {q:'Caterpillar : Butterfly :: Tadpole : ___',opts:['Fish','Frog','Lizard','Turtle'],a:1},
+    {q:'Dictionary : Words :: Atlas : ___',opts:['Countries','Maps','History','Science'],a:1},
+  ],
+  jSpatial:[
+    {q:'A cube unfolded flat — how many squares?',opts:['4','5','6','8'],a:2},
+    {q:'Letter "d" rotated 180° looks like?',opts:['b','p','q','d'],a:2},
+    {q:'How many small cubes in a 3×3×3 big cube?',opts:['9','18','27','24'],a:2},
+    {q:'Which 3D shape has exactly 2 flat circular faces?',opts:['Sphere','Cone','Cylinder','Hemisphere'],a:2},
+    {q:'Letter "b" reflected in a vertical mirror looks like?',opts:['d','p','q','b'],a:0},
+    {q:'How many faces does a tetrahedron have?',opts:['3','4','5','6'],a:1},
+  ],
+
+  // ── SAKSHI ────────────────────────────────────
+  sMaths:[
+    {q:'How many spiders are there? 🕷️🕷️🕷️🕷️🕷️',opts:['3','4','5','6'],a:2},
+    {q:'Count the webs: 🕸️🕸️🕸️🕸️🕸️🕸️🕸️',opts:['6','7','8','9'],a:1},
+    {q:'Which number comes after 15?',opts:['14','16','17','13'],a:1},
+    {q:'Which number comes before 10?',opts:['11','8','9','12'],a:2},
+    {q:'How many fingers on 2 hands?',opts:['8','9','10','12'],a:2},
+    {q:'Which is the biggest number?',opts:['12','7','19','15'],a:2},
+    {q:'Count backwards: 20, 19, 18, ___',opts:['15','16','17','14'],a:2},
+    {q:'How many legs does a spider have? 🕷️',opts:['6','8','10','4'],a:1},
+  ],
+  sAdd:[
+    {q:'What is 5 + 3?',opts:['7','8','9','6'],a:1},
+    {q:'What is 12 + 6?',opts:['16','17','18','15'],a:2},
+    {q:'What is 20 + 10?',opts:['25','28','30','32'],a:2},
+    {q:'What is 14 + 5?',opts:['17','18','19','20'],a:2},
+    {q:'What is 25 + 13?',opts:['36','37','38','39'],a:2},
+    {q:'Spidey caught 7 flies and then 8 more. Total?',opts:['13','14','15','16'],a:2},
+    {q:'What is 30 + 15?',opts:['43','44','45','46'],a:2},
+    {q:'What is 11 + 11?',opts:['20','21','22','23'],a:2},
+  ],
+  sSub:[
+    {q:'What is 10 − 4?',opts:['5','6','7','8'],a:1},
+    {q:'What is 15 − 7?',opts:['6','7','8','9'],a:2},
+    {q:'What is 20 − 9?',opts:['9','10','11','12'],a:2},
+    {q:'Spidey had 12 webs and used 5. How many left?',opts:['5','6','7','8'],a:2},
+    {q:'What is 25 − 13?',opts:['10','11','12','13'],a:2},
+    {q:'What is 30 − 14?',opts:['14','15','16','17'],a:2},
+    {q:'What is 18 − 9?',opts:['7','8','9','10'],a:2},
+  ],
+  sShapes:[
+    {q:'How many sides does a triangle have?',opts:['2','3','4','5'],a:1},
+    {q:'How many corners does a square have?',opts:['3','4','5','6'],a:1},
+    {q:'What shape is a ball?',opts:['Cube','Cylinder','Sphere','Cone'],a:2},
+    {q:'How many sides does a rectangle have?',opts:['3','4','5','6'],a:1},
+    {q:'What shape is a pizza? 🍕',opts:['Square','Triangle slice','Circle','Rectangle'],a:2},
+    {q:'How many sides does a hexagon have?',opts:['5','6','7','8'],a:1},
+    {q:'What shape has no corners?',opts:['Triangle','Square','Circle','Rectangle'],a:2},
+  ],
+  sTables:[
+    {q:'What is 2 × 3?',opts:['4','5','6','7'],a:2},
+    {q:'What is 5 × 4?',opts:['18','19','20','21'],a:2},
+    {q:'What is 10 × 6?',opts:['50','60','70','80'],a:1},
+    {q:'What is 2 × 8?',opts:['14','15','16','17'],a:2},
+    {q:'What is 5 × 7?',opts:['30','33','35','40'],a:2},
+    {q:'What is 10 × 3?',opts:['20','30','40','50'],a:1},
+    {q:'What is 2 × 10?',opts:['12','18','20','22'],a:2},
+    {q:'What is 5 × 5?',opts:['20','22','25','30'],a:2},
+  ],
+  sLetters:[
+    {q:'What letter comes after D?',opts:['C','E','F','B'],a:1},
+    {q:'Which word starts with the letter B?',opts:['Apple','Cat','Ball','Dog'],a:2},
+    {q:'What letter comes before M?',opts:['K','L','N','O'],a:1},
+    {q:'Which word has 3 letters?',opts:['Elephant','Cat','Butterfly','School'],a:1},
+    {q:'What sound does the letter "Ph" make?',opts:['"P" sound','"F" sound','"Ph" sound','"B" sound'],a:1},
+    {q:'Which letter is a vowel?',opts:['B','C','E','G'],a:2},
+    {q:'What comes after Z in the alphabet?',opts:['A again','Nothing, Z is last','AA','ZZ'],a:1},
+  ],
+  sSpelling:[
+    {q:'Correct spelling of a furry pet?',opts:['Catt','Cat','Kat','Cate'],a:1},
+    {q:'Correct spelling?',opts:['Frend','Freind','Friend','Frind'],a:2},
+    {q:'Correct spelling of the colour?',opts:['Bloo','Blew','Blue','Blu'],a:2},
+    {q:'Correct spelling?',opts:['Hous','Howse','House','Huose'],a:2},
+    {q:'Correct spelling?',opts:['Skool','School','Skule','Scool'],a:1},
+    {q:'Correct spelling?',opts:['Watar','Watter','Water','Watre'],a:2},
+    {q:'Correct spelling?',opts:['Appel','Apple','Aple','Aplle'],a:1},
+  ],
+  sSentences:[
+    {q:'Which is a correct sentence?',opts:['Runs dog the fast','The dog runs fast','Dog the fast runs','Fast the dog runs'],a:1},
+    {q:'Which word fits? "The cat ___ on the mat."',opts:['jump','sits','run','play'],a:1},
+    {q:'Which is the correct sentence?',opts:['She like mango','She likes mango','She liking mango','She liked mango everyday'],a:1},
+    {q:'Which word fits? "I ___ to school every day."',opts:['goes','go','going','gone'],a:1},
+    {q:'What is missing? "The sun ___ in the east."',opts:['rise','rising','rises','risen'],a:2},
+    {q:'Which sentence makes sense?',opts:['Blue is sky the','Is the sky blue?','Sky blue the is','The is blue sky'],a:1},
+  ],
+  sTamil:[
+    {q:'What does "அம்மா" mean?',opts:['Father','Mother','Brother','Sister'],a:1},
+    {q:'What does "அப்பா" mean?',opts:['Mother','Uncle','Father','Brother'],a:2},
+    {q:'What does "வணக்கம்" mean?',opts:['Goodbye','Hello','Thank you','Sorry'],a:1},
+    {q:'Tamil word for "school"?',opts:['வீடு','கார்','பள்ளி','மரம்'],a:2},
+    {q:'What does "நன்றி" mean?',opts:['Sorry','Please','Hello','Thank you'],a:3},
+    {q:'Tamil word for "water"?',opts:['நெருப்பு','நீர்','காற்று','மண்'],a:1},
+    {q:'What does "நேசிக்கிறேன்" mean?',opts:['I am hungry','I love you','I am happy','I am tired'],a:1},
+  ],
+  sHindi:[
+    {q:'What does "नमस्ते" mean?',opts:['Goodbye','Thank you','Hello','Sorry'],a:2},
+    {q:'Hindi word for "mother"?',opts:['पिताजी','माँ','भाई','बहन'],a:1},
+    {q:'Hindi word for "water"?',opts:['खाना','पानी','दूध','रोटी'],a:1},
+    {q:'What does "धन्यवाद" mean?',opts:['Sorry','Please','Thank you','Hello'],a:2},
+    {q:'Hindi word for "school"?',opts:['घर','बाज़ार','विद्यालय','मंदिर'],a:2},
+    {q:'What does "शुभ प्रभात" mean?',opts:['Good night','Good afternoon','Good morning','Goodbye'],a:2},
+    {q:'Hindi for "I love you"?',opts:['मुझे भूख है','मैं थका हूँ','मैं तुमसे प्यार करता हूँ','मैं ठीक हूँ'],a:2},
+  ],
+  sHindiWords:[
+    {q:'What does "गाय" mean?',opts:['Dog','Cat','Cow','Bird'],a:2},
+    {q:'What does "सेब" mean?',opts:['Mango','Banana','Apple','Orange'],a:2},
+    {q:'What does "नीला" mean?',opts:['Red','Green','Yellow','Blue'],a:3},
+    {q:'What does "छोटा" mean?',opts:['Big','Tall','Small','Heavy'],a:2},
+    {q:'What does "खुश" mean?',opts:['Sad','Angry','Happy','Tired'],a:2},
+    {q:'What does "आम" mean?',opts:['Apple','Mango','Banana','Grape'],a:1},
+    {q:'Hindi word for "red"?',opts:['नीला','हरा','लाल','पीला'],a:2},
+  ],
+  sColours:[
+    {q:'What colour is the sky on a sunny day?',opts:['Green','Blue','Red','Yellow'],a:1},
+    {q:'What colour is grass?',opts:['Blue','Brown','Green','Yellow'],a:2},
+    {q:'What colour is the sun? ☀️',opts:['White','Blue','Red','Yellow'],a:3},
+    {q:'What colour is a tomato? 🍅',opts:['Orange','Yellow','Red','Pink'],a:2},
+    {q:'What colour is a banana? 🍌',opts:['Green','Yellow','Orange','White'],a:1},
+    {q:'What colour is chocolate? 🍫',opts:['Black','Brown','Red','Grey'],a:1},
+    {q:'What colour is a frog? 🐸',opts:['Blue','Pink','Green','Yellow'],a:2},
+  ],
+  sMixColour:[
+    {q:'Red + Blue = ?',opts:['Green','Orange','Purple','Brown'],a:2},
+    {q:'Blue + Yellow = ?',opts:['Orange','Green','Purple','Pink'],a:1},
+    {q:'Red + Yellow = ?',opts:['Purple','Green','Brown','Orange'],a:3},
+    {q:'White + Black = ?',opts:['Brown','Grey','Purple','Blue'],a:1},
+    {q:'Red + White = ?',opts:['Orange','Pink','Purple','Yellow'],a:1},
+    {q:'Blue + White = ?',opts:['Dark blue','Light blue','Purple','Green'],a:1},
+    {q:'Yellow + White = ?',opts:['Orange','Dark yellow','Light yellow','Cream'],a:3},
+  ],
+  sPatterns:[
+    {q:'What comes next? 🔴🔵🔴🔵___',opts:['🔴','🔵','🟡','🟢'],a:0},
+    {q:'What comes next? 1, 2, 3, 4, ___',opts:['4','5','6','7'],a:1},
+    {q:'What comes next? ⭐⭐🌙⭐⭐🌙___',opts:['⭐','🌙','☀️','🌟'],a:1},
+    {q:'What comes next? 2, 4, 6, 8, ___',opts:['9','10','11','12'],a:1},
+    {q:'What comes next? 🟥🟦🟥🟦🟥___',opts:['🟥','🟦','🟩','🟨'],a:1},
+    {q:'What comes next? 5, 10, 15, 20, ___',opts:['22','23','25','30'],a:2},
+  ],
+  sAnimals:[
+    {q:'What sound does a cow make? 🐄',opts:['Baa','Moo','Quack','Oink'],a:1},
+    {q:'Where do fish live?',opts:['On land','In trees','In water','Underground'],a:2},
+    {q:'Which animal has a trunk?',opts:['Lion','Elephant','Giraffe','Zebra'],a:1},
+    {q:'Which animal can fly? 🦋',opts:['Fish','Dog','Butterfly','Cat'],a:2},
+    {q:'What do cows give us?',opts:['Eggs','Wool','Milk','Honey'],a:2},
+    {q:'Which is the tallest animal?',opts:['Elephant','Horse','Giraffe','Lion'],a:2},
+    {q:'Where do birds live?',opts:['Underground','In nests in trees','In water','In caves'],a:1},
+    {q:'What sound does a duck make? 🦆',opts:['Moo','Quack','Bark','Meow'],a:1},
+  ],
+  sBody:[
+    {q:'How many eyes do we have?',opts:['1','2','3','4'],a:1},
+    {q:'What do we use to smell?',opts:['Eyes','Ears','Nose','Mouth'],a:2},
+    {q:'How many fingers on one hand?',opts:['4','5','6','7'],a:1},
+    {q:'What do we use to hear?',opts:['Eyes','Ears','Nose','Hands'],a:1},
+    {q:'Which part of the body pumps blood?',opts:['Brain','Lungs','Stomach','Heart'],a:3},
+    {q:'How many legs does a person have?',opts:['1','2','3','4'],a:1},
+    {q:'What do we use to taste food?',opts:['Nose','Eyes','Tongue','Ears'],a:2},
+    {q:'What do lungs help us do?',opts:['Digest food','Breathe','See','Think'],a:1},
+  ],
+  sWorld:[
+    {q:'What is the capital of India?',opts:['Mumbai','Chennai','New Delhi','Kolkata'],a:2},
+    {q:'How many continents are there?',opts:['5','6','7','8'],a:2},
+    {q:'Which is the largest ocean?',opts:['Atlantic','Indian','Arctic','Pacific'],a:3},
+    {q:'What is the national animal of India?',opts:['Lion','Elephant','Tiger','Peacock'],a:2},
+    {q:'Which country is shaped like a boot?',opts:['France','Spain','Italy','Greece'],a:2},
+    {q:'What is the national bird of India?',opts:['Sparrow','Eagle','Peacock','Parrot'],a:2},
+    {q:'On which continent is India?',opts:['Africa','Europe','Australia','Asia'],a:3},
+  ],
+  sScience:[
+    {q:'What do plants need to make food?',opts:['Only water','Only sunlight','Sunlight, water and air','Just soil'],a:2},
+    {q:'Which is a source of light?',opts:['Moon','Stars at night','The Sun','Mirror'],a:2},
+    {q:'What happens to water when it freezes?',opts:['It becomes gas','It becomes ice','It disappears','It becomes warm'],a:1},
+    {q:'Which floats on water?',opts:['Iron nail','Stone','Wooden block','Coin'],a:2},
+    {q:'What do we call baby frogs?',opts:['Puppy','Tadpole','Kitten','Larva'],a:1},
+    {q:'What gives us heat and light?',opts:['Moon','Stars','Sun','Clouds'],a:2},
+    {q:'Plants make their own food using?',opts:['Eating soil','Sunlight and water','Eating insects','Drinking rain only'],a:1},
+  ],
+};
+
+// ═══════════════════════════════════════════════
+// SUBJECT / ACTIVITY NAVIGATION
+// ═══════════════════════════════════════════════
+function openSubject(subj){
+  const t=currentProfile.theme;
+  const cat=t==='j'?catalogJ:catalogS;
+  const subData=cat[subj];
+  // Style header
+  document.getElementById('act-header').className=`screen-header screen-header-${t}`;
+  const titleEl=document.getElementById('activity-screen-title');
+  titleEl.className=`screen-header-title-${t}`;
+  titleEl.textContent=subData.icon+' '+subData.name;
+  const list=document.getElementById('activity-list');
+  list.innerHTML='';
+  subData.activities.forEach(act=>{
+    const done=state.completed[subj+'_'+act.id];
+    const div=document.createElement('div');
+    div.className='activity-item';
+    div.innerHTML=`
+      <div class="act-icon" style="background:rgba(255,255,255,0.05)">${act.icon}</div>
+      <div class="act-info">
+        <div class="act-title-${t}">${act.title}</div>
+        <div class="act-meta">${act.meta} · +${act.xp} XP</div>
+      </div>
+      <div style="font-size:1.1rem">${done?'✅':'▶️'}</div>`;
+    div.onclick=()=>openActivity(subj,act.id);
+    list.appendChild(div);
+  });
+  showScreen('activity-screen');
+}
+
+function openActivity(subj, actId){
+  const t=currentProfile.theme;
+  const cat=t==='j'?catalogJ:catalogS;
+  const act=cat[subj]?.activities.find(a=>a.id===actId);
+  if(!act) return;
+  document.getElementById('player-header').className=`player-header player-header-${t}`;
+  document.getElementById('player-title').className=`player-title-${t}`;
+  document.getElementById('player-title').textContent=act.icon+' '+act.title;
+  document.getElementById('player-xp-label').className=`player-xp-${t}`;
+  document.getElementById('player-xp-label').textContent='+'+act.xp+' XP';
+  const body=document.getElementById('player-body');
+  body.innerHTML='';
+  window._currentActivity={subj,actId,xp:act.xp};
+  if(act.type==='abacus') renderAbacus(body);
+  else renderQuiz(body, qb[act.bank]||[]);
+  showScreen('player-screen');
+}
+
+// ═══════════════════════════════════════════════
+// ABACUS (Jaishnav only)
+// ═══════════════════════════════════════════════
+const abacusQs=[{q:'3 + 4',a:7},{q:'5 + 6',a:11},{q:'8 + 3',a:11},{q:'7 + 5',a:12},{q:'9 + 6',a:15},{q:'12 + 8',a:20},{q:'15 + 7',a:22}];
+let abacusState={qi:0,score:0,answered:false,beadMap:{}};
+
+function renderAbacus(body){
+  abacusState={qi:0,score:0,answered:false,beadMap:{}};
+  renderAbacusQ(body);
+}
+function renderAbacusQ(body){
+  const t=currentProfile.theme;
+  const total=abacusQs.length; const qi=abacusState.qi;
+  if(qi>=total){showCompletion(body,abacusState.score,total);return;}
+  const q=abacusQs[qi]; abacusState.answered=false; abacusState.beadMap={};
+  const opts=shuffle([q.a,...[q.a-3,q.a+2,q.a-1,q.a+3].filter(x=>x>0&&x!==q.a)]).slice(0,3);
+  body.innerHTML=`
+    <div class="progress-row">
+      <div class="progress-bar"><div class="progress-fill-${t}" style="width:${(qi/total)*100}%"></div></div>
+      <div class="progress-label">${qi+1}/${total}</div>
+    </div>
+    <div class="abacus-wrap">
+      <div class="abacus-question abacus-question-${t}">What is ${q.q}?</div>
+      <div class="abacus-hint">Tap beads to count, then pick your answer</div>
+      <div class="abacus-frame abacus-frame-${t}">
+        <div class="abacus-rod-row"><div class="abacus-label">Tens</div><div class="abacus-rod" id="rod-tens">${buildRod('tens',10,t)}</div></div>
+        <div class="abacus-rod-row"><div class="abacus-label">Ones</div><div class="abacus-rod" id="rod-ones">${buildRod('ones',10,t)}</div></div>
+      </div>
+      <div class="abacus-total-${t}">Count: <span id="abacus-count">0</span></div>
+      <div class="answer-row" id="answer-row">
+        ${opts.map(o=>`<button class="answer-btn${t==='s'?' answer-btn-s':''}" onclick="checkAbacus(${o},${q.a},this)">${o}</button>`).join('')}
+      </div>
+      <div id="abacus-feedback"></div>
+    </div>`;
+  document.querySelectorAll('.abacus-bead').forEach(b=>{
+    b.addEventListener('click',function(){
+      if(abacusState.answered)return;
+      const key=this.dataset.rod+'_'+this.dataset.idx;
+      abacusState.beadMap[key]=!abacusState.beadMap[key];
+      this.classList.toggle('active-'+t);
+      document.getElementById('abacus-count').textContent=document.querySelectorAll('.abacus-bead.active-'+t).length;
+    });
+  });
+}
+function buildRod(rod,n,t){
+  let h='';
+  for(let i=0;i<n;i++) h+=`<div class="abacus-bead" data-rod="${rod}" data-idx="${i}"></div>`;
+  return h;
+}
+function checkAbacus(chosen,correct,btn){
+  if(abacusState.answered)return;
+  abacusState.answered=true;
+  const t=currentProfile.theme;
+  document.querySelectorAll('#answer-row .answer-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('abacus-feedback');
+  if(chosen===correct){btn.classList.add('correct');abacusState.score++;fb.innerHTML='<div class="feedback-good">⭐ Brilliant!</div>';}
+  else{btn.classList.add('wrong');document.querySelectorAll('#answer-row .answer-btn').forEach(b=>{if(parseInt(b.textContent)===correct)b.classList.add('correct');});fb.innerHTML=`<div class="feedback-bad">The answer was ${correct}. Keep trying! 💪</div>`;}
+  fb.innerHTML+=`<button class="next-btn-${t}" onclick="abacusState.qi++;renderAbacusQ(document.getElementById('player-body'))">${abacusState.qi+1>=abacusQs.length?'See Results 🎉':'Next →'}</button>`;
+}
+
+// ═══════════════════════════════════════════════
+// GENERIC QUIZ
+// ═══════════════════════════════════════════════
+let quizState={questions:[],qi:0,score:0,answered:false};
+
+function renderQuiz(body,bank){
+  quizState={questions:shuffle([...bank]).slice(0,Math.min(6,bank.length)),qi:0,score:0,answered:false};
+  renderQuizQ(body);
+}
+function renderQuizQ(body){
+  const t=currentProfile.theme;
+  const qs=quizState.questions; const qi=quizState.qi;
+  if(qi>=qs.length){showCompletion(body,quizState.score,qs.length);return;}
+  const q=qs[qi]; quizState.answered=false;
+  body.innerHTML=`
+    <div class="progress-row">
+      <div class="progress-bar"><div class="progress-fill-${t}" style="width:${(qi/qs.length)*100}%"></div></div>
+      <div class="progress-label">${qi+1}/${qs.length}</div>
+    </div>
+    <div class="q-card q-card-${t}">
+      <div class="q-text${t==='s'?' q-text-s':''}">${q.q}</div>
+    </div>
+    <div class="opts-list" id="opts-list">
+      ${q.opts.map((o,i)=>`<button class="answer-btn${t==='s'?' answer-btn-s':''}" onclick="checkQuiz(${i},${q.a},this)">${o}</button>`).join('')}
+    </div>
+    <div id="quiz-feedback" style="margin-top:.9rem"></div>`;
+}
+function checkQuiz(chosen,correct,btn){
+  if(quizState.answered)return;
+  quizState.answered=true;
+  const t=currentProfile.theme;
+  document.querySelectorAll('#opts-list .answer-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('quiz-feedback');
+  if(chosen===correct){
+    btn.classList.add('correct'); quizState.score++;
+    fb.innerHTML=`<div class="feedback-good">${t==='s'?'🕷️ Amazing, Superhero!':'⭐ Correct! Well done!'}</div>`;
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('#opts-list .answer-btn')[correct].classList.add('correct');
+    fb.innerHTML=`<div class="feedback-bad">Not quite! Answer: <b>${quizState.questions[quizState.qi].opts[correct]}</b></div>`;
+  }
+  const last=quizState.qi+1>=quizState.questions.length;
+  fb.innerHTML+=`<button class="next-btn-${t}" onclick="quizState.qi++;renderQuizQ(document.getElementById('player-body'))">${last?'See Results 🎉':'Next →'}</button>`;
+}
+
+// ═══════════════════════════════════════════════
+// COMPLETION
+// ═══════════════════════════════════════════════
+function showCompletion(body,score,total){
+  const t=currentProfile.theme;
+  const {subj,actId,xp}=window._currentActivity;
+  const pct=Math.round((score/total)*100);
+  const earned=Math.round(xp*(score/total));
+  const cat=t==='j'?catalogJ:catalogS;
+  const key=subj+'_'+actId;
+  if(!state.completed[key]||state.completed[key].pct<pct)
+    state.completed[key]={score,total,pct,earned,date:new Date().toLocaleDateString()};
+  state.xp+=earned;
+  if(state.streak<7)state.streak=Math.min(7,state.streak+1);
+  const logEntry={subj,actId,score,total,pct,earned,date:new Date().toLocaleDateString()};
+  state.log.unshift(logEntry);
+  if(state.log.length>20)state.log.pop();
+  saveState(); syncToSheet(logEntry);
+  const medal=pct>=90?'🏆':pct>=70?'🥈':pct>=50?'🥉':'🌟';
+  const msgs={j:{90:'Outstanding, Explorer!',70:'Great job, Jaishnav!',50:'Good effort! Keep going!',0:"Keep practising, you will get there!"},
+               s:{90:'Web-slinger Champion!',70:'Super job, Shakshu!',50:'Good try, Hero!',0:'Heroes never give up!'}};
+  const msgSet=msgs[t];
+  const msg=pct>=90?msgSet[90]:pct>=70?msgSet[70]:pct>=50?msgSet[50]:msgSet[0];
+  body.innerHTML=`
+    <div class="complete-card">
+      <div class="complete-icon">${medal}</div>
+      <div class="complete-title-${t}">${msg}</div>
+      <div class="complete-score">You scored ${score} out of ${total} (${pct}%)</div>
+      <div class="xp-earned-${t}">+${earned} XP earned! ⭐</div>
+      <button class="home-return-btn-${t}" onclick="showScreen('home-screen');renderHomeForProfile()">${t==='j'?'Back to Mission Control 🚀':'Back to Hero HQ 🕷️'}</button>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════════
+function renderProgress(){
+  const t=currentProfile.theme;
+  const cat=t==='j'?catalogJ:catalogS;
+  document.getElementById('progress-title').innerHTML=`<div class="progress-screen-title-${t}" style="padding:1rem 1.5rem 0">${t==='j'?'📊 My Progress':'🕷️ My Progress'}</div>`;
+  const total=Object.keys(state.completed).length;
+  const avgPct=total?Math.round(Object.values(state.completed).reduce((s,c)=>s+c.pct,0)/total):0;
+  const html=`
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num-${t}" style="color:${t==='j'?'var(--j-cyan)':'var(--s-red2)'}">${state.xp}</div><div class="stat-label">TOTAL XP</div></div>
+      <div class="stat-card"><div class="stat-num-${t}" style="color:${t==='j'?'var(--j-gold)':'var(--s-gold)'}">${total}</div><div class="stat-label">COMPLETED</div></div>
+      <div class="stat-card"><div class="stat-num-${t}" style="color:#22c55e">${avgPct}%</div><div class="stat-label">AVG SCORE</div></div>
+      <div class="stat-card"><div class="stat-num-${t}" style="color:${t==='j'?'var(--j-coral)':'var(--s-red2)'}">${state.streak}</div><div class="stat-label">STREAK 🔥</div></div>
+    </div>
+    <div style="font-size:.68rem;letter-spacing:2px;color:#8ba3cc;margin-bottom:.6rem;font-family:${t==='j'?'var(--font-space)':'var(--font-hero)'}">RECENT ACTIVITIES</div>
+    ${state.log.length?state.log.slice(0,8).map(l=>`
+      <div class="recent-item">
+        <div class="recent-name">${(t==='j'?catalogJ:catalogS)[l.subj]?.activities.find(a=>a.id===l.actId)?.title||l.actId}</div>
+        <div class="recent-score-${t}">${l.score}/${l.total} · ${l.pct}%</div>
+      </div>`).join('')
+    :'<div style="color:#8ba3cc;text-align:center;padding:2rem;font-size:.88rem">No activities yet — start playing! '+currentProfile.avatar+'</div>'}`;
+  document.getElementById('progress-content').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// PARENT DASHBOARD
+// ═══════════════════════════════════════════════
+function tryParentLogin(){
+  const t=currentProfile.theme;
+  if(document.getElementById('parent-pwd').value===PARENT_PWD){
     document.getElementById('parent-login-area').style.display='none';
     document.getElementById('parent-dashboard').classList.add('visible');
     renderParentDashboard();
@@ -590,659 +1307,132 @@ function tryParentLogin() {
 }
 document.getElementById('parent-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')tryParentLogin();});
 
-// ===================== HOME RENDER =====================
-function renderHome() {
-  document.getElementById('xp-display').textContent=state.xp+' XP';
-  const dots=document.getElementById('streak-dots');
-  dots.innerHTML='';
-  for(let i=0;i<7;i++){
-    const d=document.createElement('div');
-    d.className='streak-dot'+(i<state.streak?' lit':'');
-    dots.appendChild(d);
+function setupParentScreen(){
+  const t=currentProfile.theme;
+  document.getElementById('parent-login-area').style.display='block';
+  document.getElementById('parent-dashboard').classList.remove('visible');
+  document.getElementById('parent-pwd').value='';
+  document.getElementById('parent-error').textContent='';
+  const titleEl=document.getElementById('parent-title-el');
+  titleEl.className=`parent-title-${t}`;
+  titleEl.textContent='🔐 Parent Dashboard';
+  const unlockBtn=document.getElementById('parent-unlock-btn');
+  unlockBtn.className=`parent-unlock-btn-${t}`;
+  unlockBtn.textContent=t==='j'?'UNLOCK DASHBOARD':'WEB INTO DASHBOARD!';
+  const pdashTitle=document.getElementById('pdash-title-el');
+  pdashTitle.className=t==='j'?'parent-title-j':'parent-title-s';
+  pdashTitle.textContent=`👨‍👧 ${currentProfile.nick}'s Report`;
+}
+
+async function renderParentDashboard(){
+  const t=currentProfile.theme;
+  const el=document.getElementById('pdash-content');
+  el.innerHTML=`<div style="text-align:center;padding:3rem;color:#8ba3cc"><div style="font-size:2rem;margin-bottom:1rem;animation:float 1.5s ease-in-out infinite">${t==='j'?'🛰️':'🕷️'}</div><div style="font-size:.78rem;letter-spacing:2px">FETCHING DATA...</div></div>`;
+  let rows=[];
+  try{
+    const res=await fetch(SHEETS_URL+'?mode=progress&child='+currentProfile.nick+'&t='+Date.now());
+    const data=await res.json();
+    if(data.status==='ok'&&data.rows) rows=data.rows;
+  }catch(e){}
+  if(!rows.length&&state.log.length){
+    const cat=t==='j'?catalogJ:catalogS;
+    rows=state.log.map(l=>({date:l.date,subject:(cat[l.subj]?.name||l.subj),activity:(cat[l.subj]?.activities.find(a=>a.id===l.actId)?.title||l.actId),score:l.score,total:l.total,pct:l.pct,xp:l.earned}));
   }
-  updateSubjectProgress();
-}
-
-function updateSubjectProgress() {
-  const subjects=['maths','english','science','tamil','iq'];
-  const totals={maths:4,english:3,science:3,tamil:2,iq:3};
-  subjects.forEach(s=>{
-    const done=Object.keys(state.completed).filter(k=>k.startsWith(s+'_')).length;
-    const pct=Math.round((done/totals[s])*100);
-    const el=document.getElementById('prog-'+s);
-    if(el) el.style.width=pct+'%';
-  });
-}
-
-// ===================== ACTIVITY CATALOG =====================
-const catalog = {
-  maths: {
-    name:'Maths', icon:'🔢', color:'var(--accent-cyan)',
-    activities:[
-      {id:'abacus',       title:'Abacus Master',          icon:'🧮', meta:'Multi-step addition & subtraction',    xp:30,  type:'abacus'},
-      {id:'tables',       title:'Times Tables Blitz',     icon:'✖️',  meta:'Mixed multiplication up to 15×15',    xp:35,  type:'quiz_maths'},
-      {id:'shapes',       title:'Shapes & Geometry',      icon:'📐', meta:'Angles, area, perimeter & 3D shapes', xp:35,  type:'quiz_shapes'},
-      {id:'fractions',    title:'Fractions & Decimals',   icon:'🍕', meta:'Compare, add and simplify fractions', xp:40,  type:'quiz_fractions'},
-      {id:'word_problems',title:'Word Problems',          icon:'🧩', meta:'Real-world multi-step maths',         xp:45,  type:'quiz_word'},
-      {id:'division',     title:'Division Duel',          icon:'➗', meta:'Long division and remainders',        xp:40,  type:'quiz_division'},
-    ]
-  },
-  english: {
-    name:'English', icon:'📚', color:'var(--accent-purple)',
-    activities:[
-      {id:'spelling',   title:'Advanced Spelling',  icon:'🔤', meta:'Tricky Grade 4-5 spelling words',         xp:30, type:'quiz_spelling'},
-      {id:'grammar',    title:'Grammar Challenge',  icon:'✏️', meta:'Tenses, clauses, sentence structure',     xp:35, type:'quiz_grammar'},
-      {id:'vocabulary', title:'Word Power',         icon:'💬', meta:'Synonyms, antonyms and meanings',         xp:35, type:'quiz_vocab'},
-    ]
-  },
-  science: {
-    name:'Science', icon:'🔭', color:'var(--accent-green)',
-    activities:[
-      {id:'solar',      title:'Solar System Deep Dive', icon:'🪐', meta:'Moons, orbits, gravity and space', xp:35, type:'quiz_solar'},
-      {id:'animals',    title:'Animal Kingdom',         icon:'🦁', meta:'Food chains and adaptations',       xp:30, type:'quiz_animals'},
-      {id:'human_body', title:'Human Body Systems',     icon:'🫀', meta:'Organs, bones, how the body works', xp:35, type:'quiz_body'},
-    ]
-  },
-  tamil: {
-    name:'Tamil / Hindi', icon:'✍️', color:'var(--accent-orange)',
-    activities:[
-      {id:'tamil_letters',   title:'Tamil Script & Words',icon:'அ',  meta:'Vowels, consonants & Tamil words',  xp:30, type:'quiz_tamil'},
-      {id:'hindi_letters',   title:'Hindi Alphabet',      icon:'क',  meta:'Devanagari letters and Hindi words', xp:30, type:'quiz_hindi'},
-      {id:'hindi_sentences', title:'Hindi Sentences',     icon:'🗣️', meta:'Common Hindi phrases and meanings',  xp:35, type:'quiz_hindi_sent'},
-      {id:'tamil_numbers',   title:'Tamil Numbers',       icon:'௧',  meta:'Numbers 1–100 in Tamil script',     xp:30, type:'quiz_tamil_num'},
-    ]
-  },
-  iq: {
-    name:'IQ Boost', icon:'🧠', color:'var(--accent-coral)',
-    activities:[
-      {id:'pattern',   title:'Pattern Master',     icon:'🔮', meta:'Number, letter and visual sequences',       xp:40, type:'quiz_pattern'},
-      {id:'riddles',   title:'Hard Riddles',        icon:'❓', meta:'Challenging brain teasers',                 xp:35, type:'quiz_riddles'},
-      {id:'logic',     title:'Logic Grid',          icon:'♟️', meta:'Deductive reasoning puzzles',              xp:45, type:'quiz_logic'},
-      {id:'analogies', title:'Word Analogies',      icon:'🔗', meta:'A is to B as C is to ___?',                xp:40, type:'quiz_analogies'},
-      {id:'spatial',   title:'Spatial Reasoning',   icon:'🔷', meta:'Rotate, fold and visualise shapes',        xp:45, type:'quiz_spatial'},
-    ]
-  }
-};
-
-function openSubject(subj) {
-  const cat=catalog[subj];
-  document.getElementById('activity-screen-title').textContent=cat.icon+' '+cat.name;
-  const list=document.getElementById('activity-list');
-  list.innerHTML='';
-  cat.activities.forEach((act,i)=>{
-    const done=state.completed[subj+'_'+act.id];
-    const locked=act.type==='coming_soon';
-    const div=document.createElement('div');
-    div.className='activity-item'+(locked?' act-locked':'');
-    div.innerHTML=`
-      <div class="act-icon" style="background:rgba(255,255,255,0.05);">${act.icon}</div>
-      <div class="act-info">
-        <div class="act-title">${act.title}</div>
-        <div class="act-meta">${act.meta} • +${act.xp} XP</div>
-      </div>
-      <div class="act-status">${locked?'🔒':done?'✅':'▶️'}</div>`;
-    if(!locked) div.onclick=()=>openActivity(subj,act.id);
-    list.appendChild(div);
-  });
-  showScreen('activity-screen');
-}
-
-function openActivity(subj, actId) {
-  const cat=catalog[subj];
-  const act=cat.activities.find(a=>a.id===actId);
-  if(!act||act.type==='coming_soon'){showToast('Coming soon! 🚀');return;}
-  document.getElementById('player-title').textContent=act.icon+' '+act.title;
-  document.getElementById('player-xp-label').textContent='+'+act.xp+' XP';
-  const body=document.getElementById('player-body');
-  body.innerHTML='';
-  window._currentActivity={subj,actId,xp:act.xp,type:act.type};
-  switch(act.type){
-    case 'abacus':          renderAbacus(body);                    break;
-    case 'quiz_maths':      renderQuiz(body,quizData.maths);       break;
-    case 'quiz_shapes':     renderQuiz(body,quizData.shapes);      break;
-    case 'quiz_spelling':   renderQuiz(body,quizData.spelling);    break;
-    case 'quiz_grammar':    renderQuiz(body,quizData.grammar);     break;
-    case 'quiz_vocab':      renderQuiz(body,quizData.vocab);       break;
-    case 'quiz_solar':      renderQuiz(body,quizData.solar);       break;
-    case 'quiz_animals':    renderQuiz(body,quizData.animals);     break;
-    case 'quiz_body':       renderQuiz(body,quizData.body);        break;
-    case 'quiz_tamil':      renderQuiz(body,quizData.tamil);       break;
-    case 'quiz_hindi':      renderQuiz(body,quizData.hindi);       break;
-    case 'quiz_hindi_sent': renderQuiz(body,quizData.hindi_sent);  break;
-    case 'quiz_tamil_num':  renderQuiz(body,quizData.tamil_num);   break;
-    case 'quiz_pattern':    renderQuiz(body,quizData.pattern);     break;
-    case 'quiz_riddles':    renderQuiz(body,quizData.riddles);     break;
-    case 'quiz_logic':      renderQuiz(body,quizData.logic);       break;
-    case 'quiz_analogies':  renderQuiz(body,quizData.analogies);   break;
-    case 'quiz_spatial':    renderQuiz(body,quizData.spatial);     break;
-    case 'quiz_fractions':  renderQuiz(body,quizData.fractions);   break;
-    case 'quiz_word':       renderQuiz(body,quizData.word);        break;
-    case 'quiz_division':   renderQuiz(body,quizData.division);    break;
-    default: body.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:3rem">Activity loading...</p>';
-  }
-  showScreen('player-screen');
-}
-
-function exitActivity() {
-  const prev=document.getElementById('activity-screen').classList.contains('active')?'activity-screen':'home-screen';
-  showScreen('home-screen');
-}
-
-// ===================== ABACUS ACTIVITY =====================
-const abacusQuestions=[
-  {q:'3 + 4',a:7},{q:'5 + 6',a:11},{q:'8 + 3',a:11},{q:'7 + 5',a:12},{q:'9 + 6',a:15}
-];
-let abacusState={qi:0,score:0,beads:[],answered:false};
-
-function renderAbacus(body) {
-  abacusState.qi=0; abacusState.score=0; abacusState.answered=false;
-  renderAbacusQuestion(body);
-}
-
-function renderAbacusQuestion(body) {
-  const total=abacusQuestions.length;
-  const qi=abacusState.qi;
-  if(qi>=total){showCompletion(body,abacusState.score,total);return;}
-  const q=abacusQuestions[qi];
-  abacusState.beads=Array(10).fill(false);
-  abacusState.answered=false;
-
-  const opts=shuffleOptions(q.a,[q.a-3,q.a+2,q.a-1,q.a+3,q.a+1].filter(x=>x>0&&x!==q.a)).slice(0,3);
-
-  body.innerHTML=`
-    <div class="progress-row">
-      <div class="progress-bar"><div class="progress-fill" style="width:${(qi/total)*100}%"></div></div>
-      <div class="progress-label">${qi+1}/${total}</div>
-    </div>
-    <div class="abacus-wrap">
-      <div class="abacus-question">What is ${q.q} ?</div>
-      <div class="abacus-hint">Tap beads to count, then pick your answer</div>
-      <div class="abacus-frame">
-        <div class="abacus-rod-row">
-          <div class="abacus-label">Tens</div>
-          <div class="abacus-rod" id="rod-tens">${buildRod('tens',10)}</div>
-        </div>
-        <div class="abacus-rod-row">
-          <div class="abacus-label">Ones</div>
-          <div class="abacus-rod" id="rod-ones">${buildRod('ones',10)}</div>
-        </div>
-      </div>
-      <div class="abacus-total">Count: <span id="abacus-count">0</span></div>
-      <div class="answer-row" id="answer-row">
-        ${opts.map(o=>`<button class="answer-btn" onclick="checkAbacus(${o},${q.a},this)">${o}</button>`).join('')}
-      </div>
-      <div id="abacus-feedback"></div>
-    </div>`;
-
-  document.querySelectorAll('.abacus-bead').forEach(b=>{
-    b.addEventListener('click',function(){
-      if(abacusState.answered) return;
-      const idx=parseInt(this.dataset.idx);
-      const rod=this.dataset.rod;
-      const key=rod+'_'+idx;
-      if(!abacusState.beadMap) abacusState.beadMap={};
-      abacusState.beadMap[key]=!abacusState.beadMap[key];
-      this.classList.toggle('active');
-      updateAbacusCount();
-    });
-  });
-}
-
-function buildRod(rod,n) {
-  let h='';
-  for(let i=0;i<n;i++) h+=`<div class="abacus-bead" data-rod="${rod}" data-idx="${i}"></div>`;
-  return h;
-}
-
-function updateAbacusCount() {
-  const active=document.querySelectorAll('.abacus-bead.active').length;
-  document.getElementById('abacus-count').textContent=active;
-}
-
-function checkAbacus(chosen,correct,btn) {
-  if(abacusState.answered) return;
-  abacusState.answered=true;
-  const fb=document.getElementById('abacus-feedback');
-  const btns=document.querySelectorAll('.answer-btn');
-  btns.forEach(b=>b.disabled=true);
-  if(chosen===correct){
-    btn.classList.add('correct');
-    abacusState.score++;
-    fb.innerHTML=`<div class="feedback-box good">⭐ Brilliant! ${correct} is correct!</div>`;
-  } else {
-    btn.classList.add('wrong');
-    btns.forEach(b=>{if(parseInt(b.textContent)===correct)b.classList.add('correct');});
-    fb.innerHTML=`<div class="feedback-box bad">Not quite! The answer was ${correct}. Keep trying! 💪</div>`;
-  }
-  fb.innerHTML+=`<button class="next-btn" onclick="abacusNext()">${abacusState.qi+1>=abacusQuestions.length?'See Results 🎉':'Next Question →'}</button>`;
-}
-
-function abacusNext() {
-  abacusState.qi++;
-  const body=document.getElementById('player-body');
-  renderAbacusQuestion(body);
-}
-
-// ===================== GENERIC QUIZ =====================
-const quizData = {
-  maths:[
-    {q:'What is 13 × 7?',opts:['81','91','89','84'],a:1},
-    {q:'What is 14 × 8?',opts:['112','102','122','108'],a:0},
-    {q:'What is 144 ÷ 12?',opts:['11','13','12','14'],a:2},
-    {q:'What is 15 × 15?',opts:['215','225','235','205'],a:1},
-    {q:'What is 9 × 9 × 2?',opts:['142','162','152','172'],a:1},
-    {q:'What is 256 ÷ 8?',opts:['28','34','32','36'],a:2},
-    {q:'What is 11 × 13?',opts:['133','143','123','153'],a:1},
-    {q:'A number multiplied by itself gives 196. What is the number?',opts:['12','16','14','18'],a:2},
-    {q:'What is 625 ÷ 25?',opts:['20','30','25','15'],a:2},
-    {q:'What is 12 × 12 − 44?',opts:['104','100','108','96'],a:0},
-  ],
-  shapes:[
-    {q:'What is the area of a rectangle 9 cm long and 6 cm wide?',opts:['54 cm²','48 cm²','45 cm²','63 cm²'],a:0},
-    {q:'What is the perimeter of a square with side 8 cm?',opts:['24 cm','32 cm','16 cm','28 cm'],a:1},
-    {q:'How many edges does a triangular prism have?',opts:['6','9','12','8'],a:1},
-    {q:'What angle is formed in an equilateral triangle?',opts:['90°','45°','60°','72°'],a:2},
-    {q:'The area of a triangle with base 10 cm and height 6 cm is?',opts:['30 cm²','60 cm²','45 cm²','20 cm²'],a:0},
-    {q:'How many vertices does a hexagonal prism have?',opts:['8','10','12','14'],a:2},
-    {q:'An angle greater than 90° but less than 180° is called?',opts:['Acute','Right','Obtuse','Reflex'],a:2},
-    {q:'What is the perimeter of a triangle with sides 7, 8, and 9 cm?',opts:['22 cm','24 cm','26 cm','20 cm'],a:1},
-    {q:'How many lines of symmetry does a regular pentagon have?',opts:['3','4','5','6'],a:2},
-    {q:'What is the area of a square with side 11 cm?',opts:['111 cm²','121 cm²','131 cm²','101 cm²'],a:1},
-  ],
-  fractions:[
-    {q:'Which fraction is the largest?',opts:['1/2','3/8','2/3','5/12'],a:2},
-    {q:'What is 1/4 + 1/4?',opts:['1/8','1/2','2/8','3/4'],a:1},
-    {q:'What is 3/4 − 1/4?',opts:['2/4','1/2','1/4','3/8'],a:1},
-    {q:'What is 0.75 as a fraction?',opts:['3/5','7/10','3/4','2/3'],a:2},
-    {q:'What is 1/3 of 90?',opts:['20','25','30','35'],a:2},
-    {q:'Which is equal to 0.5?',opts:['1/4','2/5','1/2','3/8'],a:2},
-    {q:'What is 2/5 + 1/5?',opts:['3/25','3/10','3/5','2/10'],a:2},
-    {q:'What fraction of 24 is 8?',opts:['1/2','1/4','1/3','1/6'],a:2},
-    {q:'Simplify 12/16.',opts:['2/3','3/4','4/5','5/6'],a:1},
-    {q:'What is 1.25 as a fraction?',opts:['5/4','6/5','4/3','7/5'],a:0},
-  ],
-  word:[
-    {q:'A train travels 75 km/h for 4 hours. How far does it go?',opts:['275 km','300 km','350 km','250 km'],a:1},
-    {q:'Riya has ₹500. She spends ₹175. How much is left?',opts:['₹235','₹315','₹325','₹300'],a:2},
-    {q:'A box holds 12 chocolates. How many chocolates in 15 boxes?',opts:['170','180','160','190'],a:1},
-    {q:'48 students are split into equal groups of 6. How many groups?',opts:['6','7','8','9'],a:2},
-    {q:'A rectangle has perimeter 38 cm. One side is 11 cm. What is the other side?',opts:['6 cm','7 cm','8 cm','9 cm'],a:3},
-    {q:'Arun earns ₹120 per hour. He works 8 hours. How much does he earn?',opts:['₹840','₹960','₹1020','₹900'],a:1},
-    {q:'A tank holds 240 litres. It is 3/4 full. How many litres are in it?',opts:['160 L','180 L','200 L','220 L'],a:1},
-    {q:'A book has 320 pages. Jaishnav reads 45 pages each day. How many days to finish?',opts:['6','7','8','9'],a:1},
-  ],
-  division:[
-    {q:'What is 189 ÷ 9?',opts:['19','21','23','17'],a:1},
-    {q:'What is 252 ÷ 7?',opts:['34','36','38','32'],a:1},
-    {q:'What is 375 ÷ 15?',opts:['20','25','30','35'],a:1},
-    {q:'What is the remainder when 47 is divided by 5?',opts:['1','2','3','4'],a:1},
-    {q:'What is 504 ÷ 12?',opts:['38','40','42','44'],a:2},
-    {q:'What is the remainder when 100 is divided by 7?',opts:['1','2','3','6'],a:3},
-    {q:'If 336 pens are packed in boxes of 8, how many boxes are needed?',opts:['40','42','44','46'],a:1},
-    {q:'What is 1000 ÷ 25?',opts:['30','35','40','45'],a:2},
-  ],
-  spelling:[
-    {q:'Which is spelled correctly?',opts:['Accomodate','Accommodate','Acomodate','Accommadate'],a:1},
-    {q:'Which is spelled correctly?',opts:['Embaras','Embarras','Embarrass','Embarrss'],a:2},
-    {q:'Which is spelled correctly?',opts:['Occurance','Occurence','Occurrence','Occurrance'],a:2},
-    {q:'Which is spelled correctly?',opts:['Independant','Independint','Independent','Independint'],a:2},
-    {q:'Which is spelled correctly?',opts:['Recieve','Receive','Recive','Receeve'],a:1},
-    {q:'Which is spelled correctly?',opts:['Seperate','Separete','Separate','Seprate'],a:2},
-    {q:'Which is spelled correctly?',opts:['Priviledge','Privilege','Privelege','Privlege'],a:1},
-    {q:'Which is spelled correctly?',opts:['Concious','Conscious','Consious','Conscous'],a:1},
-    {q:'Which is spelled correctly?',opts:['Wierd','Wired','Weird','Weired'],a:2},
-    {q:'Which is spelled correctly?',opts:['Definately','Definitly','Definitely','Definetly'],a:2},
-  ],
-  grammar:[
-    {q:'Identify the tense: "She has been reading for two hours."',opts:['Simple past','Present perfect continuous','Past perfect','Future continuous'],a:1},
-    {q:'Choose the correct form: "Neither the boys nor the girl ___ present."',opts:['were','are','is','be'],a:2},
-    {q:'What is the passive voice of: "The chef cooked the meal"?',opts:['The meal was cooked by the chef','The meal is cooked by the chef','The meal cooked by the chef','The chef had the meal cooked'],a:0},
-    {q:'Which sentence uses a conjunction correctly?',opts:['I was tired but I finished my work','I was tired however I finished my work','I was tired although finished my work','I was tired therefore finished'],a:0},
-    {q:'What type of clause is this: "...who won the race..."?',opts:['Adverb clause','Noun clause','Relative clause','Conditional clause'],a:2},
-    {q:'The word "quickly" in "He ran quickly" is a?',opts:['Adjective','Adverb','Preposition','Conjunction'],a:1},
-    {q:'Which is the correct superlative of "good"?',opts:['More good','Gooder','Best','Better'],a:2},
-    {q:'Choose the correct sentence:',opts:['Between you and I, this is wrong','Between you and me, this is right','Between you and me, this is wrong','Between you and I, this is right'],a:1},
-  ],
-  vocab:[
-    {q:'What is the synonym of "Enormous"?',opts:['Tiny','Gigantic','Average','Moderate'],a:1},
-    {q:'What is the antonym of "Transparent"?',opts:['Clear','Visible','Opaque','Shiny'],a:2},
-    {q:'What does "Benevolent" mean?',opts:['Cruel','Kind and generous','Angry','Lazy'],a:1},
-    {q:'Which word means "to make something worse"?',opts:['Ameliorate','Aggravate','Alleviate','Appease'],a:1},
-    {q:'What is the synonym of "Perplexed"?',opts:['Confident','Confused','Pleased','Bored'],a:1},
-    {q:'What does "Diligent" mean?',opts:['Careless','Lazy','Hard-working','Noisy'],a:2},
-    {q:'What is the antonym of "Courageous"?',opts:['Bold','Brave','Cowardly','Strong'],a:2},
-    {q:'Which word is a synonym of "Concise"?',opts:['Lengthy','Brief','Vague','Detailed'],a:1},
-    {q:'What does "Arduous" mean?',opts:['Easy','Enjoyable','Very difficult','Expensive'],a:2},
-    {q:'What is the antonym of "Serene"?',opts:['Calm','Peaceful','Turbulent','Quiet'],a:2},
-  ],
-  solar:[
-    {q:'Which planet has the most moons?',opts:['Jupiter','Saturn','Uranus','Neptune'],a:1},
-    {q:'What is the approximate distance from Earth to the Sun?',opts:['50 million km','150 million km','250 million km','100 million km'],a:1},
-    {q:'Which planet rotates on its side (axial tilt ~98°)?',opts:['Neptune','Saturn','Uranus','Mars'],a:2},
-    {q:'What causes a lunar eclipse?',opts:["Moon blocks Sun's light","Earth's shadow falls on the Moon","Sun goes behind the Moon","Moon moves away from Earth"],a:1},
-    {q:'What is the name of our galaxy?',opts:['Andromeda','Milky Way','Triangulum','Sombrero'],a:1},
-    {q:'Which planet has the shortest day (about 10 hours)?',opts:['Mars','Saturn','Jupiter','Venus'],a:2},
-    {q:'What is a light-year?',opts:['Time light takes to reach Moon','Distance light travels in one year','Speed of light','Age of the Sun'],a:1},
-    {q:"Which planet is sometimes called \"Earth's twin\" due to similar size?",opts:['Mars','Mercury','Venus','Neptune'],a:2},
-    {q:'What are the small rocky bodies orbiting the Sun between Mars and Jupiter called?',opts:['Comets','Meteors','Asteroids','Satellites'],a:2},
-    {q:'What is the correct order of planets from the Sun?',opts:['Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune','Mercury Earth Venus Mars Jupiter Saturn Neptune Uranus','Venus Mercury Earth Mars Jupiter Saturn Uranus Neptune','Mercury Venus Mars Earth Jupiter Saturn Uranus Neptune'],a:0},
-  ],
-  animals:[
-    {q:'Which animal is cold-blooded AND lays eggs?',opts:['Bat','Dolphin','Crocodile','Whale'],a:2},
-    {q:'What is the process by which a caterpillar becomes a butterfly?',opts:['Germination','Metamorphosis','Photosynthesis','Evolution'],a:1},
-    {q:'In a food chain: Grass → Grasshopper → Frog → Snake → Eagle. The Eagle is a?',opts:['Producer','Primary consumer','Secondary consumer','Tertiary consumer'],a:3},
-    {q:'Which bird cannot fly but is the fastest running bird?',opts:['Penguin','Emu','Ostrich','Kiwi'],a:2},
-    {q:'What do you call an animal that eats both plants and animals?',opts:['Herbivore','Carnivore','Omnivore','Decomposer'],a:2},
-    {q:'Which mammal lays eggs?',opts:['Bat','Whale','Platypus','Dolphin'],a:2},
-    {q:'What is the scientific study of animals called?',opts:['Botany','Zoology','Geology','Ecology'],a:1},
-    {q:'Which fish can produce electricity to stun prey?',opts:['Clownfish','Swordfish','Electric eel','Puffer fish'],a:2},
-  ],
-  body:[
-    {q:'How many bones are in the adult human body?',opts:['186','206','226','246'],a:1},
-    {q:'Which organ pumps blood through the body?',opts:['Lungs','Liver','Kidney','Heart'],a:3},
-    {q:'What is the largest organ in the human body?',opts:['Brain','Liver','Skin','Stomach'],a:2},
-    {q:'Which blood cells carry oxygen?',opts:['White blood cells','Platelets','Red blood cells','Plasma'],a:2},
-    {q:'What is the function of the kidneys?',opts:['Digest food','Filter blood and produce urine','Pump blood','Absorb oxygen'],a:1},
-    {q:'Which part of the brain controls balance and coordination?',opts:['Cerebrum','Cerebellum','Brain stem','Hippocampus'],a:1},
-    {q:'How many chambers does the human heart have?',opts:['2','3','4','5'],a:2},
-    {q:'What vitamin does skin produce when exposed to sunlight?',opts:['Vitamin A','Vitamin B12','Vitamin C','Vitamin D'],a:3},
-    {q:'Which is the longest bone in the human body?',opts:['Spine','Femur','Tibia','Humerus'],a:1},
-    {q:'What is the normal human body temperature in Celsius?',opts:['35°C','36°C','37°C','38°C'],a:2},
-  ],
-  tamil:[
-    {q:'What does "நன்றி" (Nandri) mean?',opts:['Hello','Goodbye','Thank you','Please'],a:2},
-    {q:'How many letters are in the Tamil alphabet (total)?',opts:['30','47','247','18'],a:2},
-    {q:'Which is a Tamil consonant (மெய் எழுத்து)?',opts:['அ','இ','உ','க'],a:3},
-    {q:'What does "வணக்கம்" mean?',opts:['Thank you','Greetings/Hello','Goodbye','Sorry'],a:1},
-    {q:'Which word means "school" in Tamil?',opts:['வீடு','பள்ளி','மரம்','நீர்'],a:1},
-    {q:'What does "அம்மா" mean?',opts:['Father','Sister','Mother','Brother'],a:2},
-    {q:'Which is the correct Tamil word for "sun"?',opts:['நிலா','நட்சத்திரம்','சூரியன்','மழை'],a:2},
-    {q:'What does "எண்" mean?',opts:['Letter','Word','Number','Name'],a:2},
-    {q:'Which Tamil word means "water"?',opts:['நெருப்பு','நீர்','காற்று','மண்'],a:1},
-    {q:'What does "புத்தகம்" mean?',opts:['Pen','Bag','Book','Table'],a:2},
-  ],
-  tamil_num:[
-    {q:'What is "௧" in numbers?',opts:['2','1','3','4'],a:1},
-    {q:'What is "௫" in numbers?',opts:['3','4','5','6'],a:2},
-    {q:'What is number 10 in Tamil script?',opts:['௯','௧௦','௰','Both ௧௦ and ௰'],a:3},
-    {q:'What is "௨௫" in numbers?',opts:['20','25','52','30'],a:1},
-    {q:'What is number 100 in Tamil?',opts:['நூறு','ஆயிரம்','பத்து','நாற்பது'],a:0},
-    {q:'What is "௩௦" in numbers?',opts:['13','30','33','3'],a:1},
-    {q:'Which Tamil word means "thousand"?',opts:['நூறு','பத்து','ஆயிரம்','இலட்சம்'],a:2},
-    {q:'What is "௪௫" in numbers?',opts:['54','44','45','55'],a:2},
-  ],
-  hindi:[
-    {q:'Which letter is "क" in Hindi?',opts:['Kha','Ga','Ka','Cha'],a:2},
-    {q:'What does "नमस्ते" (Namaste) mean?',opts:['Goodbye','Thank you','Hello/Greetings','Sorry'],a:2},
-    {q:'Which is a Hindi vowel (स्वर)?',opts:['क','ख','अ','ग'],a:2},
-    {q:'How many letters are in the Hindi alphabet?',opts:['36','46','52','56'],a:1},
-    {q:'What does "पानी" (Paani) mean?',opts:['Food','Fire','Water','Sky'],a:2},
-    {q:'Which word means "book" in Hindi?',opts:['कलम','किताब','थैला','मेज'],a:1},
-    {q:'What does "सूरज" (Suraj) mean?',opts:['Moon','Star','Cloud','Sun'],a:3},
-    {q:'Which Hindi word means "school"?',opts:['घर','विद्यालय','बाज़ार','मंदिर'],a:1},
-    {q:'What does "माँ" mean?',opts:['Father','Sister','Brother','Mother'],a:3},
-    {q:'Which word means "friend" in Hindi?',opts:['दुश्मन','भाई','दोस्त','बहन'],a:2},
-  ],
-  hindi_sent:[
-    {q:'What does "मेरा नाम जयश्नव है" mean?',opts:['My name is Jaishnav','I am from India','I go to school','My friend is Jaishnav'],a:0},
-    {q:'What does "मुझे भूख लगी है" mean?',opts:['I am thirsty','I am hungry','I am tired','I am happy'],a:1},
-    {q:'Translate: "How are you?" into Hindi.',opts:['तुम कहाँ हो?','तुम क्या करते हो?','तुम कैसे हो?','तुम कौन हो?'],a:2},
-    {q:'What does "कृपया बैठिए" mean?',opts:['Please stand up','Please sit down','Please come here','Please go away'],a:1},
-    {q:'What does "शुभ रात्रि" mean?',opts:['Good morning','Good afternoon','Good evening','Good night'],a:3},
-    {q:'Translate: "I love India" into Hindi.',opts:['मुझे भारत पसंद है','मैं भारत से हूँ','मैं भारत जाता हूँ','भारत मेरा देश है'],a:0},
-    {q:'What does "मेरा घर बड़ा है" mean?',opts:['My school is big','My friend is tall','My house is big','My bag is heavy'],a:2},
-    {q:'Which means "What is your name?" in Hindi?',opts:['आप कहाँ रहते हैं?','आपका नाम क्या है?','आप क्या करते हैं?','आप कैसे हैं?'],a:1},
-  ],
-  pattern:[
-    {q:'What comes next? 3, 6, 12, 24, 48, ___',opts:['72','84','96','86'],a:2},
-    {q:'What comes next? 1, 1, 2, 3, 5, 8, 13, ___',opts:['18','19','20','21'],a:3},
-    {q:'What comes next? 100, 95, 85, 70, 50, ___',opts:['30','25','20','15'],a:1},
-    {q:'What comes next? 2, 6, 12, 20, 30, ___',opts:['40','42','44','46'],a:1},
-    {q:'What comes next? Z, X, V, T, R, ___',opts:['P','Q','O','S'],a:0},
-    {q:'What comes next? 1, 8, 27, 64, ___',opts:['100','121','125','128'],a:2},
-    {q:'What is the missing number? 4, 9, 16, ___, 36',opts:['20','24','25','30'],a:2},
-    {q:'What comes next? 0.5, 1, 2, 4, 8, ___',opts:['12','14','16','18'],a:2},
-    {q:'What is the rule? 3, 7, 15, 31, 63, ___',opts:['121','127','125','131'],a:1},
-    {q:'What comes next? AZ, BY, CX, DW, ___',opts:['EU','EV','FV','EW'],a:1},
-  ],
-  riddles:[
-    {q:'I have cities but no houses. I have mountains but no trees. I have water but no fish. What am I?',opts:['A painting','A globe','A map','A dream'],a:2},
-    {q:'The more you have of it, the less you see. What is it?',opts:['Money','Darkness','Time','Light'],a:1},
-    {q:'I am always in front of you but cannot be seen. What am I?',opts:['Your shadow','Your future','Your reflection','Your past'],a:1},
-    {q:'I have a tail and a head but no body. What am I?',opts:['A snake','A comet','A coin','An arrow'],a:2},
-    {q:'What gets wetter the more it dries?',opts:['A sponge','Ice','A towel','Soap'],a:2},
-    {q:'I have keys but no locks. I have space but no room. You can enter but cannot go inside. What am I?',opts:['A safe','A piano','A keyboard','A door'],a:2},
-    {q:'What runs but never walks, has a mouth but never talks, has a head but never weeps?',opts:['A clock','A river','A road','A train'],a:1},
-    {q:'If you drop me I will crack, but smile at me and I will smile back. What am I?',opts:['An egg','Glass','A mirror','Ice'],a:2},
-  ],
-  logic:[
-    {q:'All roses are flowers. Some flowers fade quickly. Therefore?',opts:['All roses fade quickly','Some roses may fade quickly','No roses fade quickly','Roses are not flowers'],a:1},
-    {q:'If A > B and B > C, which is true?',opts:['C > A','A > C','B > A','C = A'],a:1},
-    {q:'In a race, Anand finished before Bala. Bala finished before Charu. Who came last?',opts:['Anand','Bala','Charu','Cannot say'],a:2},
-    {q:'If today is Wednesday, what day was it 10 days ago?',opts:['Sunday','Saturday','Monday','Tuesday'],a:0},
-    {q:'5 friends sit in a row. Ram is to the left of Sita. Sita is to the left of Tom. Tom is not at the end. Who can be at the far right?',opts:['Ram','Sita','Tom','Cannot be determined'],a:3},
-    {q:"A is B's sister. B is C's brother. C is D's son. How is A related to D?",opts:["D's son","D's daughter","D's niece","D's nephew"],a:1},
-    {q:'If MANGO is coded as NBOHI, how is APPLE coded?',opts:['BQQMF','BQPMF','BQQLF','CQPMF'],a:0},
-    {q:'There are 5 apples and you take away 3. How many apples do YOU have?',opts:['2','3','5','0'],a:1},
-  ],
-  analogies:[
-    {q:'Fish is to Water as Bird is to ___',opts:['Nest','Sky','Tree','Wing'],a:1},
-    {q:'Doctor is to Hospital as Teacher is to ___',opts:['Blackboard','Book','School','Student'],a:2},
-    {q:'Hot is to Cold as Fast is to ___',opts:['Quick','Slow','Speed','Race'],a:1},
-    {q:'Pen is to Write as Knife is to ___',opts:['Sharp','Metal','Cut','Blade'],a:2},
-    {q:'Chapter is to Book as Scene is to ___',opts:['Movie','Actor','Director','Stage'],a:0},
-    {q:'Fingers are to Hand as Toes are to ___',opts:['Leg','Knee','Foot','Ankle'],a:2},
-    {q:'Caterpillar is to Butterfly as Tadpole is to ___',opts:['Fish','Frog','Lizard','Turtle'],a:1},
-    {q:'Ear is to Hear as Nose is to ___',opts:['Face','Breathe','Smell','Taste'],a:2},
-    {q:'Dictionary is to Words as Atlas is to ___',opts:['Countries','Maps','History','Science'],a:1},
-    {q:'Rehearsal is to Play as Practice is to ___',opts:['Game','Match','Sport','Performance'],a:3},
-  ],
-  spatial:[
-    {q:'A cube has 6 faces. If you unfold it flat, how many squares do you see?',opts:['4','5','6','8'],a:2},
-    {q:'If you rotate the letter "d" by 180°, what does it look like?',opts:['b','p','q','d'],a:2},
-    {q:'How many small cubes make up a 3×3×3 big cube?',opts:['9','18','27','24'],a:2},
-    {q:'A shape has 4 equal sides and 4 right angles. If you rotate it 90°, it looks the same. What is it?',opts:['Rectangle','Rhombus','Square','Parallelogram'],a:2},
-    {q:'If you fold a square piece of paper in half twice and cut a small triangle from the corner, how many holes appear when unfolded?',opts:['1','2','3','4'],a:3},
-    {q:'Which 3D shape has exactly 2 flat circular faces?',opts:['Sphere','Cone','Cylinder','Hemisphere'],a:2},
-    {q:'If the letter "b" is reflected in a vertical mirror, what does it look like?',opts:['d','p','q','b'],a:0},
-    {q:'How many faces does a triangular pyramid (tetrahedron) have?',opts:['3','4','5','6'],a:1},
-  ]
-};
-
-let quizState={questions:[],qi:0,score:0,answered:false};
-
-function renderQuiz(body,questions) {
-  quizState.questions=shuffle([...questions]).slice(0,Math.min(5,questions.length));
-  quizState.qi=0; quizState.score=0; quizState.answered=false;
-  renderQuizQuestion(body);
-}
-
-function renderQuizQuestion(body) {
-  const qs=quizState.questions;
-  const qi=quizState.qi;
-  if(qi>=qs.length){showCompletion(body,quizState.score,qs.length);return;}
-  const q=qs[qi];
-  quizState.answered=false;
-  body.innerHTML=`
-    <div class="progress-row">
-      <div class="progress-bar"><div class="progress-fill" style="width:${(qi/qs.length)*100}%"></div></div>
-      <div class="progress-label">${qi+1}/${qs.length}</div>
-    </div>
-    <div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:1.5rem;margin-bottom:1.2rem">
-      <div style="font-size:1.05rem;font-weight:700;line-height:1.5">${q.q}</div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px" id="opts-list">
-      ${q.opts.map((o,i)=>`<button class="answer-btn" style="text-align:left;padding:0.85rem 1.2rem" onclick="checkQuiz(${i},${q.a},this)">${o}</button>`).join('')}
-    </div>
-    <div id="quiz-feedback" style="margin-top:1rem"></div>`;
-}
-
-function checkQuiz(chosen,correct,btn) {
-  if(quizState.answered) return;
-  quizState.answered=true;
-  const btns=document.querySelectorAll('#opts-list .answer-btn');
-  btns.forEach(b=>b.disabled=true);
-  const fb=document.getElementById('quiz-feedback');
-  if(chosen===correct){
-    btn.classList.add('correct');
-    quizState.score++;
-    fb.innerHTML=`<div class="feedback-box good">⭐ Correct! Well done!</div>`;
-  } else {
-    btn.classList.add('wrong');
-    btns[correct].classList.add('correct');
-    fb.innerHTML=`<div class="feedback-box bad">Not quite! The correct answer was: <b>${quizState.questions[quizState.qi].opts[correct]}</b></div>`;
-  }
-  const last=quizState.qi+1>=quizState.questions.length;
-  fb.innerHTML+=`<button class="next-btn" onclick="quizNext()">${last?'See Results 🎉':'Next Question →'}</button>`;
-}
-
-function quizNext() {
-  quizState.qi++;
-  renderQuizQuestion(document.getElementById('player-body'));
-}
-
-// ===================== COMPLETION =====================
-function showCompletion(body,score,total) {
-  const {subj,actId,xp}=window._currentActivity;
-  const pct=Math.round((score/total)*100);
-  const earned=Math.round(xp*(score/total));
-
-  if(!state.completed[subj+'_'+actId] || state.completed[subj+'_'+actId].score<score) {
-    state.completed[subj+'_'+actId]={score,total,pct,earned,date:new Date().toLocaleDateString()};
-  }
-  state.xp+=earned;
-  if(state.streak<7) state.streak=Math.min(7,state.streak+1);
-  state.log.unshift({subj,actId,score,total,pct,earned,date:new Date().toLocaleDateString()});
-  if(state.log.length>20) state.log.pop();
-  saveState();
-  syncToSheet(state.log[0]);
-
-  const medal=pct>=90?'🏆':pct>=70?'🥈':pct>=50?'🥉':'🌟';
-  const msg=pct>=90?'Outstanding, Explorer!':pct>=70?'Great job, Jaishnav!':pct>=50?'Good effort! Keep going!':'Keep practising, you\'ll get there!';
-
-  body.innerHTML=`
-    <div class="complete-card">
-      <div class="complete-icon">${medal}</div>
-      <div class="complete-title">${msg}</div>
-      <div class="complete-score">You scored ${score} out of ${total} (${pct}%)</div>
-      <div class="xp-earned">+${earned} XP earned! ⭐</div>
-      <button class="home-return-btn" onclick="showScreen('home-screen');renderHome()">Back to Mission Control 🚀</button>
-    </div>`;
-}
-
-// ===================== PROGRESS RENDER =====================
-function renderProgress() {
-  const total=Object.keys(state.completed).length;
-  const avgPct=total?Math.round(Object.values(state.completed).reduce((s,c)=>s+c.pct,0)/total):0;
-  const html=`
-    <div class="stat-grid">
-      <div class="stat-card"><div class="stat-num" style="color:var(--accent-cyan)">${state.xp}</div><div class="stat-label">TOTAL XP</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:var(--accent-gold)">${total}</div><div class="stat-label">COMPLETED</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:var(--accent-green)">${avgPct}%</div><div class="stat-label">AVG SCORE</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:var(--accent-coral)">${state.streak}</div><div class="stat-label">DAY STREAK 🔥</div></div>
-    </div>
-    <div class="recent-title">RECENT ACTIVITIES</div>
-    ${state.log.length?state.log.slice(0,8).map(l=>`
-      <div class="recent-item">
-        <div class="recent-name">${catalog[l.subj]?.name||l.subj} — ${catalog[l.subj]?.activities.find(a=>a.id===l.actId)?.title||l.actId}</div>
-        <div class="recent-score">${l.score}/${l.total} · ${l.pct}%</div>
-      </div>`).join(''):'<div style="color:var(--text-dim);text-align:center;padding:2rem;font-size:0.9rem">No activities completed yet. Start exploring! 🚀</div>'}`;
-  document.getElementById('progress-content').innerHTML=html;
-}
-
-// ===================== PARENT DASHBOARD =====================
-async function renderParentDashboard() {
-  const el = document.getElementById('pdash-content');
-  el.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text-dim)">
-    <div style="font-size:2rem;margin-bottom:1rem;animation:float 1.5s ease-in-out infinite">🛰️</div>
-    <div style="font-family:var(--font-display);font-size:0.8rem;letter-spacing:2px">FETCHING LIVE DATA...</div>
-  </div>`;
-
-  let rows = [];
-  try {
-    const res  = await fetch(SHEETS_URL + '?mode=progress&t=' + Date.now());
-    const data = await res.json();
-    if (data.status === 'ok' && data.rows) rows = data.rows;
-  } catch(e) {}
-
-  // fallback to localStorage if sheet is empty or fetch failed
-  if (!rows.length && state.log.length) {
-    rows = state.log.map(l => ({
-      date:     l.date,
-      subject:  catalog[l.subj]?.name || l.subj,
-      activity: catalog[l.subj]?.activities.find(a=>a.id===l.actId)?.title || l.actId,
-      score:    l.score,
-      total:    l.total,
-      pct:      l.pct,
-      xp:       l.earned
-    }));
-  }
-
-  const totalDone  = rows.length;
-  const totalXP    = rows.reduce((s,r)=>s+(parseInt(r.xp)||0),0);
-  const avgPct     = totalDone ? Math.round(rows.reduce((s,r)=>s+(parseFloat(r.pct)||0),0)/totalDone) : 0;
-  const todayStr   = new Date().toLocaleDateString();
-  const todayCount = rows.filter(r=>r.date===todayStr).length;
-
-  // subject breakdown from rows
-  const subjColors = {'Maths':'var(--accent-cyan)','English':'var(--accent-purple)','Science':'var(--accent-green)','Tamil / Hindi':'var(--accent-orange)','IQ Boost':'var(--accent-coral)'};
-  const subjMap    = {};
-  rows.forEach(r=>{
-    const s = r.subject || 'Other';
-    if(!subjMap[s]) subjMap[s]={count:0,totalPct:0};
-    subjMap[s].count++;
-    subjMap[s].totalPct += parseFloat(r.pct)||0;
-  });
-
-  const breakdown = Object.entries(subjMap).map(([name,d])=>{
-    const avg  = Math.round(d.totalPct/d.count);
-    const col  = subjColors[name] || 'var(--accent-cyan)';
-    return `<div class="breakdown-row">
-      <div class="breakdown-subject" style="color:${col};font-size:0.75rem">${name}</div>
-      <div class="breakdown-bar"><div class="breakdown-fill" style="width:${avg}%;background:${col}"></div></div>
-      <div class="breakdown-pct">${avg}%</div>
-    </div>`;
-  }).join('') || '<div style="color:var(--text-dim);font-size:0.85rem;padding:0.5rem 0">No subject data yet</div>';
-
-  const logRows = rows.slice(0,15).map((r,i)=>{
-    const pctNum = parseFloat(r.pct)||0;
-    const pctDisp = pctNum<=1 ? Math.round(pctNum*100)+'%' : Math.round(pctNum)+'%';
-    const medal  = pctNum>=0.9||pctNum>=90?'🏆':pctNum>=0.7||pctNum>=70?'🥈':pctNum>=0.5||pctNum>=50?'🥉':'🌟';
-    const rowBg  = i%2===0?'rgba(255,255,255,0.03)':'transparent';
-    return `<tr style="background:${rowBg}">
-      <td>${r.date||'—'}</td>
-      <td style="color:var(--text-dim);font-size:0.75rem">${r.subject||'—'}</td>
-      <td>${r.activity||'—'}</td>
-      <td style="color:var(--accent-green);font-family:var(--font-display);font-size:0.8rem">${pctDisp}</td>
-      <td style="color:var(--accent-gold);font-family:var(--font-display);font-size:0.8rem">+${r.xp||0}</td>
-      <td>${medal}</td>
-    </tr>`;
+  const totalDone=rows.length;
+  const totalXP=rows.reduce((s,r)=>s+(parseInt(r.xp)||0),0);
+  const avgPct=totalDone?Math.round(rows.reduce((s,r)=>s+(parseFloat(r.pct)||0),0)/totalDone):0;
+  const todayStr=new Date().toLocaleDateString();
+  const todayCount=rows.filter(r=>r.date===todayStr).length;
+  const source=rows.length?'🛰️ Live from Google Sheet':'📱 From this device';
+  const cardClass=`pdash-card-${t}`;
+  const numClass=`pdash-num-${t}`;
+  const logRows=rows.slice(0,15).map((r,i)=>{
+    const pn=parseFloat(r.pct)||0;
+    const pd=pn<=1?Math.round(pn*100)+'%':Math.round(pn)+'%';
+    const medal=pn>=90||pn>=0.9?'🏆':pn>=70||pn>=0.7?'🥈':pn>=50||pn>=0.5?'🥉':'🌟';
+    return `<tr style="background:${i%2===0?'rgba(255,255,255,.03)':'transparent'}">
+      <td>${r.date||'—'}</td><td style="color:#8ba3cc;font-size:.72rem">${r.subject||'—'}</td>
+      <td>${r.activity||'—'}</td><td style="color:#22c55e;font-size:.78rem">${pd}</td>
+      <td style="color:${t==='j'?'var(--j-gold)':'var(--s-gold)'};font-size:.78rem">+${r.xp||0}</td>
+      <td>${medal}</td></tr>`;
   }).join('');
-
-  const source = rows.length && !state.log.length ? '🛰️ Live from Google Sheet' : rows.length ? '🛰️ Live from Google Sheet' : '📱 From this device only';
-
-  el.innerHTML = `
-    <div style="font-size:0.7rem;color:var(--text-dim);text-align:right;margin-bottom:0.75rem;letter-spacing:1px">${source}</div>
+  el.innerHTML=`
+    <div style="font-size:.68rem;color:#8ba3cc;text-align:right;margin-bottom:.65rem;letter-spacing:1px">${source}</div>
     <div class="pdash-grid">
-      <div class="pdash-card"><div class="pdash-num">${totalXP}</div><div class="pdash-label">TOTAL XP</div></div>
-      <div class="pdash-card"><div class="pdash-num">${totalDone}</div><div class="pdash-label">ACTIVITIES DONE</div></div>
-      <div class="pdash-card"><div class="pdash-num">${avgPct}%</div><div class="pdash-label">AVG SCORE</div></div>
-      <div class="pdash-card"><div class="pdash-num">${todayCount}🔥</div><div class="pdash-label">TODAY</div></div>
+      <div class="${cardClass}"><div class="${numClass}">${totalXP}</div><div class="pdash-label">TOTAL XP</div></div>
+      <div class="${cardClass}"><div class="${numClass}">${totalDone}</div><div class="pdash-label">ACTIVITIES</div></div>
+      <div class="${cardClass}"><div class="${numClass}">${avgPct}%</div><div class="pdash-label">AVG SCORE</div></div>
+      <div class="${cardClass}"><div class="${numClass}">${todayCount}🔥</div><div class="pdash-label">TODAY</div></div>
     </div>
-    <div style="font-family:var(--font-display);font-size:0.7rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:0.75rem">SUBJECT BREAKDOWN</div>
-    <div class="subject-breakdown">${breakdown}</div>
-    <div style="font-family:var(--font-display);font-size:0.7rem;letter-spacing:2px;color:var(--text-dim);margin:1rem 0 0.75rem">FULL ACTIVITY LOG</div>
-    ${logRows ? `<table class="log-table">
+    ${rows.length?`<div style="font-size:.68rem;letter-spacing:2px;color:#8ba3cc;margin-bottom:.65rem">ACTIVITY LOG</div>
+    <table class="log-table">
       <tr><th>Date</th><th>Subject</th><th>Activity</th><th>Score</th><th>XP</th><th>Medal</th></tr>
       ${logRows}
-    </table>` : '<div style="color:var(--text-dim);text-align:center;padding:1.5rem;font-size:0.85rem">No activities recorded yet — Jaishnav needs to complete something first!</div>'}
-    <button onclick="renderParentDashboard()" style="margin-top:1.5rem;width:100%;padding:0.75rem;border-radius:12px;border:1px solid rgba(245,200,66,0.3);background:rgba(245,200,66,0.08);color:var(--accent-gold);font-family:var(--font-display);font-size:0.8rem;cursor:pointer;letter-spacing:1px">🔄 REFRESH</button>`;
+    </table>`:'<div style="color:#8ba3cc;text-align:center;padding:1.5rem;font-size:.85rem">No activities yet!</div>'}
+    <button onclick="renderParentDashboard()" style="margin-top:1.2rem;width:100%;padding:.75rem;border-radius:12px;border:1px solid rgba(${t==='j'?'245,200,66':'204,0,0'},.3);background:rgba(${t==='j'?'245,200,66':'204,0,0'},.08);color:${t==='j'?'var(--j-gold)':'var(--s-red2)'};font-size:.8rem;cursor:pointer;letter-spacing:1px">🔄 REFRESH</button>`;
 }
 
-// ===================== UTILS =====================
+// ═══════════════════════════════════════════════
+// SHEETS SYNC
+// ═══════════════════════════════════════════════
+function syncToSheet(logEntry){
+  if(!SHEETS_URL||!currentProfile)return;
+  const cat=currentProfile.theme==='j'?catalogJ:catalogS;
+  fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({type:'log',child:currentProfile.nick,date:logEntry.date,
+      subject:cat[logEntry.subj]?.name||logEntry.subj,
+      activity:cat[logEntry.subj]?.activities.find(a=>a.id===logEntry.actId)?.title||logEntry.actId,
+      score:logEntry.score,total:logEntry.total,pct:(logEntry.pct/100).toFixed(2),xp:logEntry.earned,duration:'—'})
+  }).catch(()=>{});
+}
+
+async function fetchAssignments(){
+  if(!SHEETS_URL||!currentProfile)return;
+  try{
+    const t=currentProfile.theme;
+    const res=await fetch(SHEETS_URL+'?child='+currentProfile.nick+'&t='+Date.now());
+    const data=await res.json();
+    if(data.status==='ok'&&data.assignments?.length){
+      const container=document.getElementById('sheet-missions-'+t);
+      if(!container)return;
+      container.innerHTML='';
+      const titleDiv=document.createElement('div');
+      titleDiv.className=`section-title section-title-${t}`;
+      titleDiv.textContent='📨 New from Dad';
+      container.appendChild(titleDiv);
+      data.assignments.forEach(a=>{
+        const card=document.createElement('div');
+        card.className=`mission-card mission-card-${t}`;
+        card.style.cursor='default';
+        card.innerHTML=`
+          <div class="mission-tag-${t}">${a.subject} · ${a.type}</div>
+          <div class="mission-title">${a.question}</div>
+          <div class="mission-sub">Due: ${a.due}</div>
+          <div class="mission-xp-${t}">+${a.xp||20} XP</div>`;
+        container.appendChild(card);
+      });
+    }
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function shuffleOptions(correct,others){const opts=[correct,...shuffle(others).slice(0,3)];return shuffle(opts);}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+function showToast(msg){
+  const t=currentProfile?.theme||'j';
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className=`show toast-${t}`;
+  setTimeout(()=>el.className='',2500);
+}
+
+// Wire up parent screen on open
+document.getElementById('nav-parent')?.addEventListener('click',setupParentScreen);
+document.querySelectorAll('[onclick*="parent-screen"]').forEach(el=>{
+  const orig=el.getAttribute('onclick');
+  el.setAttribute('onclick',orig.replace("showScreen('parent-screen')",'showScreen(\'parent-screen\');setupParentScreen()'));
+});
 </script>
 </body>
 </html>
