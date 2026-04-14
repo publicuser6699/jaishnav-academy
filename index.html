@@ -968,43 +968,92 @@ function renderProgress() {
 }
 
 // ===================== PARENT DASHBOARD =====================
-function renderParentDashboard() {
-  const total=Object.keys(state.completed).length;
-  const avgPct=total?Math.round(Object.values(state.completed).reduce((s,c)=>s+c.pct,0)/total):0;
-  const subjects=['maths','english','science','tamil','iq'];
-  const subjNames={maths:'Maths',english:'English',science:'Science',tamil:'Tamil/Hindi',iq:'IQ Boost'};
-  const subjColors={maths:'var(--accent-cyan)',english:'var(--accent-purple)',science:'var(--accent-green)',tamil:'var(--accent-orange)',iq:'var(--accent-coral)'};
-  const totals={maths:4,english:3,science:3,tamil:2,iq:3};
+async function renderParentDashboard() {
+  const el = document.getElementById('pdash-content');
+  el.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text-dim)">
+    <div style="font-size:2rem;margin-bottom:1rem;animation:float 1.5s ease-in-out infinite">🛰️</div>
+    <div style="font-family:var(--font-display);font-size:0.8rem;letter-spacing:2px">FETCHING LIVE DATA...</div>
+  </div>`;
 
-  const breakdown=subjects.map(s=>{
-    const done=Object.keys(state.completed).filter(k=>k.startsWith(s+'_')).length;
-    const pct=Math.round((done/totals[s])*100);
+  let rows = [];
+  try {
+    const res  = await fetch(SHEETS_URL + '?mode=progress&t=' + Date.now());
+    const data = await res.json();
+    if (data.status === 'ok' && data.rows) rows = data.rows;
+  } catch(e) {}
+
+  // fallback to localStorage if sheet is empty or fetch failed
+  if (!rows.length && state.log.length) {
+    rows = state.log.map(l => ({
+      date:     l.date,
+      subject:  catalog[l.subj]?.name || l.subj,
+      activity: catalog[l.subj]?.activities.find(a=>a.id===l.actId)?.title || l.actId,
+      score:    l.score,
+      total:    l.total,
+      pct:      l.pct,
+      xp:       l.earned
+    }));
+  }
+
+  const totalDone  = rows.length;
+  const totalXP    = rows.reduce((s,r)=>s+(parseInt(r.xp)||0),0);
+  const avgPct     = totalDone ? Math.round(rows.reduce((s,r)=>s+(parseFloat(r.pct)||0),0)/totalDone) : 0;
+  const todayStr   = new Date().toLocaleDateString();
+  const todayCount = rows.filter(r=>r.date===todayStr).length;
+
+  // subject breakdown from rows
+  const subjColors = {'Maths':'var(--accent-cyan)','English':'var(--accent-purple)','Science':'var(--accent-green)','Tamil / Hindi':'var(--accent-orange)','IQ Boost':'var(--accent-coral)'};
+  const subjMap    = {};
+  rows.forEach(r=>{
+    const s = r.subject || 'Other';
+    if(!subjMap[s]) subjMap[s]={count:0,totalPct:0};
+    subjMap[s].count++;
+    subjMap[s].totalPct += parseFloat(r.pct)||0;
+  });
+
+  const breakdown = Object.entries(subjMap).map(([name,d])=>{
+    const avg  = Math.round(d.totalPct/d.count);
+    const col  = subjColors[name] || 'var(--accent-cyan)';
     return `<div class="breakdown-row">
-      <div class="breakdown-subject" style="color:${subjColors[s]}">${subjNames[s]}</div>
-      <div class="breakdown-bar"><div class="breakdown-fill" style="width:${pct}%;background:${subjColors[s]}"></div></div>
-      <div class="breakdown-pct">${pct}%</div>
+      <div class="breakdown-subject" style="color:${col};font-size:0.75rem">${name}</div>
+      <div class="breakdown-bar"><div class="breakdown-fill" style="width:${avg}%;background:${col}"></div></div>
+      <div class="breakdown-pct">${avg}%</div>
     </div>`;
+  }).join('') || '<div style="color:var(--text-dim);font-size:0.85rem;padding:0.5rem 0">No subject data yet</div>';
+
+  const logRows = rows.slice(0,15).map((r,i)=>{
+    const pctNum = parseFloat(r.pct)||0;
+    const pctDisp = pctNum<=1 ? Math.round(pctNum*100)+'%' : Math.round(pctNum)+'%';
+    const medal  = pctNum>=0.9||pctNum>=90?'🏆':pctNum>=0.7||pctNum>=70?'🥈':pctNum>=0.5||pctNum>=50?'🥉':'🌟';
+    const rowBg  = i%2===0?'rgba(255,255,255,0.03)':'transparent';
+    return `<tr style="background:${rowBg}">
+      <td>${r.date||'—'}</td>
+      <td style="color:var(--text-dim);font-size:0.75rem">${r.subject||'—'}</td>
+      <td>${r.activity||'—'}</td>
+      <td style="color:var(--accent-green);font-family:var(--font-display);font-size:0.8rem">${pctDisp}</td>
+      <td style="color:var(--accent-gold);font-family:var(--font-display);font-size:0.8rem">+${r.xp||0}</td>
+      <td>${medal}</td>
+    </tr>`;
   }).join('');
 
-  const logRows=state.log.slice(0,10).map(l=>`<tr>
-    <td>${l.date}</td>
-    <td>${catalog[l.subj]?.activities.find(a=>a.id===l.actId)?.title||l.actId}</td>
-    <td style="color:var(--accent-green)">${l.pct}%</td>
-    <td style="color:var(--accent-gold)">+${l.earned}</td>
-  </tr>`).join('');
+  const source = rows.length && !state.log.length ? '🛰️ Live from Google Sheet' : rows.length ? '🛰️ Live from Google Sheet' : '📱 From this device only';
 
-  document.getElementById('pdash-content').innerHTML=`
+  el.innerHTML = `
+    <div style="font-size:0.7rem;color:var(--text-dim);text-align:right;margin-bottom:0.75rem;letter-spacing:1px">${source}</div>
     <div class="pdash-grid">
-      <div class="pdash-card"><div class="pdash-num">${state.xp}</div><div class="pdash-label">TOTAL XP</div></div>
-      <div class="pdash-card"><div class="pdash-num">${total}</div><div class="pdash-label">ACTIVITIES DONE</div></div>
+      <div class="pdash-card"><div class="pdash-num">${totalXP}</div><div class="pdash-label">TOTAL XP</div></div>
+      <div class="pdash-card"><div class="pdash-num">${totalDone}</div><div class="pdash-label">ACTIVITIES DONE</div></div>
       <div class="pdash-card"><div class="pdash-num">${avgPct}%</div><div class="pdash-label">AVG SCORE</div></div>
-      <div class="pdash-card"><div class="pdash-num">${state.streak}🔥</div><div class="pdash-label">DAY STREAK</div></div>
+      <div class="pdash-card"><div class="pdash-num">${todayCount}🔥</div><div class="pdash-label">TODAY</div></div>
     </div>
+    <div style="font-family:var(--font-display);font-size:0.7rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:0.75rem">SUBJECT BREAKDOWN</div>
     <div class="subject-breakdown">${breakdown}</div>
-    ${state.log.length?`<table class="log-table">
-      <tr><th>Date</th><th>Activity</th><th>Score</th><th>XP</th></tr>
+    <div style="font-family:var(--font-display);font-size:0.7rem;letter-spacing:2px;color:var(--text-dim);margin:1rem 0 0.75rem">FULL ACTIVITY LOG</div>
+    ${logRows ? `<table class="log-table">
+      <tr><th>Date</th><th>Subject</th><th>Activity</th><th>Score</th><th>XP</th><th>Medal</th></tr>
       ${logRows}
-    </table>`:'<div style="color:var(--text-dim);text-align:center;padding:1.5rem;font-size:0.85rem">No activity recorded yet.</div>'}`;
+    </table>` : '<div style="color:var(--text-dim);text-align:center;padding:1.5rem;font-size:0.85rem">No activities recorded yet — Jaishnav needs to complete something first!</div>'}
+    <button onclick="renderParentDashboard()" style="margin-top:1.5rem;width:100%;padding:0.75rem;border-radius:12px;border:1px solid rgba(245,200,66,0.3);background:rgba(245,200,66,0.08);color:var(--accent-gold);font-family:var(--font-display);font-size:0.8rem;cursor:pointer;letter-spacing:1px">🔄 REFRESH</button>`;
 }
 
 // ===================== UTILS =====================
