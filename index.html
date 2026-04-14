@@ -324,6 +324,7 @@
     </div>
   </div>
   <div class="home-body">
+    <div id="sheet-missions"></div>
     <div class="section-title">📡 Today's Mission</div>
     <div class="mission-card" onclick="openActivity('maths','abacus')">
       <div class="mission-tag">DAILY CHALLENGE</div>
@@ -451,6 +452,7 @@
 // ===================== CONFIG =====================
 const STUDENT_PWD = 'Jaishnav@123';
 const PARENT_PWD  = 'Parent@999';
+const SHEETS_URL  = 'https://script.google.com/macros/s/AKfycbyvF0Hq-nGvp6NvNJdRQMOVvyPBLtUpfpQ7YQBJCTqqktdh3pHDP1qcd_qbLESxMOEj2g/exec';
 const STUDENT_NAME = 'Jaishnav';
 
 // ===================== STATE =====================
@@ -469,6 +471,60 @@ function loadState() {
 }
 function saveState() {
   try { localStorage.setItem('jaishnav_state', JSON.stringify(state)); } catch(e){}
+}
+
+function syncToSheet(logEntry) {
+  if (!SHEETS_URL) return;
+  const payload = {
+    type:     'log',
+    date:     logEntry.date,
+    subject:  catalog[logEntry.subj]?.name || logEntry.subj,
+    activity: catalog[logEntry.subj]?.activities.find(a=>a.id===logEntry.actId)?.title || logEntry.actId,
+    score:    logEntry.score,
+    total:    logEntry.total,
+    pct:      (logEntry.pct/100).toFixed(2),
+    xp:       logEntry.earned,
+    duration: '—'
+  };
+  fetch(SHEETS_URL, {
+    method:  'POST',
+    mode:    'no-cors',
+    headers: {'Content-Type':'application/json'},
+    body:    JSON.stringify(payload)
+  }).catch(()=>{});
+}
+
+async function fetchAssignments() {
+  if (!SHEETS_URL) return;
+  try {
+    const res  = await fetch(SHEETS_URL + '?t=' + Date.now());
+    const data = await res.json();
+    if (data.status === 'ok' && data.assignments?.length) {
+      renderSheetAssignments(data.assignments);
+    }
+  } catch(e) {}
+}
+
+function renderSheetAssignments(assignments) {
+  const container = document.getElementById('sheet-missions');
+  if (!container) return;
+  container.innerHTML = '';
+  if (!assignments.length) return;
+  const title = document.createElement('div');
+  title.className = 'section-title';
+  title.textContent = '📨 New from Dad';
+  container.appendChild(title);
+  assignments.forEach(a => {
+    const card = document.createElement('div');
+    card.className = 'mission-card';
+    card.style.cursor = 'default';
+    card.innerHTML = `
+      <div class="mission-tag">${a.subject} · ${a.type} · ${a.difficulty || 'Normal'}</div>
+      <div class="mission-title">${a.question}</div>
+      <div class="mission-sub">Due: ${a.due}</div>
+      <div class="mission-xp">+${a.xp||20} XP</div>`;
+    container.appendChild(card);
+  });
 }
 
 // ===================== STARFIELD =====================
@@ -510,6 +566,7 @@ function tryLogin() {
     loadState();
     showScreen('home-screen');
     renderHome();
+    fetchAssignments();
     showToast('Welcome back, '+STUDENT_NAME+'! 🚀');
   } else {
     document.getElementById('login-error').textContent='Wrong password! Try again.';
@@ -875,6 +932,7 @@ function showCompletion(body,score,total) {
   state.log.unshift({subj,actId,score,total,pct,earned,date:new Date().toLocaleDateString()});
   if(state.log.length>20) state.log.pop();
   saveState();
+  syncToSheet(state.log[0]);
 
   const medal=pct>=90?'🏆':pct>=70?'🥈':pct>=50?'🥉':'🌟';
   const msg=pct>=90?'Outstanding, Explorer!':pct>=70?'Great job, Jaishnav!':pct>=50?'Good effort! Keep going!':'Keep practising, you\'ll get there!';
