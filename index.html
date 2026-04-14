@@ -923,7 +923,7 @@ const quizData = {
     {q:'What is the name of our galaxy?',opts:['Andromeda','Milky Way','Triangulum','Sombrero'],a:1},
     {q:'Which planet has the shortest day (about 10 hours)?',opts:['Mars','Saturn','Jupiter','Venus'],a:2},
     {q:'What is a light-year?',opts:['Time light takes to reach Moon','Distance light travels in one year','Speed of light','Age of the Sun'],a:1},
-    {q:'Which planet is sometimes called "Earth's twin" due to similar size?',opts:['Mars','Mercury','Venus','Neptune'],a:2},
+    {q:"Which planet is sometimes called \"Earth's twin\" due to similar size?",opts:['Mars','Mercury','Venus','Neptune'],a:2},
     {q:'What are the small rocky bodies orbiting the Sun between Mars and Jupiter called?',opts:['Comets','Meteors','Asteroids','Satellites'],a:2},
     {q:'What is the correct order of planets from the Sun?',opts:['Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune','Mercury Earth Venus Mars Jupiter Saturn Neptune Uranus','Venus Mercury Earth Mars Jupiter Saturn Uranus Neptune','Mercury Venus Mars Earth Jupiter Saturn Uranus Neptune'],a:0},
   ],
@@ -1021,7 +1021,7 @@ const quizData = {
     {q:'In a race, Anand finished before Bala. Bala finished before Charu. Who came last?',opts:['Anand','Bala','Charu','Cannot say'],a:2},
     {q:'If today is Wednesday, what day was it 10 days ago?',opts:['Sunday','Saturday','Monday','Tuesday'],a:0},
     {q:'5 friends sit in a row. Ram is to the left of Sita. Sita is to the left of Tom. Tom is not at the end. Who can be at the far right?',opts:['Ram','Sita','Tom','Cannot be determined'],a:3},
-    {q:'A is B's sister. B is C's brother. C is D's son. How is A related to D?',opts:["D's son","D's daughter","D's niece","D's nephew"],a:1},
+    {q:"A is B's sister. B is C's brother. C is D's son. How is A related to D?",opts:["D's son","D's daughter","D's niece","D's nephew"],a:1},
     {q:'If MANGO is coded as NBOHI, how is APPLE coded?',opts:['BQQMF','BQPMF','BQQLF','CQPMF'],a:0},
     {q:'There are 5 apples and you take away 3. How many apples do YOU have?',opts:['2','3','5','0'],a:1},
   ],
@@ -1049,7 +1049,7 @@ const quizData = {
   ]
 };
 
-let quizState={questions:[],qi:0,score:0,answered:false};={questions:[],qi:0,score:0,answered:false};
+let quizState={questions:[],qi:0,score:0,answered:false};
 
 function renderQuiz(body,questions) {
   quizState.questions=shuffle([...questions]).slice(0,Math.min(5,questions.length));
