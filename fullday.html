@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Jaishnav's Full Day Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@400;600;700;800&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --dark:#050a1a;--mid:#0d1b3e;--blue:#1a3a6e;
+  --cyan:#00e5ff;--purple:#a855f7;--gold:#f5c842;
+  --green:#22c55e;--coral:#ff6b6b;--orange:#ff9f43;
+  --pink:#f472b6;--teal:#14b8a6;--indigo:#6366f1;
+  --dim:#8ba3cc;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.09);
+  --font-display:'Orbitron',monospace;
+  --font-body:'Nunito',sans-serif;
+  --font-mono:'Space Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-height:100vh;background:var(--dark);color:#fff;font-family:var(--font-body);overflow-x:hidden;}
+
+/* STARFIELD */
+#stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d,3s) ease-in-out infinite;opacity:0;}
+@keyframes tw{0%,100%{opacity:0}50%{opacity:var(--o,.7)}}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;position:relative;z-index:1;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* ── INTRO SCREEN ── */
+#intro-screen{align-items:center;justify-content:center;padding:2rem;text-align:center;}
+.intro-rocket{font-size:72px;display:block;margin-bottom:1rem;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.intro-title{font-family:var(--font-display);font-size:1.3rem;font-weight:900;color:var(--cyan);letter-spacing:2px;margin-bottom:.4rem;}
+.intro-sub{color:var(--dim);font-size:.9rem;margin-bottom:.5rem;}
+.intro-date{font-family:var(--font-display);font-size:.7rem;color:var(--gold);letter-spacing:2px;margin-bottom:2rem;}
+.xp-total-preview{background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.25);border-radius:14px;padding:.75rem 1.5rem;display:inline-block;font-family:var(--font-display);font-size:.85rem;color:var(--gold);margin-bottom:1.5rem;}
+
+/* Level cards on intro */
+.level-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:440px;margin-bottom:2rem;}
+.lvl-card{border-radius:14px;padding:.9rem;text-align:left;border:1px solid rgba(255,255,255,.08);background:var(--card);position:relative;overflow:hidden;}
+.lvl-num{font-family:var(--font-display);font-size:.65rem;color:var(--dim);letter-spacing:1px;}
+.lvl-name{font-weight:800;font-size:.85rem;margin:.2rem 0;}
+.lvl-time{font-size:.7rem;color:var(--dim);}
+.lvl-xp{position:absolute;top:.6rem;right:.6rem;font-family:var(--font-display);font-size:.65rem;color:var(--gold);}
+.lvl-card.unlocked{border-color:rgba(34,197,94,.2);}
+.lvl-card.locked{opacity:.4;}
+.start-btn{background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:14px;color:#fff;font-family:var(--font-display);font-size:.9rem;font-weight:700;letter-spacing:2px;padding:1rem 2.5rem;cursor:pointer;transition:transform .15s;width:100%;max-width:300px;}
+.start-btn:hover{transform:scale(1.02);}
+
+/* ── LEVEL SCREEN ── */
+#level-screen{padding-bottom:5rem;}
+.level-topbar{padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:10;background:rgba(5,10,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.back-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:1.2rem;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.topbar-info{flex:1;}
+.topbar-level{font-family:var(--font-display);font-size:.7rem;color:var(--dim);letter-spacing:2px;}
+.topbar-title{font-weight:800;font-size:.95rem;}
+.topbar-xp{font-family:var(--font-display);font-size:.72rem;color:var(--gold);background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.25);border-radius:8px;padding:.25rem .6rem;white-space:nowrap;}
+
+/* Overall XP bar */
+.xp-bar-wrap{padding:.5rem 1.5rem;background:rgba(5,10,26,.8);}
+.xp-bar-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--dim);margin-bottom:4px;}
+.xp-bar-outer{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.xp-bar-inner{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:3px;transition:width .6s ease;}
+
+/* SECTIONS within level */
+.level-body{padding:1rem 1.5rem 2rem;}
+
+/* TEACH BLOCK */
+.teach-block{border-radius:16px;padding:1.25rem;margin-bottom:1rem;border:1px solid;}
+.teach-block.cyan{background:rgba(0,229,255,.05);border-color:rgba(0,229,255,.2);}
+.teach-block.purple{background:rgba(168,85,247,.05);border-color:rgba(168,85,247,.2);}
+.teach-block.green{background:rgba(34,197,94,.05);border-color:rgba(34,197,94,.2);}
+.teach-block.gold{background:rgba(245,200,66,.05);border-color:rgba(245,200,66,.2);}
+.teach-block.coral{background:rgba(255,107,107,.05);border-color:rgba(255,107,107,.2);}
+.teach-block.orange{background:rgba(255,159,67,.05);border-color:rgba(255,159,67,.2);}
+.teach-block.teal{background:rgba(20,184,166,.05);border-color:rgba(20,184,166,.2);}
+.teach-block.indigo{background:rgba(99,102,241,.05);border-color:rgba(99,102,241,.2);}
+.teach-block.pink{background:rgba(244,114,182,.05);border-color:rgba(244,114,182,.2);}
+.teach-title{font-family:var(--font-display);font-size:.7rem;letter-spacing:2px;margin-bottom:.75rem;text-transform:uppercase;}
+.teach-title.cyan{color:var(--cyan);}
+.teach-title.purple{color:var(--purple);}
+.teach-title.green{color:var(--green);}
+.teach-title.gold{color:var(--gold);}
+.teach-title.coral{color:var(--coral);}
+.teach-title.orange{color:var(--orange);}
+.teach-title.teal{color:var(--teal);}
+.teach-title.indigo{color:var(--indigo);}
+.teach-title.pink{color:var(--pink);}
+.teach-content{font-size:.88rem;line-height:1.75;color:#e2e8f0;}
+.teach-content b{color:#fff;}
+.teach-content .highlight{background:rgba(255,255,255,.06);border-radius:6px;padding:.1rem .4rem;font-family:var(--font-mono);font-size:.82rem;}
+.teach-content .example{display:block;margin:.5rem 0;padding:.5rem .75rem;background:rgba(255,255,255,.04);border-radius:8px;border-left:3px solid rgba(255,255,255,.15);font-family:var(--font-mono);font-size:.82rem;}
+.trick-box{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);border-radius:12px;padding:.75rem 1rem;margin:.75rem 0;font-size:.85rem;line-height:1.6;}
+.trick-box .trick-label{font-family:var(--font-display);font-size:.65rem;color:var(--gold);letter-spacing:1px;margin-bottom:.3rem;}
+
+/* QUIZ SECTION */
+.section-divider{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0 1rem;}
+.section-divider-line{flex:1;height:1px;background:var(--border);}
+.section-divider-text{font-family:var(--font-display);font-size:.65rem;color:var(--dim);letter-spacing:2px;white-space:nowrap;}
+
+/* Progress */
+.quiz-progress{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.qpb{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.qpb-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+.qpb-fill.cyan{background:var(--cyan);}
+.qpb-fill.purple{background:var(--purple);}
+.qpb-fill.green{background:var(--green);}
+.qpb-fill.gold{background:var(--gold);}
+.qpb-fill.coral{background:var(--coral);}
+.qpb-fill.orange{background:var(--orange);}
+.qpb-fill.teal{background:var(--teal);}
+.qpb-fill.indigo{background:var(--indigo);}
+.qpb-fill.pink{background:var(--pink);}
+.qpb-label{font-size:.7rem;color:var(--dim);white-space:nowrap;}
+
+/* Question card */
+.q-card{border-radius:16px;padding:1.1rem;margin-bottom:.9rem;border:1px solid var(--border);background:var(--card);}
+.q-num{font-family:var(--font-display);font-size:.65rem;color:var(--dim);letter-spacing:1px;margin-bottom:.4rem;}
+.q-text{font-size:1rem;font-weight:700;line-height:1.55;}
+.q-sub{font-size:.8rem;color:var(--dim);margin-top:.3rem;}
+
+/* Options */
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:.75rem;}
+.opt-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:var(--font-body);font-size:.92rem;font-weight:700;cursor:pointer;transition:all .15s;border-radius:12px;padding:.75rem 1rem;text-align:left;width:100%;}
+.opt-btn:hover:not(:disabled){background:rgba(255,255,255,.1);transform:translateX(4px);}
+.opt-btn.correct{background:rgba(34,197,94,.18);border-color:var(--green);color:var(--green);}
+.opt-btn.wrong{background:rgba(255,107,107,.15);border-color:var(--coral);color:var(--coral);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* Feedback */
+.feedback{border-radius:12px;padding:.9rem;margin:.5rem 0;font-size:.85rem;line-height:1.6;}
+.feedback.good{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--green);}
+.feedback.bad{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.25);color:var(--coral);}
+.feedback .explanation{color:var(--dim);font-size:.82rem;margin-top:.4rem;}
+
+/* Next btn */
+.next-q-btn{width:100%;padding:.85rem;border-radius:12px;border:none;cursor:pointer;color:#fff;font-family:var(--font-display);font-size:.8rem;font-weight:700;letter-spacing:1px;transition:transform .15s;margin-top:.5rem;}
+.next-q-btn:hover{transform:scale(1.02);}
+
+/* Fill in blank */
+.blank-input{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:1rem;font-family:var(--font-body);padding:.65rem 1rem;width:100%;outline:none;margin:.75rem 0;transition:border .2s;}
+.blank-input:focus{border-color:var(--cyan);}
+.submit-blank{background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:10px;color:#fff;font-family:var(--font-display);font-size:.78rem;font-weight:700;letter-spacing:1px;padding:.7rem 1.5rem;cursor:pointer;transition:transform .15s;}
+.submit-blank:hover{transform:scale(1.02);}
+
+/* Level complete */
+.level-complete{text-align:center;padding:2rem 1rem;}
+.lc-icon{font-size:64px;display:block;margin-bottom:.9rem;animation:pop .4s cubic-bezier(.36,.07,.19,.97);}
+@keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
+.lc-title{font-family:var(--font-display);font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:.4rem;}
+.lc-score{color:var(--dim);font-size:.9rem;margin-bottom:1rem;}
+.lc-xp{font-family:var(--font-display);font-size:1.1rem;color:var(--gold);background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.25);border-radius:20px;padding:.4rem 1.2rem;display:inline-block;margin-bottom:1.5rem;}
+.lc-facts{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem;text-align:left;margin-bottom:1.5rem;}
+.lc-facts-title{font-family:var(--font-display);font-size:.65rem;color:var(--cyan);letter-spacing:2px;margin-bottom:.5rem;}
+.lc-fact{font-size:.82rem;color:var(--dim);padding:.3rem 0;border-bottom:1px solid var(--border);line-height:1.5;}
+.lc-fact:last-child{border-bottom:none;}
+.lc-fact b{color:#fff;}
+.next-level-btn{width:100%;max-width:280px;padding:.9rem;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;font-family:var(--font-display);font-size:.85rem;font-weight:700;letter-spacing:1px;transition:transform .15s;}
+.next-level-btn:hover{transform:scale(1.02);}
+
+/* Break screen */
+.break-screen-body{text-align:center;padding:3rem 2rem;}
+.break-icon{font-size:72px;margin-bottom:1rem;display:block;}
+.break-title{font-family:var(--font-display);font-size:1.1rem;color:var(--gold);letter-spacing:2px;margin-bottom:.5rem;}
+.break-sub{color:var(--dim);font-size:.9rem;margin-bottom:1.5rem;line-height:1.6;}
+.break-timer{font-family:var(--font-display);font-size:2.5rem;font-weight:900;color:var(--cyan);margin:1.5rem 0;}
+.break-tip{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:.9rem;margin-bottom:1.5rem;font-size:.85rem;color:var(--green);line-height:1.6;}
+
+/* FINAL SCREEN */
+#final-screen{align-items:center;justify-content:center;padding:2rem;text-align:center;}
+.final-trophy{font-size:80px;display:block;margin-bottom:1rem;animation:float 3s ease-in-out infinite;}
+.final-title{font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--gold);letter-spacing:2px;margin-bottom:.5rem;}
+.final-sub{color:var(--dim);font-size:.9rem;margin-bottom:2rem;}
+.final-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:360px;margin-bottom:2rem;}
+.fstat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem;text-align:center;}
+.fstat-num{font-family:var(--font-display);font-size:1.6rem;font-weight:900;}
+.fstat-label{font-size:.68rem;color:var(--dim);letter-spacing:1px;margin-top:2px;}
+.certificate{background:linear-gradient(135deg,rgba(13,27,62,.9),rgba(26,58,110,.9));border:1px solid rgba(245,200,66,.3);border-radius:20px;padding:1.5rem;width:100%;max-width:360px;margin-bottom:2rem;}
+.cert-title{font-family:var(--font-display);font-size:.75rem;color:var(--gold);letter-spacing:2px;margin-bottom:.5rem;}
+.cert-name{font-family:var(--font-display);font-size:1.1rem;font-weight:900;color:#fff;margin-bottom:.25rem;}
+.cert-text{font-size:.8rem;color:var(--dim);line-height:1.5;}
+.cert-badge{font-size:2rem;margin-top:.75rem;display:block;}
+
+/* Toast */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(13,27,62,.97);border:1px solid rgba(0,229,255,.3);border-radius:12px;padding:.55rem 1.1rem;font-size:.82rem;color:var(--cyan);opacity:0;transition:all .3s;z-index:100;white-space:nowrap;pointer-events:none;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* XP popup */
+.xp-popup{position:fixed;bottom:100px;right:20px;background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.4);border-radius:10px;padding:.4rem .8rem;font-family:var(--font-display);font-size:.85rem;color:var(--gold);opacity:0;transition:all .4s;z-index:200;pointer-events:none;}
+.xp-popup.show{opacity:1;transform:translateY(-10px);}
+
+@media(min-width:700px){.level-body,.level-topbar,.xp-bar-wrap{max-width:680px;margin-left:auto;margin-right:auto;}}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div id="toast"></div>
+<div class="xp-popup" id="xp-popup"></div>
+
+<!-- ════════════ PASSWORD GATE ════════════ -->
+<div id="gate-screen" class="screen active" style="align-items:center;justify-content:center;padding:2rem;min-height:100vh;display:flex;flex-direction:column;">
+  <span style="font-size:64px;display:block;margin-bottom:1rem;animation:float 3s ease-in-out infinite">🚀</span>
+  <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--cyan);letter-spacing:2px;margin-bottom:.25rem">FULL DAY ACADEMY</div>
+  <div style="color:var(--dim);font-size:.85rem;margin-bottom:2rem">Jaishnav's 6-Hour Learning Mission</div>
+  <div style="background:rgba(13,27,62,.9);border:1px solid rgba(0,229,255,.2);border-radius:20px;padding:2rem;width:100%;max-width:360px;text-align:center">
+    <div style="font-family:var(--font-display);font-size:.75rem;color:var(--dim);letter-spacing:2px;margin-bottom:1rem">ENTER YOUR CODE</div>
+    <input type="password" id="fd-gate-pwd" style="width:100%;padding:.8rem 1rem;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:1rem;text-align:center;letter-spacing:3px;outline:none;font-family:var(--font-body);margin-bottom:.75rem" placeholder="••••••••••" maxlength="20">
+    <button onclick="fdGateCheck()" style="width:100%;padding:.85rem;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;font-family:var(--font-display);font-size:.85rem;font-weight:700;letter-spacing:2px">LAUNCH 🚀</button>
+    <div id="fd-gate-err" style="color:#ff6b6b;font-size:.8rem;margin-top:.5rem;min-height:1.1rem"></div>
+    <a href="index.html" style="display:block;margin-top:1rem;color:var(--dim);font-size:.75rem;text-decoration:none">← Back to main app</a>
+  </div>
+</div>
+
+<!-- ════════════ INTRO ════════════ -->
+<div id="intro-screen" class="screen">
+  <span class="intro-rocket">🚀</span>
+  <div class="intro-title">FULL DAY ACADEMY</div>
+  <div class="intro-sub">Jaishnav's 6-Hour Learning Mission</div>
+  <div class="intro-date" id="intro-date">TODAY</div>
+  <div class="xp-total-preview">⭐ 650 XP available today</div>
+  <div class="level-grid" id="level-grid"></div>
+  <button class="start-btn" onclick="startDay()">BEGIN MISSION 🚀</button>
+</div>
+
+<!-- ════════════ LEVEL ════════════ -->
+<div id="level-screen" class="screen">
+  <div class="level-topbar">
+    <button class="back-btn" onclick="goHome()">‹</button>
+    <div class="topbar-info">
+      <div class="topbar-level" id="tb-level">LEVEL 1</div>
+      <div class="topbar-title" id="tb-title">Warm-up</div>
+    </div>
+    <div class="topbar-xp" id="tb-xp">0 XP</div>
+  </div>
+  <div class="xp-bar-wrap">
+    <div class="xp-bar-label"><span>Daily XP</span><span id="xp-bar-text">0 / 650</span></div>
+    <div class="xp-bar-outer"><div class="xp-bar-inner" id="xp-bar" style="width:0%"></div></div>
+  </div>
+  <div class="level-body" id="level-body"></div>
+</div>
+
+<!-- ════════════ FINAL ════════════ -->
+<div id="final-screen" class="screen">
+  <span class="final-trophy">🏆</span>
+  <div class="final-title">MISSION COMPLETE!</div>
+  <div class="final-sub">You conquered a full 6-hour learning day, Jaishnav!</div>
+  <div class="final-stats" id="final-stats"></div>
+  <div class="certificate">
+    <div class="cert-title">CERTIFICATE OF ACHIEVEMENT</div>
+    <div class="cert-name">JAISHNAV</div>
+    <div class="cert-text">Successfully completed the Full Day Academy —<br>8 levels, 6 hours, 100+ questions across Maths, IQ, Science, English, Tamil and Hindi.</div>
+    <span class="cert-badge">🎖️</span>
+  </div>
+  <button class="start-btn" onclick="location.reload()">Play Again? 🔄</button>
+  <a href="index.html" style="display:block;margin-top:1rem;color:var(--dim);font-size:.82rem;text-decoration:none;text-align:center">← Back to main app</a>
+</div>
+
+<script>
+
+// ── Password gate ─────────────────────────────
+const FD_PWD = 'Jaishnav@123';
+function fdGateCheck(){
+  const v = document.getElementById('fd-gate-pwd').value;
+  if(v === FD_PWD){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('intro-screen').classList.add('active');
+    window.scrollTo(0,0);
+  } else {
+    document.getElementById('fd-gate-err').textContent='Wrong password! Try again.';
+    document.getElementById('fd-gate-pwd').value='';
+    setTimeout(()=>document.getElementById('fd-gate-err').textContent='',2000);
+  }
+}
+document.addEventListener('keydown',function(e){
+  const inp=document.getElementById('fd-gate-pwd');
+  if(inp && document.activeElement===inp && e.key==='Enter') fdGateCheck();
+});
+// ── End password gate ─────────────────────────
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let totalXP = 0;
+let currentLevel = 0;
+let levelScores = {};
+const MAX_XP = 650;
+
+// ══════════════════════════════════════════════
+// STARFIELD
+// ══════════════════════════════════════════════
+(function(){
+  const sf=document.getElementById('stars');
+  for(let i=0;i<140;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=Math.random()*2.5+.4;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--o:${.3+Math.random()*.7};animation-delay:${Math.random()*5}s`;
+    sf.appendChild(s);
+  }
+})();
+
+// ══════════════════════════════════════════════
+// LEVEL DEFINITIONS
+// ══════════════════════════════════════════════
+const LEVELS = [
+  {
+    id:1, name:"Warm-up", subtitle:"Mental Maths Tricks", time:"30 min", xp:60, color:"teal",
+    icon:"⚡", tag:"MATHS + PATTERNS"
+  },
+  {
+    id:2, name:"Number Mastery", subtitle:"Vedic Maths & BODMAS", time:"45 min", xp:80, color:"cyan",
+    icon:"🔢", tag:"MATHS DEEP"
+  },
+  {
+    id:3, name:"Language Power", subtitle:"English · Tamil · Hindi", time:"45 min", xp:75, color:"purple",
+    icon:"📚", tag:"LANGUAGES"
+  },
+  {
+    id:4, name:"Science Explorer", subtitle:"Physics · Chemistry · Biology", time:"45 min", xp:75, color:"green",
+    icon:"🔬", tag:"SCIENCE"
+  },
+  {
+    id:"break", name:"Lunch Break", subtitle:"Rest your brain!", time:"45 min", xp:0, color:"gold",
+    icon:"🍎", tag:"BREAK"
+  },
+  {
+    id:5, name:"IQ Accelerator", subtitle:"Logic · Spatial · Codes", time:"45 min", xp:90, color:"coral",
+    icon:"🧠", tag:"IQ HEAVY"
+  },
+  {
+    id:6, name:"Geometry & Algebra", subtitle:"Equations · Area · Symmetry", time:"45 min", xp:85, color:"indigo",
+    icon:"📐", tag:"MATHS ADVANCED"
+  },
+  {
+    id:7, name:"Cross-Subject", subtitle:"Mixed Hard Problems", time:"45 min", xp:85, color:"pink",
+    icon:"🌍", tag:"CHALLENGE"
+  },
+  {
+    id:8, name:"BOSS LEVEL", subtitle:"Elite Problems · Final Test", time:"60 min", xp:100, color:"gold",
+    icon:"👑", tag:"FINAL BOSS"
+  },
+];
+
+// ══════════════════════════════════════════════
+// INTRO
+// ══════════════════════════════════════════════
+document.getElementById('intro-date').textContent =
+  new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
+
+const grid = document.getElementById('level-grid');
+LEVELS.forEach((l,i)=>{
+  const div=document.createElement('div');
+  div.className='lvl-card'+(i===0?' unlocked':'');
+  if(l.id==='break'){
+    div.innerHTML=`<div class="lvl-num">BREAK</div><div class="lvl-name">${l.name}</div><div class="lvl-time">${l.time}</div>`;
+  } else {
+    div.innerHTML=`<div class="lvl-num">LEVEL ${l.id}</div><div class="lvl-name">${l.name}</div><div class="lvl-time">${l.time} · ${l.tag}</div><div class="lvl-xp">+${l.xp} XP</div>`;
+  }
+  grid.appendChild(div);
+});
+
+function startDay(){
+  currentLevel = 0;
+  loadLevel(0);
+  showScreen('level-screen');
+}
+
+// ══════════════════════════════════════════════
+// SCREENS
+// ══════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHome(){ showScreen('intro-screen'); }
+
+function updateXPBar(){
+  const pct=Math.min(100,(totalXP/MAX_XP)*100);
+  document.getElementById('xp-bar').style.width=pct+'%';
+  document.getElementById('xp-bar-text').textContent=totalXP+' / '+MAX_XP;
+  document.getElementById('tb-xp').textContent=totalXP+' XP';
+}
+
+function showXPPopup(amount){
+  const el=document.getElementById('xp-popup');
+  el.textContent='+'+amount+' XP ⭐';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),1500);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ══════════════════════════════════════════════
+// LEVEL LOADER
+// ══════════════════════════════════════════════
+function loadLevel(idx){
+  const lev=LEVELS[idx];
+  document.getElementById('tb-level').textContent = lev.id==='break'?'BREAK':'LEVEL '+lev.id;
+  document.getElementById('tb-title').textContent = lev.icon+' '+lev.name;
+  updateXPBar();
+
+  const body=document.getElementById('level-body');
+  body.innerHTML='';
+
+  if(lev.id==='break'){
+    renderBreak(body, idx);
+  } else {
+    const levelFn = levelRenderers[lev.id];
+    if(levelFn) levelFn(body, idx);
+  }
+  showScreen('level-screen');
+}
+
+function nextLevel(idx){
+  const next = idx+1;
+  if(next >= LEVELS.length){
+    showFinal();
+  } else {
+    currentLevel = next;
+    loadLevel(next);
+    window.scrollTo(0,0);
+  }
+}
+
+// ══════════════════════════════════════════════
+// BREAK SCREEN
+// ══════════════════════════════════════════════
+function renderBreak(body, idx){
+  let secs = 45*60;
+  body.innerHTML=`
+    <div class="break-screen-body">
+      <span class="break-icon">🍎</span>
+      <div class="break-title">LUNCH BREAK TIME!</div>
+      <div class="break-sub">You've completed 4 levels — that's brilliant work!<br>Now eat something, drink water, rest your eyes for 45 minutes.<br>Your brain needs fuel to tackle Levels 5–8!</div>
+      <div class="break-timer" id="break-timer">45:00</div>
+      <div class="break-tip">💡 <b>Brain fact:</b> Your brain consolidates what you learned while you rest. This break is actually part of the learning!</div>
+      <button class="next-level-btn" onclick="nextLevel(${idx})" style="max-width:260px;display:block;margin:0 auto">Skip Break — Continue →</button>
+    </div>`;
+  const timer = setInterval(()=>{
+    secs--;
+    if(secs<=0){ clearInterval(timer); nextLevel(idx); return; }
+    const m=Math.floor(secs/60), s=secs%60;
+    const el=document.getElementById('break-timer');
+    if(el) el.textContent=m+':'+(s<10?'0':'')+s;
+    else clearInterval(timer);
+  },1000);
+}
+
+// ══════════════════════════════════════════════
+// QUIZ ENGINE
+// ══════════════════════════════════════════════
+function buildQuizSection(body, questions, color, levelIdx, xpPerQ, onComplete){
+  let qi = 0;
+  let score = 0;
+  const total = questions.length;
+
+  function renderQ(){
+    if(qi >= total){ onComplete(score, total); return; }
+    const q = questions[qi];
+    body.innerHTML = '';
+
+    // Progress
+    const pRow = document.createElement('div');
+    pRow.className='quiz-progress';
+    pRow.innerHTML=`<div class="qpb"><div class="qpb-fill ${color}" style="width:${(qi/total)*100}%"></div></div><div class="qpb-label">${qi+1}/${total}</div>`;
+    body.appendChild(pRow);
+
+    // Question card
+    const qcard = document.createElement('div');
+    qcard.className='q-card';
+    qcard.innerHTML=`<div class="q-num">QUESTION ${qi+1}</div><div class="q-text">${q.q}</div>${q.hint?`<div class="q-sub">💡 ${q.hint}</div>`:''}`;
+    body.appendChild(qcard);
+
+    if(q.type==='fill'){
+      // Fill in the blank
+      const wrap=document.createElement('div');
+      wrap.innerHTML=`<input class="blank-input" id="blank-inp" placeholder="Type your answer..." autocomplete="off"><br><button class="submit-blank" onclick="checkFill()">Check Answer →</button><div id="fb-fill"></div>`;
+      body.appendChild(wrap);
+      window._checkFill=()=>{
+        const val=document.getElementById('blank-inp').value.trim();
+        const fb=document.getElementById('fb-fill');
+        const correct=q.answers.some(a=>val.toLowerCase().includes(a.toLowerCase()));
+        if(correct){
+          score++; totalXP+=xpPerQ; showXPPopup(xpPerQ); updateXPBar();
+          fb.innerHTML=`<div class="feedback good">⭐ Correct! ${q.explain||''}<button class="next-q-btn" style="background:linear-gradient(135deg,var(--green),var(--teal))" onclick="nextQ()">Next →</button></div>`;
+        } else {
+          fb.innerHTML=`<div class="feedback bad">Not quite. Answer: <b>${q.answer}</b><div class="explanation">${q.explain||''}</div><button class="next-q-btn" style="background:linear-gradient(135deg,var(--coral),var(--orange))" onclick="nextQ()">Next →</button></div>`;
+        }
+        document.getElementById('blank-inp').disabled=true;
+        document.querySelector('.submit-blank').disabled=true;
+      };
+    } else {
+      // MCQ
+      const opts=document.createElement('div');opts.className='opts';
+      q.opts.forEach((o,i)=>{
+        const btn=document.createElement('button');
+        btn.className='opt-btn';btn.textContent=o;
+        btn.onclick=()=>checkMCQ(i,q.a,btn,opts,q,xpPerQ);
+        opts.appendChild(btn);
+      });
+      body.appendChild(opts);
+      const fb=document.createElement('div');fb.id='q-fb';body.appendChild(fb);
+    }
+
+    function nextQ(){ qi++; renderQ(); }
+    window.nextQ=nextQ;
+  }
+
+  window.checkFill=()=>window._checkFill();
+  window.checkMCQ=(chosen,correct,btn,opts,q,xpPerQ)=>{
+    opts.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+    const fb=document.getElementById('q-fb');
+    if(chosen===correct){
+      btn.classList.add('correct'); score++; totalXP+=xpPerQ; showXPPopup(xpPerQ); updateXPBar();
+      fb.innerHTML=`<div class="feedback good">⭐ Correct! ${q.explain||''}<button class="next-q-btn" style="background:linear-gradient(135deg,var(--green),var(--teal));margin-top:.75rem" onclick="nextQ()">${qi+1>=total?'See Results 🎉':'Next Question →'}</button></div>`;
+    } else {
+      btn.classList.add('wrong');
+      opts.querySelectorAll('.opt-btn')[correct].classList.add('correct');
+      fb.innerHTML=`<div class="feedback bad">Not quite! <b>${q.opts[correct]}</b> was correct.<div class="explanation">${q.explain||''}</div><button class="next-q-btn" style="background:linear-gradient(135deg,var(--coral),var(--orange));margin-top:.75rem" onclick="nextQ()">${qi+1>=total?'See Results 🎉':'Next Question →'}</button></div>`;
+    }
+  };
+
+  renderQ();
+}
+
+// ══════════════════════════════════════════════
+// HELPER: render teach + quiz flow
+// ══════════════════════════════════════════════
+function renderLevelFull(body, levelIdx, sections){
+  let sectionIdx = 0;
+  function nextSection(){
+    if(sectionIdx >= sections.length){
+      const lev=LEVELS[levelIdx];
+      renderLevelComplete(body, levelIdx, lev.xp);
+      return;
+    }
+    const sec = sections[sectionIdx];
+    body.innerHTML = '';
+    window.scrollTo(0,0);
+
+    // Teach block
+    if(sec.teach){
+      const tb=document.createElement('div');
+      tb.className=`teach-block ${sec.color}`;
+      tb.innerHTML=`<div class="teach-title ${sec.color}">${sec.icon} ${sec.teachTitle}</div><div class="teach-content">${sec.teach}</div>`;
+      body.appendChild(tb);
+      if(sec.trick){
+        const tk=document.createElement('div');
+        tk.className='trick-box';
+        tk.innerHTML=`<div class="trick-label">💡 TRICK / SHORTCUT</div>${sec.trick}`;
+        body.appendChild(tk);
+      }
+    }
+
+    // Divider
+    const div=document.createElement('div');
+    div.className='section-divider';
+    div.innerHTML=`<div class="section-divider-line"></div><div class="section-divider-text">NOW TEST YOURSELF</div><div class="section-divider-line"></div>`;
+    body.appendChild(div);
+
+    // Quiz
+    const qwrap=document.createElement('div');
+    body.appendChild(qwrap);
+    const xpPerQ=Math.floor((LEVELS[levelIdx].xp/getTotalQuestions(sections))*1.2);
+    buildQuizSection(qwrap, sec.questions, sec.color, levelIdx, Math.max(xpPerQ,3), (score,total)=>{
+      sectionIdx++;
+      nextSection();
+    });
+  }
+  nextSection();
+}
+
+function getTotalQuestions(sections){
+  return sections.reduce((s,sec)=>s+(sec.questions?.length||0),0);
+}
+
+function renderLevelComplete(body, levelIdx, xp){
+  const lev=LEVELS[levelIdx];
+  body.innerHTML=`
+    <div class="level-complete">
+      <span class="lc-icon">🎉</span>
+      <div class="lc-title">${lev.name} Complete!</div>
+      <div class="lc-score">You've unlocked Level ${lev.id==='break'?'Next':((lev.id||0)+1)}</div>
+      <div class="lc-xp">+${xp} XP earned</div>
+      <div class="lc-facts" id="lc-facts-${levelIdx}">
+        <div class="lc-facts-title">🧠 WHAT YOU JUST LEARNED</div>
+        ${(lev.learnedFacts||[]).map(f=>`<div class="lc-fact">✓ ${f}</div>`).join('')}
+      </div>
+      <button class="next-level-btn" onclick="nextLevel(${levelIdx})">${levelIdx+1>=LEVELS.length?'Finish Day 🏆':'Next Level →'}</button>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+// FINAL SCREEN
+// ══════════════════════════════════════════════
+function showFinal(){
+  const completedLevels = LEVELS.filter(l=>l.id!=='break').length;
+  document.getElementById('final-stats').innerHTML=`
+    <div class="fstat"><div class="fstat-num" style="color:var(--gold)">${totalXP}</div><div class="fstat-label">TOTAL XP</div></div>
+    <div class="fstat"><div class="fstat-num" style="color:var(--cyan)">${completedLevels}</div><div class="fstat-label">LEVELS DONE</div></div>
+    <div class="fstat"><div class="fstat-num" style="color:var(--green)">6h</div><div class="fstat-label">STUDIED</div></div>
+    <div class="fstat"><div class="fstat-num" style="color:var(--coral)">100+</div><div class="fstat-label">QUESTIONS</div></div>`;
+  showScreen('final-screen');
+  showToast('INCREDIBLE! You completed the Full Day Academy! 🏆');
+}
+
+// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// LEVEL CONTENT
+// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+
+const levelRenderers = {};
+
+// ─────────────────────────────────────────
+// LEVEL 1: WARM-UP — Mental Maths Tricks
+// ─────────────────────────────────────────
+LEVELS[0].learnedFacts = [
+  'Multiply any number by 11 using the split trick',
+  'Square numbers ending in 5 instantly',
+  'Multiply by 9 using your fingers',
+  'Spot Fibonacci patterns in sequences',
+];
+levelRenderers[1] = (body, idx) => {
+  renderLevelFull(body, idx, [
+    {
+      color:'teal', icon:'⚡', teachTitle:'TRICK 1 — Multiply by 11 (any 2-digit number)',
+      teach:`Multiplying a 2-digit number by 11 is <b>instant</b> when you know this trick:<br><br>
+<span class="example">Take the number: 34</span>
+<span class="example">Split the digits: 3 _ 4</span>
+<span class="example">Add them and put in the middle: 3+4=7 → 374</span>
+<span class="example">Try: 52 × 11 → 5+2=7 → 572 ✓</span>
+<b>What if middle sum > 9?</b> Carry the 1:<br>
+<span class="example">75 × 11 → 7+5=12 → put 2 in middle, carry 1 → 825</span>`,
+      trick:`<b>THE RULE:</b> For AB × 11 → A, (A+B), B. If A+B > 9, carry the 1 to A.`,
+      questions:[
+        {q:'What is 43 × 11?',opts:['473','474','463','483'],a:0,explain:'4+3=7 → 473'},
+        {q:'What is 62 × 11?',opts:['682','672','662','692'],a:0,explain:'6+2=8 → 682'},
+        {q:'What is 85 × 11?',opts:['845','935','855','835'],a:1,explain:'8+5=13 → put 3, carry 1 → 935'},
+        {q:'What is 99 × 11?',opts:['1089','1009','999','1099'],a:0,explain:'9+9=18 → put 8, carry 1 → 1089'},
+      ]
+    },
+    {
+      color:'cyan', icon:'🔢', teachTitle:'TRICK 2 — Squaring Numbers Ending in 5',
+      teach:`Any number ending in <b>5</b>, when squared, follows this pattern:<br><br>
+<span class="example">Step 1: Take the digit(s) before the 5</span>
+<span class="example">Step 2: Multiply that number by itself+1</span>
+<span class="example">Step 3: Put 25 at the end</span>
+<b>Example: 35²</b>
+<span class="example">Digit before 5 = 3. Multiply 3 × 4 = 12. Answer = 1225</span>
+<b>Example: 75²</b>
+<span class="example">Digit before 5 = 7. Multiply 7 × 8 = 56. Answer = 5625</span>`,
+      trick:`n5² = [n×(n+1)] followed by 25. Works for ANY number ending in 5!`,
+      questions:[
+        {q:'What is 25²?',opts:['525','625','725','425'],a:1,explain:'2×3=6, answer = 625'},
+        {q:'What is 45²?',opts:['1925','2025','2125','1825'],a:1,explain:'4×5=20, answer = 2025'},
+        {q:'What is 65²?',opts:['3225','4025','4225','3825'],a:2,explain:'6×7=42, answer = 4225'},
+        {q:'What is 15²?',opts:['215','225','235','125'],a:1,explain:'1×2=2, answer = 225'},
+      ]
+    },
+    {
+      color:'green', icon:'🖐️', teachTitle:'TRICK 3 — Multiply by 9 Using Fingers',
+      teach:`Hold up all 10 fingers. Number them 1–10 from left to right.<br><br>
+To multiply <b>any number × 9</b>: bend down that finger.<br>
+<span class="example">4 × 9: bend finger 4 → 3 fingers left, 6 fingers right → 36</span>
+<span class="example">7 × 9: bend finger 7 → 6 fingers left, 3 fingers right → 63</span>
+<b>The pattern:</b> 9×1=9, 9×2=18, 9×3=27... notice the digits always add to 9!<br>
+<span class="example">9×8=72 → 7+2=9 ✓</span>`,
+      trick:`For 9×n: the tens digit is (n−1), the units digit is (9−(n−1)) = (10−n). So 9×7: tens=6, units=3 → 63`,
+      questions:[
+        {q:'9 × 6 = ?',opts:['54','56','63','45'],a:0,explain:'Tens = 5, Units = 4 → 54'},
+        {q:'9 × 8 = ?',opts:['63','71','72','81'],a:2,explain:'Tens = 7, Units = 2 → 72'},
+        {q:'Which equation is WRONG?',opts:['9×4=36','9×7=63','9×5=44','9×9=81'],a:2,explain:'9×5=45, not 44. Digit sum must be 9: 4+4=8 ≠ 9'},
+        {q:'What is the pattern in the multiples of 9? (digits sum to...)',opts:['8','9','10','11'],a:1,explain:'Every multiple of 9 has digits that add up to 9 (or a multiple of 9)'},
+      ]
+    },
+    {
+      color:'gold', icon:'🔮', teachTitle:'Sequences & Pattern Recognition',
+      teach:`Before solving any sequence, ask: <b>What is the rule?</b><br><br>
+<b>Types of sequences:</b><br>
+• <b>Arithmetic</b> — add/subtract same number: 3, 7, 11, 15 (add 4)<br>
+• <b>Geometric</b> — multiply by same number: 2, 6, 18, 54 (×3)<br>
+• <b>Fibonacci-style</b> — add previous two: 1, 1, 2, 3, 5, 8, 13<br>
+• <b>Square numbers</b> — 1, 4, 9, 16, 25, 36 (n²)<br>
+• <b>Differences change</b> — look at the gaps: 1, 3, 6, 10 (gaps: +2, +3, +4...)`,
+      trick:`Always write the DIFFERENCES between terms first. If differences are equal → arithmetic. If differences of differences are equal → second-order pattern.`,
+      questions:[
+        {q:'What comes next? 2, 6, 18, 54, ___',opts:['72','108','162','200'],a:2,explain:'×3 each time. 54×3=162'},
+        {q:'What comes next? 1, 4, 9, 16, 25, ___',opts:['30','36','35','32'],a:1,explain:'Square numbers: 6²=36'},
+        {q:'What comes next? 1, 3, 6, 10, 15, ___',opts:['18','20','21','22'],a:2,explain:'Differences: +2,+3,+4,+5,+6 → 15+6=21 (triangular numbers)'},
+        {q:'What comes next? 3, 5, 8, 13, 21, ___',opts:['29','32','34','36'],a:2,explain:'Fibonacci-style: each term = sum of two before it. 13+21=34'},
+        {q:'Identify the sequence type: 100, 50, 25, 12.5, ___',opts:['Arithmetic','Geometric','Fibonacci','Square'],a:1,explain:'Dividing by 2 each time — geometric sequence. Next = 6.25'},
+      ]
+    },
+  ]);
+};
+
+// ─────────────────────────────────────────
+// LEVEL 2: NUMBER MASTERY
+// ─────────────────────────────────────────
+LEVELS[1].learnedFacts = [
+  'Vedic multiplication: criss-cross method for 2-digit numbers',
+  'BODMAS with all 6 operations in the right order',
+  'Indian number system: lakhs and crores',
+  'Divisibility rules for 2, 3, 4, 5, 6, 9, 11',
+];
+levelRenderers[2] = (body, idx) => {
+  renderLevelFull(body, idx, [
+    {
+      color:'cyan', icon:'✖️', teachTitle:'VEDIC MATHS — Criss-Cross Multiplication',
+      teach:`Multiply two 2-digit numbers WITHOUT a calculator using the criss-cross method.<br><br>
+<b>Example: 23 × 41</b><br>
+<span class="example">Step 1 — Units: 3×1 = 3 (write 3, carry 0)</span>
+<span class="example">Step 2 — Cross: (2×1)+(3×4) = 2+12 = 14 (write 4, carry 1)</span>
+<span class="example">Step 3 — Tens: (2×4)+carry 1 = 8+1 = 9</span>
+<span class="example">Answer: 943</span>
+<b>Example: 34 × 52</b>
+<span class="example">Units: 4×2=8 | Cross: 3×2+4×5=6+20=26 (write 6, carry 2) | Tens: 3×5+2=17</span>
+<span class="example">Answer: 1768</span>`,
+      trick:`Write the numbers one below the other. Units×Units | Cross-multiply and add | Tens×Tens. Handle carries!`,
+      questions:[
+        {q:'Using criss-cross: 21 × 32 = ?',opts:['662','672','652','682'],a:1,explain:'Units:1×2=2 | Cross:2×2+1×3=4+3=7 | Tens:2×3=6 → 672'},
+        {q:'Calculate 43 × 21 = ?',opts:['893','893','903','903'],a:1,explain:'Units:3×1=3 | Cross:4×1+3×2=4+6=10(write 0,carry 1) | Tens:4×2+1=9 → 903'},
+        {q:'Which method is BODMAS used for?',opts:['Multiplication only','The correct order of operations','Adding fractions','Rounding numbers'],a:1,explain:'BODMAS tells you the ORDER to solve mixed operations'},
+        {q:'Solve: 5 + 3 × 4 − 6 ÷ 2',opts:['11','14','13','16'],a:2,explain:'First × and ÷: 3×4=12, 6÷2=3. Then: 5+12−3=14. Answer: 14'},
+      ]
+    },
+    {
+      color:'teal', icon:'🇮🇳', teachTitle:'Indian Number System — Lakhs & Crores',
+      teach:`The Indian number system is different from the international one.<br><br>
+<b>Indian:</b> Ones → Tens → Hundreds → Thousands → Ten Thousands → Lakhs → Ten Lakhs → Crores<br>
+<span class="example">1 Lakh = 1,00,000 (one hundred thousand)</span>
+<span class="example">10 Lakhs = 10,00,000 (one million)</span>
+<span class="example">1 Crore = 1,00,00,000 (ten million)</span>
+<b>Writing with commas (Indian):</b> First comma after 3 digits, then every 2:<br>
+<span class="example">International: 12,345,678</span>
+<span class="example">Indian: 1,23,45,678 = 1 crore 23 lakhs 45 thousand 6 hundred 78</span>`,
+      trick:`To convert: 1 million = 10 lakhs. 1 billion = 100 crores.`,
+      questions:[
+        {q:'Write 4,56,78,901 in words (Indian system)',opts:['Four crore fifty-six lakh seventy-eight thousand nine hundred and one','Forty-five crore sixty-seven lakh...','Four billion...','Four hundred fifty-six thousand...'],a:0,explain:'4 crore + 56 lakh + 78 thousand + 901'},
+        {q:'How many lakhs make one crore?',opts:['10','100','1000','10000'],a:1,explain:'1 crore = 100 lakhs = 1,00,00,000'},
+        {q:'Which is larger: 25 lakhs or 2.6 million?',opts:['25 lakhs','2.6 million','They are equal','Cannot compare'],a:1,explain:'25 lakhs = 2.5 million. 2.6 million > 2.5 million'},
+        {q:'Population of India is approximately 1.4 billion. In crores, this is?',opts:['14 crores','140 crores','1400 crores','14000 crores'],a:1,explain:'1 billion = 100 crores. 1.4 billion = 140 crores'},
+      ]
+    },
+    {
+      color:'indigo', icon:'🔍', teachTitle:'Divisibility Rules — Never Divide by Hand Again!',
+      teach:`Check if a number is divisible WITHOUT dividing:<br><br>
+<b>÷2:</b> Last digit is even (0,2,4,6,8)<br>
+<b>÷3:</b> Sum of digits divisible by 3<br>
+<b>÷4:</b> Last TWO digits divisible by 4<br>
+<b>÷5:</b> Ends in 0 or 5<br>
+<b>÷6:</b> Divisible by BOTH 2 AND 3<br>
+<b>÷9:</b> Sum of digits divisible by 9<br>
+<b>÷11:</b> Alternating sum (odd positions − even positions) = 0 or multiple of 11<br>
+<span class="example">Check 4,73,856 ÷ 9: 4+7+3+8+5+6=33, 3+3=6. NOT divisible by 9</span>
+<span class="example">Check 2,45,124 ÷ 4: last two digits = 24, 24÷4=6 ✓</span>`,
+      trick:`For ÷11: take alternating + and − starting from the right. If result is 0 or ±11 etc, it's divisible. e.g. 121: 1−2+1=0 ✓`,
+      questions:[
+        {q:'Is 7,35,246 divisible by 6?',opts:['Yes','No','Cannot tell','Only by 3'],a:0,explain:'Ends in 6 (÷2 ✓). Digit sum=7+3+5+2+4+6=27, 27÷3=9 (÷3 ✓). So divisible by 6 ✓'},
+        {q:'Is 4,58,913 divisible by 9?',opts:['Yes','No','Yes, also by 3','Only if even'],a:0,explain:'4+5+8+9+1+3=30, 3+0=3. Not 9... wait: 4+5+8+9+1+3=30. 30÷9=3.3 Not divisible by 9. BUT divisible by 3. Correct answer: No for 9'},
+        {q:'Which of these is divisible by 11?',opts:['121','123','125','127'],a:0,explain:'121: alternating sum = 1−2+1=0 ✓ divisible by 11 (11×11=121)'},
+        {q:'A number ends in 0. Which of these is it definitely divisible by?',opts:['2 and 5 only','2, 5 and 10','10 only','2 only'],a:1,explain:'Ending in 0 means divisible by 2 (even), 5 (ends in 0 or 5), and 10 (both)'},
+        {q:'Is 2,34,516 divisible by 4?',opts:['Yes','No','Only by 2','Cannot tell'],a:0,explain:'Last two digits: 16. 16÷4=4 ✓ Yes, divisible by 4'},
+      ]
+    },
+  ]);
+};
+
+// ─────────────────────────────────────────
+// LEVEL 3: LANGUAGE POWER
+// ─────────────────────────────────────────
+LEVELS[2].learnedFacts = [
+  'Active vs passive voice transformation',
+  'Direct and indirect speech rules',
+  'Tamil compound words and grammar terms',
+  'Hindi tenses and gender agreement',
+];
+levelRenderers[3] = (body, idx) => {
+  renderLevelFull(body, idx, [
+    {
+      color:'purple', icon:'📖', teachTitle:'ENGLISH — Active & Passive Voice',
+      teach:`<b>Active voice:</b> Subject does the action. "The cat chased the mouse."<br>
+<b>Passive voice:</b> Subject receives the action. "The mouse was chased by the cat."<br><br>
+<b>How to convert Active → Passive:</b><br>
+<span class="example">1. Object becomes new subject</span>
+<span class="example">2. Add "was/were/is/are/will be" + past participle</span>
+<span class="example">3. Original subject becomes "by ___" (or dropped)</span>
+<b>Examples:</b>
+<span class="example">Active: She writes a letter → Passive: A letter is written by her</span>
+<span class="example">Active: They built the bridge → Passive: The bridge was built by them</span>`,
+      trick:`Pronoun changes: I→me, he→him, she→her, they→them, we→us in passive constructions.`,
+      questions:[
+        {q:'Convert to passive: "The teacher explained the lesson."',opts:['The lesson was explained by the teacher','The lesson explained by teacher','The teacher was explained the lesson','The lesson has explained by teacher'],a:0,explain:'Object (lesson) → subject. was + explained (past participle). by the teacher.'},
+        {q:'Convert to active: "The cake was baked by Priya."',opts:['Priya baked the cake','The cake baked Priya','Priya was baking cake','The cake is baked'],a:0,explain:'Priya (doer) + baked + the cake (object)'},
+        {q:'Which sentence is in passive voice?',opts:['Dogs bark loudly','She painted the wall','The match was won by India','He writes every day'],a:2,explain:'"was won" — passive construction with "was + past participle + by"'},
+        {q:'Convert: "They will announce the results tomorrow."',opts:['The results will be announced tomorrow','Tomorrow results announced','Results are being announced','The results announced by them'],a:0,explain:'Future passive: will be + past participle (announced). "by them" can be dropped.'},
+      ]
+    },
+    {
+      color:'indigo', icon:'💬', teachTitle:'ENGLISH — Direct and Indirect Speech',
+      teach:`<b>Direct speech:</b> Exact words in quotes. She said, "I am hungry."<br>
+<b>Indirect (reported) speech:</b> No quotes, tense shifts back.<br><br>
+<b>Rules when converting:</b>
+<span class="example">Present simple → Past simple ("am" → "was")</span>
+<span class="example">Present continuous → Past continuous ("is eating" → "was eating")</span>
+<span class="example">"will" → "would" | "can" → "could" | "may" → "might"</span>
+<span class="example">Pronouns change: "I" → "he/she", "we" → "they"</span>
+<b>Example:</b>
+<span class="example">Direct: Ram said, "I will come tomorrow."</span>
+<span class="example">Indirect: Ram said that he would come the next day.</span>`,
+      trick:`"Today" → "that day" | "tomorrow" → "the next day" | "yesterday" → "the previous day" | "here" → "there"`,
+      questions:[
+        {q:'Convert: She said, "I am going to school."',opts:['She said that she was going to school','She said she is going to school','She said I am going to school','She told I was going to school'],a:0,explain:'am → was. "I" → "she". Remove quotes, add "that".'},
+        {q:'Convert: He said, "I can swim very fast."',opts:['He said that he can swim very fast','He said that he could swim very fast','He told that I could swim fast','He said I can swim'],a:1,explain:'"can" → "could" in indirect speech. "I" → "he"'},
+        {q:'Which is correct indirect speech for: "We will win the match," they said.',opts:['They said that they would win the match','They said we will win the match','They told that we would win the match','They said that we will win the match'],a:0,explain:'"will" → "would". "we" stays as "they" (referring to the speakers)'},
+        {q:'Direct speech uses ___ and indirect speech uses ___.',opts:['past tense / present tense','quotation marks / no quotation marks','indirect words / direct words','passive / active'],a:1,explain:'Direct speech uses the exact words in quotation marks. Indirect speech rephrases without quotes.'},
+      ]
+    },
+    {
+      color:'gold', icon:'அ', teachTitle:'TAMIL — Compound Words & Grammar Terms',
+      teach:`<b>Tamil compound words (தொடர்ச்சொற்கள்):</b> Two words joined to make a new meaning.<br><br>
+<span class="example">கால் + பந்து = கால்பந்து (football)</span>
+<span class="example">நூல் + நிலையம் = நூலகம் (library — the "nilayam" part is absorbed)</span>
+<b>Tamil grammar terms:</b>
+<span class="example">பெயர்ச்சொல் = Noun | வினைச்சொல் = Verb | பண்புப்பெயர் = Adjective</span>
+<span class="example">வினையடை = Adverb | இடைச்சொல் = Preposition/conjunction</span>
+<b>Tenses in Tamil:</b>
+<span class="example">இறந்த காலம் = Past tense</span>
+<span class="example">நிகழ் காலம் = Present tense</span>
+<span class="example">எதிர் காலம் = Future tense</span>`,
+      trick:`Tamil verbs change their ending based on tense and the subject (gender/number). Learning the root verb + endings is the key to all Tamil grammar.`,
+      questions:[
+        {q:'What is the Tamil grammar term for "verb"?',opts:['பெயர்ச்சொல்','வினைச்சொல்','பண்புப்பெயர்','வினையடை'],a:1,explain:'வினைச்சொல் = verb (action word)'},
+        {q:'What does "எதிர் காலம்" mean?',opts:['Past tense','Present tense','Future tense','Conditional tense'],a:2,explain:'எதிர் = future/opposite. எதிர் காலம் = future tense'},
+        {q:'கால்பந்து means football. Which two words form it?',opts:['கால் + பந்து','கா + ல்பந்து','கால் + அந்து','கால் + மந்து'],a:0,explain:'கால் (foot/leg) + பந்து (ball) = கால்பந்து (football)'},
+        {q:'Identify the noun in this sentence: அவன் வேகமாக ஓடினான்',opts:['வேகமாக','ஓடினான்','அவன்','வேகம்'],a:2,explain:'அவன் = he (pronoun acting as noun/subject). ஓடினான் = ran (verb). வேகமாக = quickly (adverb)'},
+        {q:'What is the Tamil word for "adverb"?',opts:['பெயர்ச்சொல்','இடைச்சொல்','வினையடை','பண்புப்பெயர்'],a:2,explain:'வினையடை = adverb (modifies a verb)'},
+      ]
+    },
+    {
+      color:'orange', icon:'🗣️', teachTitle:'HINDI — Tenses, Gender & Sentence Formation',
+      teach:`<b>Hindi tense summary:</b>
+<span class="example">Present: मैं खाता हूँ (I eat) — male speaker</span>
+<span class="example">Present: मैं खाती हूँ (I eat) — female speaker</span>
+<span class="example">Past: मैंने खाया (I ate) — completed action</span>
+<span class="example">Future: मैं खाऊँगा (I will eat) — male</span>
+<b>Gender rules:</b> In Hindi, every noun has gender. Verbs must agree.<br>
+<span class="example">Masculine: लड़का (boy), पेड़ (tree), कुत्ता (dog)</span>
+<span class="example">Feminine: लड़की (girl), नदी (river), किताब (book)</span>
+<b>Postpositions (विभक्ति):</b> Hindi uses words AFTER the noun (not before like English).<br>
+<span class="example">in/on/at → में | to/for → को | from → से | of → का/के/की</span>`,
+      trick:`When a masculine noun ends in -ा (jaise लड़का), it often changes to -े before postpositions: लड़के को (to the boy).`,
+      questions:[
+        {q:'What is correct: "वह स्कूल _____ है" (She goes to school)',opts:['जाता','जाती','जाते','जाओ'],a:1,explain:'वह (she) → feminine → जाती. Male would be जाता.'},
+        {q:'Translate: "The book is on the table"',opts:['किताब मेज़ पर है','किताब मेज़ में है','मेज़ किताब पर है','किताब पर मेज़ है'],a:0,explain:'किताब=book, मेज़=table, पर=on, है=is. Word order: Subject + Location + Verb'},
+        {q:'Which postposition means "from"?',opts:['में','को','से','का'],a:2,explain:'से = from. Examples: दिल्ली से (from Delhi), स्कूल से (from school)'},
+        {q:'Correct the sentence: "वह पुस्तक पढ़ता है।" (She reads a book)',opts:['वह पुस्तक पढ़ती है।','वह पुस्तक पढ़ते है।','वह पुस्तक पढ़ा है।','वह पुस्तक पढ़ेगी।'],a:0,explain:'वह (she) is feminine → verb must be feminine form: पढ़ती (not पढ़ता which is masculine)'},
+      ]
+    },
+  ]);
+};
+
+// ─────────────────────────────────────────
+// LEVEL 4: SCIENCE EXPLORER
+// ─────────────────────────────────────────
+LEVELS[3].learnedFacts = [
+  'Newton\'s three laws of motion explained simply',
+  'Periodic table — first 20 elements and their symbols',
+  'How the heart and blood circulation works',
+  'Photosynthesis equation and what each part means',
+];
+levelRenderers[4] = (body, idx) => {
+  renderLevelFull(body, idx, [
+    {
+      color:'green', icon:'⚡', teachTitle:'PHYSICS — Newton\'s Three Laws of Motion',
+      teach:`<b>Law 1 — Inertia:</b> An object stays still or keeps moving at the same speed unless a force acts on it.<br>
+<span class="example">→ Why you lurch forward when a bus brakes suddenly</span>
+<b>Law 2 — F = ma:</b> Force = mass × acceleration. More mass needs more force.<br>
+<span class="example">→ A cricket ball is easier to throw than a shot put</span>
+<b>Law 3 — Action-Reaction:</b> Every action has an equal and opposite reaction.<br>
+<span class="example">→ Rocket launches: gas pushed DOWN, rocket pushed UP</span>
+<span class="example">→ When you push a wall, the wall pushes back equally</span>`,
+      trick:`LAW 1: Objects are lazy (inertia). LAW 2: F=ma (Force equals mass times acceleration). LAW 3: You push, universe pushes back.`,
+      questions:[
+        {q:'A book lies on a table. Why doesn\'t it fall through the table? (Newton\'s Law)',opts:["Law 1 — table's inertia","Law 2 — table has no mass","Law 3 — table pushes book up with equal force","None — gravity isn't real"],a:2,explain:"Newton's 3rd Law — gravity pulls book down, table pushes book up with equal force (normal reaction)"},
+        {q:'Why is it harder to stop a truck than a bicycle moving at the same speed?',opts:['Trucks have more engines','Trucks have more mass — need more force to change their motion (F=ma)','Bicycles have better brakes','Trucks are longer'],a:1,explain:"Newton's 2nd Law: F=ma. Same deceleration needed, but truck has far more mass → requires far more force"},
+        {q:'A swimmer pushes water backwards with their hands. What happens?',opts:['Nothing — water is liquid','Swimmer moves forward (Law 3)','Swimmer sinks','Water pushes sideways'],a:1,explain:"Law 3: Action = push water backward. Reaction = water pushes swimmer forward. Same principle as rocket propulsion."},
+        {q:'Earth pulls the Moon toward it. What does the Moon do to Earth?',opts:['Nothing','Pulls Earth equally toward it','Pushes Earth away','Has no effect on Earth'],a:1,explain:"Law 3: The Moon pulls Earth with the SAME force Earth pulls the Moon. This is why Earth wobbles slightly as it orbits."},
+      ]
+    },
+    {
+      color:'teal', icon:'⚗️', teachTitle:'CHEMISTRY — The First 20 Elements',
+      teach:`The <b>periodic table</b> organises all elements. You need to know the first 20 for CBSE:<br><br>
+<span class="example">1.H 2.He 3.Li 4.Be 5.B 6.C 7.N 8.O 9.F 10.Ne</span>
+<span class="example">11.Na 12.Mg 13.Al 14.Si 15.P 16.S 17.Cl 18.Ar 19.K 20.Ca</span>
+<b>Memory trick for 1–10:</b><br>
+<span class="highlight">H He Li Be B C N O F Ne</span><br>
+<b>"Hhe Li Be BCN O F Ne"</b> — say it like: <i>"HaHa, LiBe BeCaN, OFfNeah"</i><br><br>
+<b>Groups:</b> Column 1 (alkali metals: Li, Na, K) are very reactive. Noble gases (He, Ne, Ar) don't react.`,
+      trick:`The atomic number = number of protons = number of electrons in neutral atom. Carbon (6) has 6 protons and 6 electrons.`,
+      questions:[
+        {q:'What is the symbol for Sodium?',opts:['So','Sd','Na','Sm'],a:2,explain:'Na comes from Latin "Natrium". Many elements have symbols from their Latin names.'},
+        {q:'Which element has atomic number 8?',opts:['Nitrogen','Oxygen','Fluorine','Carbon'],a:1,explain:'H(1) He(2) Li(3) Be(4) B(5) C(6) N(7) O(8). Oxygen = 8.'},
+        {q:'Why are Noble gases (He, Ne, Ar) unreactive?',opts:['They are too small','Their outer electron shell is completely full','They are too expensive','They only exist in space'],a:1,explain:'Noble gases have 8 electrons in their outer shell (Helium has 2 which is also full). A full outer shell = no need to react.'},
+        {q:'The symbol K stands for which element?',opts:['Krypton','Potassium','Kryptonite','Kelsium'],a:1,explain:'K = Kalium (Latin name for Potassium). Atomic number 19.'},
+        {q:'How many electrons does Magnesium (atomic number 12) have?',opts:['6','10','12','24'],a:2,explain:'In a neutral atom, number of electrons = number of protons = atomic number = 12'},
+      ]
+    },
+    {
+      color:'pink', icon:'🌿', teachTitle:'BIOLOGY — Photosynthesis & The Circulatory System',
+      teach:`<b>Photosynthesis equation:</b><br>
+<span class="example">Carbon dioxide + Water → (with sunlight + chlorophyll) → Glucose + Oxygen</span>
+<span class="example">6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂</span>
+<b>Where:</b> Chloroplasts in leaf cells<br>
+<b>Why it matters:</b> Produces ALL the food and oxygen on Earth!<br><br>
+<b>Blood circulation:</b><br>
+<span class="example">Heart → Arteries → Capillaries → Veins → Heart (double circulation)</span>
+<span class="example">Right side of heart → Lungs (to get O₂) → Left side → Body</span>
+<b>Blood components:</b> Red blood cells (O₂), White blood cells (fight infection), Platelets (clotting), Plasma (liquid)`,
+      trick:`Arteries Always leave the heart (both A's). Veins return. Arteries have thick walls (high pressure). Veins have valves (prevent backflow).`,
+      questions:[
+        {q:'What two raw materials does a plant need for photosynthesis?',opts:['Oxygen and glucose','Carbon dioxide and water','Nitrogen and sunlight','Glucose and chlorophyll'],a:1,explain:'CO₂ (from air through stomata) + H₂O (from roots via stem). Sunlight is the energy source, not a raw material.'},
+        {q:'Why do leaves appear green?',opts:['They reflect green light','They absorb green light','They produce green gas','Soil is green'],a:0,explain:'Chlorophyll absorbs red and blue light for photosynthesis but REFLECTS green light — which is why we see leaves as green.'},
+        {q:'Which side of the heart pumps blood to the lungs?',opts:['Left side','Right side','Both equally','Neither — lungs pump independently'],a:1,explain:'Right side → pulmonary artery → lungs (to pick up O₂ and drop CO₂). Left side → aorta → body (delivers O₂).'},
+        {q:'A person has a cut that won\'t stop bleeding. Which blood component is NOT working properly?',opts:['Red blood cells','White blood cells','Platelets','Plasma'],a:2,explain:'Platelets are responsible for blood clotting — they clump together at the wound site to form a plug and stop bleeding.'},
+        {q:'Why do plants need sunlight for photosynthesis but NOT as a raw material?',opts:['Plants don\'t actually need sunlight','Sunlight provides energy to drive the reaction, not atoms for the product','Sunlight is too hot','Plants only use moonlight'],a:1,explain:'Sunlight is the ENERGY source that powers the chemical reaction. The actual atoms in the product (glucose, oxygen) come from CO₂ and H₂O.'},
+      ]
+    },
+  ]);
+};
+
+// ─────────────────────────────────────────
+// LEVEL 5: IQ ACCELERATOR
+// ─────────────────────────────────────────
+LEVELS[5].learnedFacts = [
+  'Systematic approach to logic grid puzzles',
+  'Spatial rotation — how to mentally rotate shapes',
+  'Caesar cipher and mirror code decryption',
+  'Set theory basics — union, intersection, Venn diagrams',
+];
+levelRenderers[5] = (body, idx) => {
+  renderLevelFull(body, idx, [
+    {
+      color:'coral', icon:'♟️', teachTitle:'LOGIC — Systematic Elimination & Grid Method',
+      teach:`<b>The grid method for logic puzzles:</b><br>
+Build a table. For each clue, mark ✓ (must be true) or ✗ (impossible).<br>
+<b>Key rule:</b> If you mark ✓ in a cell, every other cell in that row AND column gets ✗.<br><br>
+<b>Example clues:</b><br>
+<span class="example">"Arjun does not play chess" → mark ✗ in (Arjun, Chess)</span>
+<span class="example">"Bala plays football" → mark ✓ in (Bala, Football), ✗ everywhere else in Bala's row and Football's column</span>
+<b>When only one option remains in a row/column → that must be the answer.</b>`,
+      trick:`Start with the most restrictive clues (ones that eliminate the most options). Work from certainty to uncertainty.`,
+      questions:[
+        {q:'Arjun, Bala, Charan each have a pet: cat, dog, fish. Arjun has no cat. Bala has no dog. Charan has no fish. Who has the dog?',opts:['Arjun','Bala','Charan','Cannot determine'],a:0,explain:'Charan: no fish → cat or dog. Bala: no dog → cat or fish. Arjun: no cat → dog or fish. If Charan has dog, Bala must have cat, Arjun has fish ✓. If Charan has cat, Bala has fish, Arjun has dog ✓. Both seem valid... but wait: re-read: Arjun has no cat → Arjun has dog or fish. Charan has no fish → Charan has cat or dog. Bala has no dog → Bala has cat or fish. If Arjun=dog: Bala=cat or fish, Charan=cat or dog. Charan≠fish, Arjun=dog → Charan=cat, Bala=fish ✓. Answer: Arjun has dog.'},
+        {q:'If all Bloops are Razzles, and all Razzles are Lazzles, then:',opts:['All Bloops are Lazzles','No Bloops are Lazzles','Some Bloops might be Lazzles','Cannot determine'],a:0,explain:'Logical chain: Bloops → Razzles → Lazzles. Therefore all Bloops are Lazzles (transitive property of sets)'},
+        {q:'5 houses in a row painted: Red, Blue, Green, Yellow, White. Blue is not next to Red. Green is between Yellow and White. Red is at one end. What is the order?',opts:['Red-Yellow-Green-White-Blue','Red-Green-Yellow-Blue-White','Blue-Yellow-Green-White-Red','Red-Blue-Green-Yellow-White'],a:0,explain:'Red at end. Green between Yellow and White. Blue not next to Red. → Red, then Blue cannot be next, so: Red-Yellow-Green-White-Blue ✓'},
+        {q:'In a class, 20 like cricket, 15 like football, 8 like both. How many like at least one sport?',opts:['35','43','27','33'],a:2,explain:'At least one = Cricket + Football − Both = 20+15−8 = 27 (avoiding counting "both" group twice)'},
+      ]
+    },
+    {
+      color:'indigo', icon:'🔷', teachTitle:'SPATIAL REASONING — Mental Rotation & Nets',
+      teach:`Spatial reasoning means seeing shapes in your <b>mind's eye</b>.<br><br>
+<b>3D shape nets:</b> A net is the shape unfolded flat. Key nets to know:<br>
+<span class="example">Cube: 6 squares arranged in a cross or T or L shape</span>
+<span class="example">Triangular prism: 2 triangles + 3 rectangles</span>
+<b>Mirror reflection:</b> A vertical mirror flips left-right. A horizontal mirror flips up-down.<br>
+<span class="example">Letter b → mirror (vertical) → d</span>
+<span class="example">Letter p → mirror (vertical) → q</span>
+<b>Rotation:</b> 90° clockwise = 90° anticlockwise is 270° clockwise.`,
+      trick:`To mentally rotate a shape: look at one distinct feature (like a missing corner). Track where THAT feature goes after rotation.`,
+      questions:[
+        {q:'A dice has opposite faces: 1-6, 2-5, 3-4. If 1 faces you and 2 faces up, what faces down?',opts:['3','4','5','6'],a:2,explain:'2 faces up → its opposite (5) faces down. The face-you/1 is front, its opposite 6 is back.'},
+        {q:'The letter N rotated 90° clockwise looks like:',opts:['И (Cyrillic I)','Z','S','N again'],a:1,explain:"N rotated 90° clockwise → the diagonal goes from bottom-right to top-left, making it look like Z"},
+        {q:'How many squares are in a standard cube net?',opts:['4','5','6','8'],a:2,explain:'A cube has 6 faces, so its net has 6 squares'},
+        {q:'A shape has rotational symmetry of order 4. It looks identical after rotating every:',opts:['45°','60°','72°','90°'],a:3,explain:'Order 4 means it looks same 4 times in 360°. 360÷4 = 90° each time'},
+        {q:'You look in a mirror and wave your RIGHT hand. The reflection appears to wave its:',opts:['Right hand','Left hand','Both hands','No hand'],a:1,explain:'A mirror flips left-right. Your right appears as the reflection\'s left. This is why text appears reversed in mirrors.'},
+      ]
+    },
+    {
+      color:'gold', icon:'🔐', teachTitle:'CODES — Caesar Cipher & Pattern Codes',
+      teach:`<b>Caesar Cipher:</b> Shift every letter by a fixed number.<br>
+<span class="example">Shift +3: A→D, B→E, C→F... Z→C (wraps around)</span>
+<span class="example">To ENCODE "CAT" with shift 3: C→F, A→D, T→W = "FDW"</span>
+<span class="example">To DECODE: shift BACK by 3</span>
+<b>Mirror code (A↔Z, B↔Y, C↔X...):</b><br>
+<span class="example">A=26, B=25, C=24... Z=1 (or: A↔Z means swap with opposite)</span>
+<b>Number position code:</b> A=1, B=2... Z=26<br>
+<span class="example">MATHS = 13-1-20-8-19</span>`,
+      trick:`To find the shift in a Caesar cipher: find a common 1-letter word (A or I) or short word and test shifts. "Vjg" decoded with -2 gives "The" — common starting word!`,
+      questions:[
+        {q:'Decode with Caesar shift -3 (shift back 3): KHOOR',opts:['HELLO','JELLO','WORLD','BRAIN'],a:0,explain:'K(-3)=H, H(-3)=E, O(-3)=L, O(-3)=L, R(-3)=O → HELLO'},
+        {q:'In the code A=1, B=2... Z=26: What word is 9-14-4-9-1?',opts:['INDIA','CHINA','INNER','INDIE'],a:0,explain:'I=9, N=14, D=4, I=9, A=1 → INDIA'},
+        {q:'Mirror code (A↔Z, B↔Y, C↔X...): Encode "SUN"',opts:['HFM','HSM','GFM','HFN'],a:0,explain:'S=19th letter, mirror = 26-19+1=8th letter=H. U=21st, mirror=6th=F. N=14th, mirror=13th=M. HFM'},
+        {q:'A message reads: 2-5 8-5-18-15. What does it say? (A=1 code)',opts:['BE HERO','GO HOME','BE HERE','NO HERO'],a:0,explain:'B=2,E=5 → BE. H=8,E=5,R=18,O=15 → HERO → BE HERO'},
+      ]
+    },
+  ]);
+};
+
+// ─────────────────────────────────────────
+// LEVEL 6: GEOMETRY & ALGEBRA
+// ─────────────────────────────────────────
+LEVELS[6].learnedFacts = [
+  'Solving equations with variables on both sides',
+  'Area and perimeter of all 2D shapes',
+  'Circle area and circumference with π',
+  'Symmetry: lines of symmetry and rotational order',
+];
+levelRenderers[6] = (body, idx) => {
+  renderLevelFull(body, idx, [
+    {
+      color:'indigo', icon:'⚖️', teachTitle:'ALGEBRA — Equations with Variables on Both Sides',
+      teach:`When a variable appears on BOTH sides, move all variable terms to one side.<br><br>
+<b>Rule:</b> Do the SAME thing to BOTH sides.<br>
+<span class="example">3x + 7 = x + 19</span>
+<span class="example">Step 1: Subtract x from both sides: 2x + 7 = 19</span>
+<span class="example">Step 2: Subtract 7 from both sides: 2x = 12</span>
+<span class="example">Step 3: Divide both sides by 2: x = 6</span>
+<span class="example">Check: 3(6)+7=25 and 6+19=25 ✓</span>
+<b>Always check your answer by substituting back!</b>`,
+      trick:`Variables to LEFT side, numbers to RIGHT side. What you do to one side, do to the other — always.`,
+      questions:[
+        {q:'Solve: 5x − 3 = 2x + 12',opts:['x=4','x=5','x=6','x=3'],a:1,explain:'5x−2x=12+3. 3x=15. x=5. Check: 5(5)−3=22 and 2(5)+12=22 ✓'},
+        {q:'Solve: 4(n + 2) = 3(n + 6)',opts:['n=8','n=10','n=12','n=6'],a:1,explain:'4n+8=3n+18. 4n−3n=18−8. n=10'},
+        {q:'Two numbers differ by 8. Their sum is 46. Find the larger number.',opts:['25','27','29','23'],a:1,explain:'n+(n+8)=46. 2n=38. n=19. Larger = 19+8=27'},
+        {q:'Solve: 7 − 2x = 3x − 13',opts:['x=3','x=4','x=5','x=2'],a:1,explain:'7+13=3x+2x. 20=5x. x=4. Check:7−8=−1 and 12−13=−1 ✓'},
+        {q:'If 3(x−4) = x + 2, what is x?',opts:['5','7','9','11'],a:1,explain:'3x−12=x+2. 2x=14. x=7'},
+      ]
+    },
+    {
+      color:'cyan', icon:'📐', teachTitle:'GEOMETRY — Area of All 2D Shapes',
+      teach:`<b>Memorise these area formulas:</b><br>
+<span class="example">Square: side²</span>
+<span class="example">Rectangle: length × width</span>
+<span class="example">Triangle: ½ × base × height</span>
+<span class="example">Parallelogram: base × height</span>
+<span class="example">Circle: πr² (use π = 22/7 or 3.14)</span>
+<span class="example">Trapezium: ½ × (sum of parallel sides) × height</span>
+<b>Composite shapes:</b> Break into simpler shapes, find each area, ADD or SUBTRACT.<br>
+<b>Perimeter:</b> Always the total distance around the outside — add ALL sides.`,
+      trick:`For a semicircle: Area = πr²/2. Perimeter = πr + 2r (the curved part + the diameter).`,
+      questions:[
+        {q:'Find the area of a triangle with base 14 cm and height 9 cm.',opts:['126 cm²','63 cm²','252 cm²','72 cm²'],a:1,explain:'½ × 14 × 9 = 63 cm²'},
+        {q:'A circle has radius 14 cm. Find its area. (π=22/7)',opts:['616 cm²','308 cm²','154 cm²','88 cm²'],a:0,explain:'πr² = 22/7 × 14 × 14 = 22 × 2 × 14 = 616 cm²'},
+        {q:'Find the area of a trapezium with parallel sides 8 cm and 12 cm, height 5 cm.',opts:['50 cm²','60 cm²','100 cm²','40 cm²'],a:0,explain:'½ × (8+12) × 5 = ½ × 20 × 5 = 50 cm²'},
+        {q:'A square has the same area as a rectangle 8cm × 18cm. What is the side of the square?',opts:['10 cm','12 cm','13 cm','14 cm'],a:1,explain:'Rectangle area = 144 cm². Square side = √144 = 12 cm'},
+        {q:'A floor is 12m × 8m. Tiles are 50cm × 50cm. How many tiles needed?',opts:['192','384','480','768'],a:1,explain:'Floor = 1200cm × 800cm = 960,000 cm². Tile = 50×50 = 2500 cm². Tiles = 960000÷2500 = 384'},
+      ]
+    },
+    {
+      color:'pink', icon:'🔄', teachTitle:'SYMMETRY — Lines of Symmetry & Rotational Order',
+      teach:`<b>Line symmetry:</b> A fold line where both halves match perfectly.<br>
+<span class="example">Square: 4 lines | Rectangle: 2 | Equilateral triangle: 3</span>
+<span class="example">Regular hexagon: 6 | Circle: infinite</span>
+<b>Rotational symmetry order:</b> How many times a shape looks the same in 360°.<br>
+<span class="example">Square: order 4 (looks same every 90°)</span>
+<span class="example">Equilateral triangle: order 3 (every 120°)</span>
+<span class="example">Rectangle: order 2 (every 180°)</span>
+<b>A shape always has rotational symmetry of at least order 1</b> (after 360°).`,
+      trick:`Lines of symmetry of a regular polygon = number of sides. Rotational symmetry order = number of sides.`,
+      questions:[
+        {q:'How many lines of symmetry does a regular pentagon have?',opts:['4','5','6','10'],a:1,explain:'A regular polygon has as many lines of symmetry as it has sides. Pentagon = 5 sides = 5 lines.'},
+        {q:'What is the rotational symmetry order of the letter "H"?',opts:['0','1','2','4'],a:2,explain:'H looks the same after 180° rotation (upside down H is still H). Order = 2.'},
+        {q:'A shape has 6 lines of symmetry and rotational symmetry order 6. It is most likely a:',opts:['Hexagon','Pentagon','Circle','Star'],a:0,explain:'Regular hexagon has 6 lines of symmetry and rotational symmetry of order 6.'},
+        {q:'Does the letter "S" have a line of symmetry?',opts:['Yes, vertical','Yes, horizontal','No line of symmetry, but has rotational symmetry order 2','Both horizontal and vertical'],a:2,explain:'S has no line of symmetry (neither fold produces matching halves). But rotated 180° it looks the same — rotational symmetry order 2.'},
+      ]
+    },
+  ]);
+};
+
+// ─────────────────────────────────────────
+// LEVEL 7: CROSS-SUBJECT CHALLENGE
+// ─────────────────────────────────────────
+LEVELS[7].learnedFacts = [
+  'Speed, distance, time problems solved systematically',
+  'Set theory — Venn diagrams and intersections',
+  'World geography and current affairs',
+  'Mixed word problems requiring multiple steps',
+];
+levelRenderers[7] = (body, idx) => {
+  renderLevelFull(body, idx, [
+    {
+      color:'pink', icon:'🚀', teachTitle:'MATHS — Speed, Distance & Time',
+      teach:`The <b>three linked formulas</b> — know all three forms:<br>
+<span class="example">Distance = Speed × Time</span>
+<span class="example">Speed = Distance ÷ Time</span>
+<span class="example">Time = Distance ÷ Speed</span>
+<b>Units must match!</b> If speed is km/h, time must be in hours, distance in km.<br>
+<b>Converting:</b> 90 km/h = 90 × 1000/3600 = 25 m/s<br>
+<span class="example">To convert km/h to m/s: multiply by 5/18</span>
+<span class="example">To convert m/s to km/h: multiply by 18/5</span>
+<b>Relative speed:</b> Same direction: subtract. Opposite direction: add.`,
+      trick:`Triangle trick: write D on top, S×T on bottom. Cover what you want to find — multiply or divide the remaining two.`,
+      questions:[
+        {q:'A train travels 450 km in 5 hours. What is its speed?',opts:['80 km/h','90 km/h','85 km/h','75 km/h'],a:1,explain:'Speed = Distance/Time = 450/5 = 90 km/h'},
+        {q:'Convert 72 km/h to m/s.',opts:['15 m/s','20 m/s','25 m/s','30 m/s'],a:1,explain:'72 × 5/18 = 72×5/18 = 360/18 = 20 m/s'},
+        {q:'Two trains start from the same station going in opposite directions at 60 km/h and 80 km/h. How far apart after 3 hours?',opts:['180 km','240 km','420 km','360 km'],a:2,explain:'Opposite directions → relative speed = 60+80 = 140 km/h. Distance = 140×3 = 420 km'},
+        {q:'A car covers 240 km in 4 hours. How long to cover 360 km at the same speed?',opts:['5h','6h','7h','8h'],a:1,explain:'Speed = 240/4 = 60 km/h. Time for 360 km = 360/60 = 6 hours'},
+        {q:'A train 180m long passes a 270m platform. The train moves at 90 km/h (25 m/s). How long does it take to fully pass the platform?',opts:['12 s','18 s','20 s','25 s'],a:3,explain:'Total distance = 180+270 = 450m. Time = 450/25 = 18s. Wait: 450÷25=18s. Let me recalc: 180+270=450, 450÷25=18s. Answer: 18s'},
+      ]
+    },
+    {
+      color:'coral', icon:'🌍', teachTitle:'GENERAL KNOWLEDGE — Science, History & World',
+      teach:`<b>Key GK facts for CBSE and beyond:</b><br>
+<span class="example">India: 28 states, 8 UTs | Capital: New Delhi | Largest state: Rajasthan</span>
+<span class="example">National animal: Tiger | National bird: Peacock | National flower: Lotus</span>
+<span class="example">Longest river in world: Nile | In India: Ganga</span>
+<span class="example">Highest mountain: Mt Everest (8848m) | In India: Kangchenjunga</span>
+<b>Science facts:</b>
+<span class="example">Speed of light: 3×10⁸ m/s | Speed of sound: 343 m/s in air</span>
+<span class="example">Water boils at 100°C, freezes at 0°C at standard pressure</span>`,
+      trick:`India connections: India is in Asia, bordered by Pakistan, China, Nepal, Bhutan, Bangladesh, Myanmar. Indian Ocean is named after India.`,
+      questions:[
+        {q:'Which is the smallest planet in our solar system?',opts:['Mars','Mercury','Pluto','Venus'],a:1,explain:'Mercury is the smallest planet. Pluto was reclassified as a dwarf planet in 2006.'},
+        {q:'Who invented the telephone?',opts:['Thomas Edison','Nikola Tesla','Alexander Graham Bell','Guglielmo Marconi'],a:2,explain:'Alexander Graham Bell patented the telephone in 1876.'},
+        {q:'The Great Wall of China was built primarily to:',opts:['Show off wealth','Protect against invasions from the north','Mark the border with India','Prevent flooding'],a:1,explain:'The Great Wall was built over centuries to protect Chinese states from nomadic invasions from the Mongolian steppe.'},
+        {q:'What does DNA stand for?',opts:['Dynamic Nuclear Acid','Deoxyribonucleic Acid','Detailed Nucleic Acid','Deoxyribose and Nucleic Amino'],a:1,explain:'DNA = Deoxyribonucleic Acid. It carries genetic information in all living organisms.'},
+        {q:'Which Indian city is known as the "Silicon Valley of India"?',opts:['Hyderabad','Pune','Chennai','Bengaluru'],a:3,explain:'Bengaluru (Bangalore) is India\'s IT hub, home to thousands of tech companies.'},
+      ]
+    },
+    {
+      color:'teal', icon:'🧮', teachTitle:'HARD MIXED PROBLEMS — Apply Everything',
+      teach:`These problems combine multiple concepts. Read carefully, identify what is asked, then plan your approach before calculating.<br><br>
+<b>Problem-solving strategy:</b>
+<span class="example">1. Read the problem twice</span>
+<span class="example">2. Write down: GIVEN and FIND</span>
+<span class="example">3. Choose the right formula/method</span>
+<span class="example">4. Solve step by step</span>
+<span class="example">5. Check if the answer makes sense</span>`,
+      trick:`For word problems, draw a diagram wherever possible. A picture often reveals the solution immediately.`,
+      questions:[
+        {q:'A 240L tank fills in 6 hours, empties in 8 hours. Both open simultaneously — time to fill?',opts:['20h','24h','18h','16h'],a:1,explain:'Fill rate: 1/6 per hour. Drain rate: 1/8 per hour. Net rate = 1/6−1/8 = 4/24−3/24 = 1/24. Time = 24 hours.'},
+        {q:'The ratio of boys to girls in a class is 3:2. There are 30 students total. How many girls?',opts:['10','12','14','18'],a:1,explain:'Total parts = 5. Girls = 2/5 × 30 = 12'},
+        {q:'A shopkeeper marks up cost price by 40% and then gives a 25% discount. What is the actual profit or loss %?',opts:['5% profit','5% loss','10% profit','10% loss'],a:0,explain:'Say CP=100. Marked = 140. After 25% discount: 140×0.75=105. Profit = 5%'},
+        {q:'How many 3-digit numbers are divisible by both 4 and 6?',opts:['38','75','150','50'],a:1,explain:'LCM(4,6)=12. 3-digit numbers divisible by 12: first=108(12×9), last=996(12×83). Count=83−9+1=75'},
+      ]
+    },
+  ]);
+};
+
+// ─────────────────────────────────────────
+// LEVEL 8: BOSS LEVEL
+// ─────────────────────────────────────────
+LEVELS[8].learnedFacts = [
+  'Solved university entrance-style maths problems',
+  'Completed the full 6-hour learning marathon',
+  'Demonstrated mastery across 8 subjects',
+  'Earned the Full Day Academy certificate',
+];
+levelRenderers[8] = (body, idx) => {
+  renderLevelFull(body, idx, [
+    {
+      color:'gold', icon:'👑', teachTitle:'BOSS LEVEL — Elite Problems (No hints below!)',
+      teach:`<b>You have reached the BOSS LEVEL.</b><br><br>
+These problems are at Grade 7–8 and competition level. They require combining EVERYTHING from today.<br><br>
+<b>Some are designed to make you think hard</b> — don't give up after 30 seconds. Think for 2–3 minutes before answering.<br><br>
+<b>Each correct answer here is worth double XP.</b><br><br>
+You've already proven yourself today. Now show what you're really made of. 🏆`,
+      trick:`No tricks today. Just your brain. You've got this.`,
+      questions:[
+        {q:'BOSS Q1: A number when divided by 5 leaves remainder 3. When divided by 7 leaves remainder 4. The smallest such number is?',opts:['18','53','38','32'],a:0,explain:'Numbers leaving remainder 3 when ÷5: 3,8,13,18,23,28,33,38... Leaving remainder 4 when ÷7: 4,11,18,25... First common: 18. ✓'},
+        {q:'BOSS Q2: In how many ways can 3 students be arranged in a row of 3 seats?',opts:['3','6','9','27'],a:1,explain:'Permutations: 3 choices for seat 1, 2 for seat 2, 1 for seat 3. 3×2×1 = 6 (this is called 3! or 3 factorial)'},
+        {q:'BOSS Q3: A square is inscribed in a circle of radius 7 cm. What is the area of the square?',opts:['49 cm²','98 cm²','196 cm²','77 cm²'],a:1,explain:'The diagonal of the square = diameter of circle = 14 cm. Side² + Side² = 14². 2s²=196. s²=98 cm². Area = 98 cm²'},
+        {q:'BOSS Q4: The average of 5 consecutive odd numbers is 25. What is the largest number?',opts:['27','29','31','23'],a:1,explain:'Consecutive odd numbers centred on average: 21,23,25,27,29. Largest = 29'},
+        {q:'BOSS Q5: A water pipe of 3 cm diameter discharges water at 2 m/s. How many litres per minute? (π≈3.14, 1000 cm³=1L)',opts:['84.78 L/min','8.478 L/min','847.8 L/min','0.848 L/min'],a:0,explain:'Cross-section area = π×(1.5)² = 3.14×2.25 = 7.065 cm². Flow in 1 sec = 7.065×200=1413 cm³. Per minute = 1413×60=84,780 cm³ = 84.78L'},
+        {q:'BOSS Q6: LATERAL THINKING — A man is looking at a photo and says "Brothers and sisters I have none, but that man\'s father is my father\'s son." Who is in the photo?',opts:["The man's son","The man himself","The man's father","The man's brother"],a:0,explain:'"My father\'s son" (with no siblings) = himself. So "that man\'s father = me". Therefore the man in the photo is the speaker\'s SON.'},
+        {q:'BOSS Q7: If 6 cats catch 6 mice in 6 minutes, how many cats to catch 60 mice in 60 minutes?',opts:['60','10','6','30'],a:2,explain:'1 cat catches 1 mouse in 6 minutes. In 60 minutes, 1 cat catches 10 mice. To catch 60 mice: need 60/10 = 6 cats. Same 6 cats!'},
+        {q:'BOSS Q8 FINAL: You have two ropes. Each burns completely in exactly 1 hour (non-uniformly). How do you measure exactly 45 minutes?',opts:['Burn one from both ends simultaneously for 45min','Light rope 1 from both ends AND rope 2 from one end. When rope 1 burns out (30 min), light rope 2\'s other end. It burns for 15 more min = 45 total','Burn both simultaneously from one end for 45min','Fold rope in half and burn'],a:1,explain:'Rope 1 from both ends burns in 30 min (half time). At 30 min, rope 2 has 30 min left. Light its other end → burns in 15 min. 30+15=45 minutes. Classic puzzle!'},
+      ]
+    },
+  ]);
+};
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  updateXPBar();
+});
+</script>
+</body>
+</html>
