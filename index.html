@@ -317,6 +317,129 @@ html,body{width:100%;min-height:100vh;background:#050a1a;color:#fff;font-family:
 
 @media(min-width:500px){.subject-grid{grid-template-columns:1fr 1fr 1fr;}}
 @media(min-width:700px){.home-body,.activity-list,.player-body{max-width:600px;margin-left:auto;margin-right:auto;}}
+
+  /* ══ FULL DAY SCREEN ══ */
+  #fullday-screen{padding-bottom:5rem;}
+  .fd-header{padding:1rem 1.5rem;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);border-bottom:1px solid var(--card-border);}
+  .fd-header-j{background:rgba(5,10,26,.95);}
+  .fd-header-s{background:rgba(10,0,0,.95);}
+  .fd-toprow{display:flex;align-items:center;gap:.75rem;}
+  .fd-title-j{font-family:var(--font-space);font-size:.9rem;font-weight:700;color:var(--j-cyan);flex:1;}
+  .fd-title-s{font-family:var(--font-hero);font-size:1.2rem;color:var(--s-red2);flex:1;letter-spacing:1px;}
+  .fd-xp{font-family:var(--font-space);font-size:.72rem;color:var(--j-gold);background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.25);border-radius:8px;padding:.22rem .55rem;white-space:nowrap;}
+  .fd-xp-s{font-family:var(--font-hero);font-size:.9rem;color:var(--s-gold);background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.25);border-radius:8px;padding:.22rem .55rem;}
+  .fd-daybar{margin-top:.5rem;}
+  .fd-daybar-label{display:flex;justify-content:space-between;font-size:.68rem;color:#8ba3cc;margin-bottom:3px;}
+  .fd-daybar-outer{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+  .fd-daybar-inner{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--j-cyan),var(--j-purple));transition:width .5s ease;}
+  /* Level list */
+  .fd-body{padding:.75rem 1.5rem 1rem;}
+  .fd-intro-card{border-radius:16px;padding:1.1rem;margin-bottom:1rem;text-align:center;}
+  .fd-intro-j{background:linear-gradient(135deg,rgba(0,229,255,.08),rgba(168,85,247,.08));border:1px solid rgba(0,229,255,.15);}
+  .fd-intro-s{background:linear-gradient(135deg,rgba(204,0,0,.12),rgba(0,51,102,.12));border:1px solid rgba(204,0,0,.2);}
+  .fd-intro-icon{font-size:40px;display:block;margin-bottom:.5rem;}
+  .fd-intro-title-j{font-family:var(--font-space);font-size:.9rem;font-weight:900;color:var(--j-cyan);margin-bottom:.25rem;}
+  .fd-intro-title-s{font-family:var(--font-hero);font-size:1.3rem;color:var(--s-red2);letter-spacing:1px;margin-bottom:.25rem;}
+  .fd-intro-sub{font-size:.78rem;color:#8ba3cc;}
+  /* Level cards */
+  .fd-level-card{border-radius:14px;padding:.9rem 1.1rem;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:.9rem;transition:all .2s;border:1px solid var(--card-border);background:var(--card-bg);}
+  .fd-level-card:hover{transform:translateX(4px);background:rgba(255,255,255,.07);}
+  .fd-level-card.locked{opacity:.35;cursor:not-allowed;}
+  .fd-level-card.locked:hover{transform:none;}
+  .fd-level-card.done{border-color:rgba(34,197,94,.3);}
+  .fd-level-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .fd-level-info{flex:1;}
+  .fd-level-name-j{font-weight:800;font-size:.9rem;margin-bottom:2px;}
+  .fd-level-name-s{font-family:var(--font-hero);font-size:1rem;letter-spacing:1px;margin-bottom:2px;}
+  .fd-level-meta{font-size:.72rem;color:#8ba3cc;}
+  .fd-level-xp{font-family:var(--font-space);font-size:.68rem;color:var(--j-gold);white-space:nowrap;}
+  /* Player inner */
+  #fd-player-screen{padding-bottom:5rem;}
+  .fd-player-header{padding:.9rem 1.5rem;display:flex;align-items:center;gap:.75rem;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);border-bottom:1px solid var(--card-border);}
+  .fd-player-header-j{background:rgba(5,10,26,.95);}
+  .fd-player-header-s{background:rgba(10,0,0,.95);}
+  .fd-player-body{padding:1rem 1.5rem;}
+  /* Teach block */
+  .fd-teach{border-radius:14px;padding:1.1rem;margin-bottom:.9rem;border:1px solid;}
+  .fd-teach-cyan{background:rgba(0,229,255,.05);border-color:rgba(0,229,255,.18);}
+  .fd-teach-purple{background:rgba(168,85,247,.05);border-color:rgba(168,85,247,.18);}
+  .fd-teach-green{background:rgba(34,197,94,.05);border-color:rgba(34,197,94,.18);}
+  .fd-teach-gold{background:rgba(245,200,66,.05);border-color:rgba(245,200,66,.18);}
+  .fd-teach-coral{background:rgba(255,107,107,.05);border-color:rgba(255,107,107,.18);}
+  .fd-teach-teal{background:rgba(20,184,166,.05);border-color:rgba(20,184,166,.18);}
+  .fd-teach-indigo{background:rgba(99,102,241,.05);border-color:rgba(99,102,241,.18);}
+  .fd-teach-pink{background:rgba(244,114,182,.05);border-color:rgba(244,114,182,.18);}
+  .fd-teach-orange{background:rgba(255,159,67,.05);border-color:rgba(255,159,67,.18);}
+  .fd-teach-label{font-family:var(--font-space);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:.6rem;}
+  .fd-teach-label.cyan{color:var(--j-cyan);}
+  .fd-teach-label.purple{color:var(--j-purple);}
+  .fd-teach-label.green{color:var(--j-green);}
+  .fd-teach-label.gold{color:var(--j-gold);}
+  .fd-teach-label.coral{color:var(--j-coral);}
+  .fd-teach-label.teal{color:var(--teal, #14b8a6);}
+  .fd-teach-label.indigo{color:#6366f1;}
+  .fd-teach-label.pink{color:#f472b6;}
+  .fd-teach-label.orange{color:var(--j-orange);}
+  .fd-teach-content{font-size:.87rem;line-height:1.75;color:#e2e8f0;}
+  .fd-teach-content b{color:#fff;}
+  .fd-example{display:block;margin:.4rem 0;padding:.4rem .7rem;background:rgba(255,255,255,.04);border-radius:7px;border-left:2px solid rgba(255,255,255,.15);font-family:monospace;font-size:.82rem;}
+  .fd-trick{background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.18);border-radius:10px;padding:.65rem .9rem;margin:.65rem 0;font-size:.83rem;line-height:1.6;}
+  .fd-trick-label{font-family:var(--font-space);font-size:.62rem;color:var(--j-gold);letter-spacing:1px;margin-bottom:.25rem;}
+  /* Divider */
+  .fd-divider{display:flex;align-items:center;gap:.65rem;margin:1rem 0 .85rem;}
+  .fd-divider-line{flex:1;height:1px;background:var(--card-border);}
+  .fd-divider-text{font-family:var(--font-space);font-size:.6rem;color:#8ba3cc;letter-spacing:2px;white-space:nowrap;}
+  /* Quiz */
+  .fd-qprog{display:flex;align-items:center;gap:9px;margin-bottom:.9rem;}
+  .fd-qpb{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+  .fd-qpb-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+  .fd-q-card{border-radius:14px;padding:1rem;margin-bottom:.8rem;background:var(--card-bg);border:1px solid var(--card-border);}
+  .fd-q-num{font-family:var(--font-space);font-size:.62rem;color:#8ba3cc;letter-spacing:1px;margin-bottom:.35rem;}
+  .fd-q-text{font-size:.98rem;font-weight:700;line-height:1.5;}
+  .fd-opts{display:flex;flex-direction:column;gap:7px;margin-bottom:.7rem;}
+  .fd-opt{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:var(--font-body);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s;border-radius:11px;padding:.72rem 1rem;text-align:left;width:100%;}
+  .fd-opt:hover:not(:disabled){background:rgba(255,255,255,.1);transform:translateX(3px);}
+  .fd-opt.correct{background:rgba(34,197,94,.18);border-color:var(--j-green);color:var(--j-green);}
+  .fd-opt.wrong{background:rgba(255,107,107,.15);border-color:var(--j-coral);color:var(--j-coral);animation:shake .3s;}
+  .fd-feedback{border-radius:11px;padding:.8rem;margin:.45rem 0;font-size:.83rem;line-height:1.6;}
+  .fd-feedback.good{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.22);color:var(--j-green);}
+  .fd-feedback.bad{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.22);color:var(--j-coral);}
+  .fd-next-btn{width:100%;padding:.82rem;border-radius:11px;border:none;cursor:pointer;color:#fff;font-family:var(--font-space);font-size:.78rem;font-weight:700;letter-spacing:1px;transition:transform .15s;margin-top:.45rem;}
+  .fd-next-btn:hover{transform:scale(1.02);}
+  /* Section complete */
+  .fd-sec-complete{text-align:center;padding:1.5rem 1rem;}
+  .fd-sc-icon{font-size:52px;margin-bottom:.7rem;display:block;animation:pop .4s cubic-bezier(.36,.07,.19,.97);}
+  .fd-sc-title-j{font-family:var(--font-space);font-size:1rem;font-weight:900;color:var(--j-gold);margin-bottom:.35rem;}
+  .fd-sc-title-s{font-family:var(--font-hero);font-size:1.4rem;color:var(--s-red2);letter-spacing:1px;margin-bottom:.35rem;}
+  .fd-sc-score{font-size:.88rem;color:#8ba3cc;margin-bottom:.9rem;}
+  .fd-sc-xp{font-family:var(--font-space);font-size:.95rem;color:var(--j-gold);background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.22);border-radius:16px;padding:.35rem 1rem;display:inline-block;margin-bottom:1.25rem;}
+  .fd-learned{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:.9rem;text-align:left;margin-bottom:1.25rem;}
+  .fd-learned-title{font-family:var(--font-space);font-size:.62rem;color:var(--j-cyan);letter-spacing:2px;margin-bottom:.5rem;}
+  .fd-learned-item{font-size:.8rem;color:#8ba3cc;padding:.25rem 0;border-bottom:1px solid var(--card-border);line-height:1.5;}
+  .fd-learned-item:last-child{border:none;}
+  .fd-continue-btn{width:100%;max-width:260px;padding:.85rem;border-radius:13px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--j-cyan),var(--j-purple));color:#fff;font-family:var(--font-space);font-size:.82rem;font-weight:700;letter-spacing:1px;transition:transform .15s;}
+  .fd-continue-btn:hover{transform:scale(1.02);}
+  /* Break */
+  .fd-break-body{text-align:center;padding:2.5rem 1.5rem;}
+  .fd-break-timer{font-family:var(--font-space);font-size:2.2rem;font-weight:900;color:var(--j-cyan);margin:1rem 0;}
+  /* Final */
+  .fd-final{text-align:center;padding:2rem 1.5rem;}
+  .fd-final-trophy{font-size:72px;display:block;margin-bottom:.9rem;animation:float 3s ease-in-out infinite;}
+  .fd-final-title-j{font-family:var(--font-space);font-size:1.2rem;font-weight:900;color:var(--j-gold);margin-bottom:.4rem;letter-spacing:1px;}
+  .fd-cert{background:linear-gradient(135deg,rgba(13,27,62,.95),rgba(26,58,110,.95));border:1px solid rgba(245,200,66,.3);border-radius:18px;padding:1.4rem;margin:1.25rem 0;}
+  .fd-cert-label{font-family:var(--font-space);font-size:.65rem;color:var(--j-gold);letter-spacing:2px;margin-bottom:.4rem;}
+  .fd-cert-name{font-family:var(--font-space);font-size:1rem;font-weight:900;color:#fff;margin-bottom:.25rem;}
+  .fd-cert-text{font-size:.78rem;color:#8ba3cc;line-height:1.5;}
+  .fd-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:1.25rem;}
+  .fd-stat{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:.85rem;text-align:center;}
+  .fd-stat-num{font-family:var(--font-space);font-size:1.5rem;font-weight:900;}
+  .fd-stat-label{font-size:.66rem;color:#8ba3cc;letter-spacing:1px;margin-top:2px;}
+  /* XP popup */
+  #fd-xp-pop{position:fixed;bottom:100px;right:16px;background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.4);border-radius:9px;padding:.35rem .75rem;font-family:var(--font-space);font-size:.82rem;color:var(--j-gold);opacity:0;transition:all .35s;z-index:200;pointer-events:none;}
+  #fd-xp-pop.show{opacity:1;transform:translateY(-8px);}
+  /* Miss teal var */
+  :root{--teal:#14b8a6;}
+
 </style>
 </head>
 <body>
@@ -377,6 +500,9 @@ html,body{width:100%;min-height:100vh;background:#050a1a;color:#fff;font-family:
   <nav class="bottom-nav" id="home-nav">
     <button class="nav-btn" id="nav-home" onclick="showScreen('home-screen');setActiveNav('nav-home')">
       <span class="nav-icon">🏠</span><span id="nav-home-label">HOME</span>
+    </button>
+    <button class="nav-btn" id="nav-fullday" onclick="window.location.href='fullday.html'" style="display:none">
+      <span class="nav-icon">⚡</span>FULL DAY
     </button>
     <button class="nav-btn" id="nav-progress" onclick="showScreen('progress-screen');setActiveNav('nav-progress');renderProgress()">
       <span class="nav-icon">📊</span>PROGRESS
@@ -608,6 +734,9 @@ function renderHomeForProfile(){
   // Build body
   const body=document.getElementById('home-body');
   const cat=t==='j'?catalogJ:catalogS;
+  // Show/hide Full Day button based on profile
+  const fdNavBtn=document.getElementById('nav-fullday');
+  if(fdNavBtn) fdNavBtn.style.display = t==='j'?'flex':'none';
   const missionCard=t==='j'
     ?`<div class="mission-card mission-card-j" onclick="openActivity('maths','abacus')">
         <div class="mission-tag-j">DAILY CHALLENGE</div>
@@ -1434,5 +1563,46 @@ document.querySelectorAll('[onclick*="parent-screen"]').forEach(el=>{
   el.setAttribute('onclick',orig.replace("showScreen('parent-screen')",'showScreen(\'parent-screen\');setupParentScreen()'));
 });
 </script>
+
+<!-- ═══════════════════ FULL DAY SCREEN ═══════════════════ -->
+<div id="fullday-screen" class="screen">
+  <div class="fd-header" id="fd-header">
+    <div class="fd-toprow">
+      <button class="back-btn" onclick="showScreen('home-screen');setActiveNav('nav-home')">‹</button>
+      <div id="fd-screen-title" class="fd-title-j">⚡ Full Day Academy</div>
+      <div id="fd-screen-xp" class="fd-xp">0 XP</div>
+    </div>
+    <div class="fd-daybar">
+      <div class="fd-daybar-label"><span>Day Progress</span><span id="fd-bar-text">0 / 650 XP</span></div>
+      <div class="fd-daybar-outer"><div class="fd-daybar-inner" id="fd-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div id="fd-list-body"></div>
+  <nav class="bottom-nav" id="fd-list-nav">
+    <button class="nav-btn" onclick="showScreen('home-screen');setActiveNav('nav-home')"><span class="nav-icon">🏠</span>HOME</button>
+    <button class="nav-btn active" onclick="openFullDay()"><span class="nav-icon">⚡</span>FULL DAY</button>
+    <button class="nav-btn" onclick="showScreen('progress-screen');renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
+  </nav>
+</div>
+
+<!-- ═══════════════════ FULL DAY PLAYER ═══════════════════ -->
+<div id="fd-player-screen" class="screen">
+  <div class="fd-player-header" id="fd-player-header">
+    <button class="back-btn" onclick="showScreen('fullday-screen');renderFdList()">‹</button>
+    <div style="flex:1">
+      <div id="fd-player-level" style="font-family:var(--font-space);font-size:.62rem;color:#8ba3cc;letter-spacing:2px">LEVEL 1</div>
+      <div id="fd-player-title" style="font-weight:800;font-size:.92rem">Section</div>
+    </div>
+    <div id="fd-player-xp-badge" class="fd-xp">+30 XP</div>
+  </div>
+  <div class="fd-player-body" id="fd-player-body"></div>
+  <nav class="bottom-nav" id="fd-player-nav">
+    <button class="nav-btn" onclick="showScreen('home-screen');setActiveNav('nav-home')"><span class="nav-icon">🏠</span>HOME</button>
+    <button class="nav-btn" onclick="showScreen('fullday-screen');renderFdList()"><span class="nav-icon">⚡</span>FULL DAY</button>
+    <button class="nav-btn" onclick="showScreen('progress-screen');renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
+  </nav>
+</div>
+<div id="fd-xp-pop"></div>
+
 </body>
 </html>
