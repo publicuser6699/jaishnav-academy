@@ -1675,447 +1675,460 @@ document.querySelectorAll('[onclick*="parent-screen"]').forEach(el=>{
   el.setAttribute('onclick',orig.replace("showScreen('parent-screen')",'showScreen(\'parent-screen\');setupParentScreen()'));
 });
 
-// ══════════════════════════════════════════════
-// FULL DAY ACADEMY — embedded in main app
-// ══════════════════════════════════════════════
-let fdXP=0, fdDone={};
-const FD_TOTAL_XP=650;
+// ════════════════════════════════════════
+// FULL DAY ACADEMY — clean rewrite
+// ════════════════════════════════════════
+var fdXP = 0;
+var fdDone = {};
+var FD_TOTAL_XP = 650;
 
-const FD_LEVELS=[
-  {id:1,name:"Warm-up",icon:"⚡",col:"teal",time:"30 min",xp:60,
-   learned:["Multiply any 2-digit number by 11 instantly","Square numbers ending in 5 in 2 seconds","The 9× finger trick","Spot Fibonacci, geometric and triangular sequences"],
-   secs:[
-    {col:"teal",icon:"⚡",lbl:"TRICK 1 — Multiply by 11",
-     teach:`<b>Any 2-digit number × 11:</b><br>Split the digits, add them, put the sum in the middle.<br><span class="fd-ex">34 × 11 → 3,4 → 3+4=7 → 374</span><span class="fd-ex">52 × 11 → 5+2=7 → 572</span><b>If sum &gt; 9, carry the 1:</b><span class="fd-ex">75 × 11 → 7+5=12 → put 2, carry 1 → 825</span><span class="fd-ex">99 × 11 → 9+9=18 → 1089</span>`,
-     trick:"AB×11: write A, then A+B, then B. If A+B&gt;9, add 1 to A.",
-     qs:[
-      {q:"43 × 11 = ?",o:["473","483","463","453"],a:0,e:"4+3=7 → 473"},
-      {q:"62 × 11 = ?",o:["692","682","672","662"],a:1,e:"6+2=8 → 682"},
-      {q:"85 × 11 = ?",o:["845","855","925","935"],a:3,e:"8+5=13 → put 3, carry 1 → 935"},
-      {q:"67 × 11 = ?",o:["727","737","747","757"],a:1,e:"6+7=13 → put 3, carry 1 → 737"},
-      {q:"99 × 11 = ?",o:["1089","1099","1009","1019"],a:0,e:"9+9=18 → 1089"},
-     ]},
-    {col:"cyan",icon:"🔢",lbl:"TRICK 2 — Square numbers ending in 5",
-     teach:`<b>Any number ending in 5, squared:</b><br><span class="fd-ex">Step 1: Take digits BEFORE the 5</span><span class="fd-ex">Step 2: Multiply that number × (itself+1)</span><span class="fd-ex">Step 3: Put 25 at the end</span><b>Examples:</b><span class="fd-ex">35² → 3×4=12 → 1225</span><span class="fd-ex">75² → 7×8=56 → 5625</span><span class="fd-ex">125² → 12×13=156 → 15625</span>`,
-     trick:"n5² = [n×(n+1)] then 25. Works for ANY number ending in 5!",
-     qs:[
-      {q:"25² = ?",o:["425","525","625","725"],a:2,e:"2×3=6 → 625"},
-      {q:"45² = ?",o:["1825","1925","2025","2125"],a:2,e:"4×5=20 → 2025"},
-      {q:"65² = ?",o:["3625","4025","4225","4625"],a:2,e:"6×7=42 → 4225"},
-      {q:"95² = ?",o:["8825","8925","9025","9125"],a:2,e:"9×10=90 → 9025"},
-      {q:"15² = ?",o:["125","215","225","235"],a:2,e:"1×2=2 → 225"},
-     ]},
-    {col:"green",icon:"🖐️",lbl:"TRICK 3 — Multiply by 9 (finger method)",
-     teach:`Hold up 10 fingers, number 1–10 left to right.<br>To find n×9: bend down finger n.<br><span class="fd-ex">4×9 → bend finger 4 → 3 left, 6 right → 36</span><span class="fd-ex">7×9 → bend finger 7 → 6 left, 3 right → 63</span><b>Digit-sum shortcut:</b> Digits of any 9× multiple always add to 9.<span class="fd-ex">9×8=72 → 7+2=9 ✓ | 9×12=108 → 1+0+8=9 ✓</span>`,
-     trick:"For 9×n: tens digit = n−1, units digit = 10−n. So 9×6: tens=5, units=4 → 54",
-     qs:[
-      {q:"9 × 6 = ?",o:["45","54","56","63"],a:1,e:"Finger 6 → 5 left, 4 right → 54"},
-      {q:"9 × 8 = ?",o:["63","71","72","81"],a:2,e:"Finger 8 → 7 left, 2 right → 72"},
-      {q:"Which multiple of 9 is WRONG?",o:["9×4=36","9×7=63","9×5=44","9×9=81"],a:2,e:"9×5=45, not 44. Check: 4+4=8≠9, so 44 is wrong."},
-      {q:"9 × 11 = ?",o:["98","99","100","101"],a:1,e:"99 → 9+9=18 → 1+8=9 ✓"},
-      {q:"Which is a correct multiple of 9?",o:["9×13=115","9×14=126","9×15=125","9×16=153"],a:1,e:"126: 1+2+6=9 ✓. 9×14=126 ✓"},
-     ]},
-    {col:"gold",icon:"🔮",lbl:"Sequence types — crack any pattern",
-     teach:`Always write the GAPS between terms first.<br><span class="fd-ex">Arithmetic: same gap → 3, 7, 11, 15 (gap +4)</span><span class="fd-ex">Geometric: multiply by same number → 2, 6, 18, 54 (×3)</span><span class="fd-ex">Square numbers: 1, 4, 9, 16, 25 (gaps: 3,5,7,9...)</span><span class="fd-ex">Triangular: 1, 3, 6, 10, 15 (gaps: 2,3,4,5...)</span><span class="fd-ex">Fibonacci-style: each term = sum of two before it</span>`,
-     trick:"List the gaps first. Equal gaps = arithmetic. Gaps that grow by same amount = second-order. Gaps that multiply = geometric.",
-     qs:[
-      {q:"Next: 2, 6, 18, 54, ___",o:["72","108","162","200"],a:2,e:"×3 each time. 54×3=162"},
-      {q:"Next: 1, 4, 9, 16, 25, ___",o:["30","35","36","49"],a:2,e:"Square numbers: 6²=36"},
-      {q:"Next: 1, 3, 6, 10, 15, ___",o:["18","20","21","25"],a:2,e:"Triangular numbers. Gaps: +2,+3,+4,+5,+6 → 15+6=21"},
-      {q:"Next: 3, 5, 8, 13, 21, ___",o:["29","32","34","36"],a:2,e:"Fibonacci-style: 13+21=34"},
-      {q:"Sequence type of 100, 50, 25, 12.5?",o:["Arithmetic","Geometric","Fibonacci","Square"],a:1,e:"Dividing by 2 each time = geometric"},
-     ]},
-   ]},
-  {id:2,name:"Number Mastery",icon:"🔢",col:"cyan",time:"45 min",xp:80,
-   learned:["Vedic criss-cross multiplication for 2-digit numbers","BODMAS — correct order for all 6 operations","Indian number system: lakhs and crores","All 7 divisibility rules by heart"],
-   secs:[
-    {col:"cyan",icon:"✖️",lbl:"VEDIC MATHS — Criss-cross multiplication",
-     teach:`Multiply 2-digit numbers in your head:<br><b>Example: 23 × 41</b><span class="fd-ex">Step 1 — Units: 3×1=3</span><span class="fd-ex">Step 2 — Cross: (2×1)+(3×4)=14 → write 4, carry 1</span><span class="fd-ex">Step 3 — Tens: 2×4+carry 1=9 → Answer: 943 ✓</span><b>Example: 34 × 52:</b><span class="fd-ex">Units:4×2=8 | Cross:3×2+4×5=26(write 6,carry 2) | Tens:3×5+2=17 → 1768 ✓</span>`,
-     trick:"Units×Units | (Outer cross + Inner cross) | Tens×Tens. Handle carries at each step.",
-     qs:[
-      {q:"21 × 32 = ?",o:["652","662","672","682"],a:2,e:"Units:1×2=2 | Cross:2×2+1×3=7 | Tens:2×3=6 → 672"},
-      {q:"43 × 21 = ?",o:["883","893","903","913"],a:2,e:"Units:3×1=3 | Cross:4×1+3×2=10(0,c1) | Tens:4×2+1=9 → 903"},
-      {q:"Solve (BODMAS): 5 + 3 × 4 − 6 ÷ 2",o:["11","13","14","16"],a:2,e:"×÷ first: 3×4=12, 6÷2=3. Then: 5+12−3=14"},
-      {q:"Solve: (48 ÷ 6 + 4²) × 3 − 15",o:["42","48","57","60"],a:2,e:"4²=16, 48÷6=8, (8+16)×3−15=72−15=57"},
-      {q:"First step in BODMAS?",o:["Orders","Brackets","Division","Multiplication"],a:1,e:"Brackets FIRST, then Orders, then Division/Multiplication, then Addition/Subtraction"},
-     ]},
-    {col:"teal",icon:"🇮🇳",lbl:"Indian number system",
-     teach:`<b>Indian place values (right to left):</b><span class="fd-ex">Ones → Tens → Hundreds → Thousands → Ten-Thousands → Lakhs → Ten-Lakhs → Crores</span><b>Key values:</b><span class="fd-ex">1 Lakh = 1,00,000</span><span class="fd-ex">1 Crore = 1,00,00,000 (= 10 million)</span><b>Indian comma rule:</b> First comma after 3 digits, then every 2:<span class="fd-ex">International: 12,345,678 → Indian: 1,23,45,678</span>`,
-     trick:"1 million = 10 lakhs. 1 billion = 100 crores. India has ~140 crore people.",
-     qs:[
-      {q:"4,56,78,901 in words?",o:["Four crore fifty-six lakh seventy-eight thousand nine hundred one","Forty-five crore sixty-seven lakh","Four billion","Four hundred fifty-six thousand"],a:0,e:"4 crores + 56 lakhs + 78 thousands + 901"},
-      {q:"How many lakhs make one crore?",o:["10","100","1000","10000"],a:1,e:"1 crore = 100 lakhs"},
-      {q:"25 lakhs = ___ million?",o:["0.25","2.5","25","250"],a:1,e:"10 lakhs = 1 million. So 25 lakhs = 2.5 million"},
-      {q:"140 crores = ___ billion?",o:["0.14","1.4","14","140"],a:1,e:"1 billion = 100 crores. 140 crores = 1.4 billion"},
-     ]},
-    {col:"indigo",icon:"🔍",lbl:"Divisibility rules",
-     teach:`<b>Check without dividing:</b><span class="fd-ex">÷2: last digit even</span><span class="fd-ex">÷3: sum of all digits divisible by 3</span><span class="fd-ex">÷4: last TWO digits divisible by 4</span><span class="fd-ex">÷5: ends in 0 or 5</span><span class="fd-ex">÷6: divisible by both 2 AND 3</span><span class="fd-ex">÷9: sum of digits divisible by 9</span><span class="fd-ex">÷11: alternating sum (odd positions − even) = 0 or ±11</span>`,
-     trick:"For ÷11 on 121: 1−2+1=0 ✓. For ÷9: if digit sum =9 or 18 etc, divisible by 9.",
-     qs:[
-      {q:"Is 7,35,246 divisible by 6?",o:["Yes — by 2 and 3","No — only by 2","No — only by 3","No"],a:0,e:"Ends 6 (÷2 ✓). Digit sum=27, 27÷3=9 (÷3 ✓). Both → divisible by 6"},
-      {q:"Is 2,34,516 divisible by 4?",o:["Yes","No","Only by 2","Only by 8"],a:0,e:"Last two digits: 16. 16÷4=4 ✓"},
-      {q:"Which is divisible by 11?",o:["121","123","125","127"],a:0,e:"121: 1−2+1=0 ✓. And 11×11=121"},
-      {q:"A number ends in 0. It is definitely divisible by?",o:["2 only","2 and 5 only","2, 5 and 10","10 only"],a:2,e:"Ends in 0 → even (÷2), ends 0/5 (÷5), and both → ÷10"},
-      {q:"Is 4,58,913 divisible by 9?",o:["Yes","No — digit sum is 30","Only by 3","Cannot tell"],a:1,e:"4+5+8+9+1+3=30. 30÷9 is not whole → NOT ÷9. But 30÷3=10 → IS ÷3"},
-     ]},
-   ]},
-  {id:3,name:"Language Power",icon:"📚",col:"purple",time:"45 min",xp:75,
-   learned:["Active → Passive voice transformation","Direct → Indirect speech with tense shifts","Tamil grammar terms in Tamil script","Hindi gender agreement and tenses"],
-   secs:[
-    {col:"purple",icon:"📖",lbl:"ENGLISH — Active & Passive Voice",
-     teach:`<b>Active:</b> Subject DOES the action. "Priya painted the wall."<br><b>Passive:</b> Subject RECEIVES the action. "The wall was painted by Priya."<br><b>Convert Active → Passive:</b><span class="fd-ex">1. Object becomes new subject</span><span class="fd-ex">2. Add was/were + past participle</span><span class="fd-ex">3. Original subject → "by ___"</span><b>Examples:</b><span class="fd-ex">Active: They built the bridge → Passive: The bridge was built by them</span><span class="fd-ex">Active: She writes letters → Passive: Letters are written by her</span>`,
-     trick:"Pronoun changes: I→me, he→him, she→her, they→them, we→us",
-     qs:[
-      {q:"Convert: 'The teacher explained the lesson.'",o:["The lesson was explained by the teacher","The lesson explained by teacher","The teacher was explained the lesson","The lesson has explained by teacher"],a:0,e:"Object (lesson)→subject. was+explained. by the teacher."},
-      {q:"Convert to active: 'The cake was baked by Priya.'",o:["Priya baked the cake","The cake baked Priya","Priya was baking cake","The cake is baked"],a:0,e:"Priya (doer) + baked + the cake (object)"},
-      {q:"Which sentence is passive?",o:["Dogs bark loudly","She painted the wall","The match was won by India","He writes every day"],a:2,e:"'was won' = passive (was + past participle + by)"},
-      {q:"Convert: 'They will announce the results.'",o:["The results will be announced","Results announced by them","The results are announced","Results will announce"],a:0,e:"Future passive: will be + announced"},
-     ]},
-    {col:"indigo",icon:"💬",lbl:"ENGLISH — Direct & Indirect Speech",
-     teach:`<b>Direct:</b> Exact words in quotes. She said, "I am hungry."<br><b>Indirect:</b> No quotes, tense shifts back.<br><b>Tense shifts:</b><span class="fd-ex">is/am → was | are → were</span><span class="fd-ex">will → would | can → could | may → might</span><span class="fd-ex">today → that day | tomorrow → the next day</span><b>Example:</b><span class="fd-ex">Direct: Ram said, "I will come tomorrow."</span><span class="fd-ex">Indirect: Ram said that he would come the next day.</span>`,
-     trick:"Remove quotes, add 'that', shift tense back one step, change pronouns and time words.",
-     qs:[
-      {q:"Convert: She said, 'I am going to school.'",o:["She said that she was going to school","She said she is going to school","She said I am going to school","She told I was going to school"],a:0,e:"am → was. I → she. Add 'that', remove quotes."},
-      {q:"Convert: He said, 'I can swim.'",o:["He said he can swim","He said that he could swim","He told that I could swim","He said I can swim"],a:1,e:"can → could. I → he."},
-      {q:"'We will win,' they said. Indirect speech?",o:["They said that they would win","They said we will win","They told that we would win","They said that we will win"],a:0,e:"will → would. we (speakers) → they"},
-      {q:"Direct speech uses ___. Indirect uses ___.",o:["past / present","quotation marks / no quotes","indirect words / direct words","passive / active"],a:1,e:"Direct = exact words in quotes. Indirect = rephrased without quotes."},
-     ]},
-    {col:"gold",icon:"அ",lbl:"TAMIL — Grammar terms & tenses",
-     teach:`<b>Tamil grammar terms:</b><span class="fd-ex">பெயர்ச்சொல் = Noun</span><span class="fd-ex">வினைச்சொல் = Verb</span><span class="fd-ex">பண்புப்பெயர் = Adjective</span><span class="fd-ex">வினையடை = Adverb</span><b>Tamil tenses:</b><span class="fd-ex">இறந்த காலம் = Past tense</span><span class="fd-ex">நிகழ் காலம் = Present tense</span><span class="fd-ex">எதிர் காலம் = Future tense</span><b>Compound words:</b><span class="fd-ex">கால் + பந்து = கால்பந்து (football)</span>`,
-     trick:"Tamil verb endings change with tense AND the gender/number of the subject. Learn the root + endings.",
-     qs:[
-      {q:"Tamil word for 'verb'?",o:["பெயர்ச்சொல்","வினைச்சொல்","பண்புப்பெயர்","வினையடை"],a:1,e:"வினைச்சொல் = action/verb word"},
-      {q:"'எதிர் காலம்' means?",o:["Past tense","Present tense","Future tense","Conditional"],a:2,e:"எதிர் = future. எதிர் காலம் = future tense"},
-      {q:"கால்பந்து is formed from?",o:["கால் + பந்து","கா + ல்பந்து","கால் + வந்து","கால் + மந்து"],a:0,e:"கால் (foot) + பந்து (ball) = கால்பந்து (football)"},
-      {q:"Identify the adverb: அவன் வேகமாக ஓடினான்",o:["அவன்","வேகமாக","ஓடினான்","வேகம்"],a:1,e:"வேகமாக = quickly (adverb — modifies how he ran)"},
-     ]},
-    {col:"orange",icon:"🗣️",lbl:"HINDI — Tenses & gender rules",
-     teach:`<b>Verb endings change with gender:</b><span class="fd-ex">Present (male): मैं खाता हूँ</span><span class="fd-ex">Present (female): मैं खाती हूँ</span><span class="fd-ex">Past: मैंने खाया</span><span class="fd-ex">Future (male): मैं खाऊँगा</span><b>Postpositions — come AFTER the noun:</b><span class="fd-ex">में=in/on | को=to/for | से=from | का/के/की=of</span>`,
-     trick:"Male verbs end in -ता/-ता है. Female verbs end in -ती/-ती है.",
-     qs:[
-      {q:"'She goes to school' in Hindi?",o:["वह स्कूल जाता है","वह स्कूल जाती है","वह स्कूल जाते है","वह स्कूल जाओ"],a:1,e:"वह (she) = feminine → जाती. Male → जाता"},
-      {q:"'The book is on the table' in Hindi?",o:["किताब मेज़ पर है","किताब मेज़ में है","मेज़ किताब पर है","किताब पर मेज़ है"],a:0,e:"किताब=book, मेज़=table, पर=on, है=is"},
-      {q:"Hindi postposition meaning 'from'?",o:["में","को","से","का"],a:2,e:"से = from. दिल्ली से = from Delhi"},
-      {q:"Correct (she reads a book): 'वह पुस्तक पढ़ता है'?",o:["वह पुस्तक पढ़ती है","वह पुस्तक पढ़ते है","वह पुस्तक पढ़ा है","वह पुस्तक पढ़ेगी"],a:0,e:"Feminine subject → पढ़ती (not masculine पढ़ता)"},
-     ]},
-   ]},
-  {id:4,name:"Science Explorer",icon:"🔬",col:"green",time:"45 min",xp:75,
-   learned:["Newton's 3 laws with real-world examples","First 20 elements of the periodic table","Photosynthesis equation explained","Double blood circulation — left and right heart"],
-   secs:[
-    {col:"green",icon:"⚡",lbl:"PHYSICS — Newton's Three Laws",
-     teach:`<b>Law 1 — Inertia:</b> Objects stay still or keep moving unless a force acts.<span class="fd-ex">→ You lurch forward when a bus brakes (your body wants to keep moving)</span><b>Law 2 — F = ma:</b> Force = mass × acceleration<span class="fd-ex">→ A cricket ball is easier to throw than a shot put</span><b>Law 3 — Action-Reaction:</b> Every action has an equal and opposite reaction.<span class="fd-ex">→ Rocket pushes gas DOWN → gas pushes rocket UP</span><span class="fd-ex">→ You push a wall → wall pushes you back equally</span>`,
-     trick:"LAW 1: Objects are lazy. LAW 2: F=ma. LAW 3: You push, the universe pushes back equally.",
-     qs:[
-      {q:"Why do you lurch forward when a bus brakes?",o:["Brakes push you forward","Your body has inertia and wants to keep moving (Law 1)","Driver accelerates","Air resistance"],a:1,e:"Law 1 — Inertia: your body was moving and resists the change"},
-      {q:"Truck vs bicycle at same speed — which needs MORE force to stop?",o:["Bicycle","Truck — more mass means more force needed (F=ma)","Both need same force","Depends on driver"],a:1,e:"F=ma: same deceleration, but truck has far more mass → far more braking force"},
-      {q:"Swimmer pushes water backward. What happens?",o:["Nothing","Swimmer moves forward (Law 3)","Swimmer sinks","Water pushes sideways"],a:1,e:"Law 3: push water back → water pushes swimmer forward equally"},
-      {q:"Earth pulls Moon toward it. Moon does what to Earth?",o:["Nothing","Pulls Earth equally toward it (Law 3)","Pushes Earth away","Has no effect"],a:1,e:"Law 3 — equal and opposite. Moon pulls Earth with same force Earth pulls Moon"},
-     ]},
-    {col:"teal",icon:"⚗️",lbl:"CHEMISTRY — First 20 elements",
-     teach:`<b>First 20 elements (symbol and number):</b><span class="fd-ex">1H 2He 3Li 4Be 5B 6C 7N 8O 9F 10Ne</span><span class="fd-ex">11Na 12Mg 13Al 14Si 15P 16S 17Cl 18Ar 19K 20Ca</span><b>Memory trick for 1–10:</b><span class="fd-ex">"HaHa LiBe BeCaN OFfNeah"</span><span class="fd-ex">H-He-Li-Be-B-C-N-O-F-Ne</span><b>Key facts:</b><span class="fd-ex">Na = Sodium (from Latin Natrium)</span><span class="fd-ex">K = Potassium (from Latin Kalium)</span><span class="fd-ex">Noble gases (He,Ne,Ar) don't react — full outer shell</span>`,
-     trick:"Atomic number = number of protons = number of electrons in a neutral atom.",
-     qs:[
-      {q:"Symbol for Sodium?",o:["So","Sd","Na","Sm"],a:2,e:"Na from Latin 'Natrium'"},
-      {q:"Element with atomic number 8?",o:["Nitrogen","Oxygen","Fluorine","Carbon"],a:1,e:"H(1)He(2)Li(3)Be(4)B(5)C(6)N(7)O(8) — Oxygen"},
-      {q:"Why are Noble gases unreactive?",o:["Too small","Outer electron shell is completely full","Too expensive","Only exist in space"],a:1,e:"Full outer shell = no need to gain/lose electrons = maximum stability"},
-      {q:"K stands for which element?",o:["Krypton","Potassium","Kryptonite","Kelsium"],a:1,e:"K = Kalium (Latin for Potassium). Atomic number 19"},
-     ]},
-    {col:"pink",icon:"🌿",lbl:"BIOLOGY — Photosynthesis & circulation",
-     teach:`<b>Photosynthesis:</b><span class="fd-ex">CO₂ + H₂O → (sunlight + chlorophyll) → Glucose + O₂</span><span class="fd-ex">Where: chloroplasts in leaf cells</span><span class="fd-ex">Why leaves are green: chlorophyll REFLECTS green light</span><b>Double blood circulation:</b><span class="fd-ex">Right heart → Lungs (get O₂) → Left heart → Body</span><b>Blood components:</b><span class="fd-ex">Red cells (O₂) | White cells (fight infection) | Platelets (clotting) | Plasma (liquid)</span>`,
-     trick:"Arteries Always leave the heart. Veins return. Arteries = thick walls. Veins = valves.",
-     qs:[
-      {q:"Two raw materials for photosynthesis?",o:["O₂ and glucose","CO₂ and water","Nitrogen and sunlight","Glucose and chlorophyll"],a:1,e:"CO₂ from air + H₂O from roots. Sunlight is energy, not a raw material."},
-      {q:"Why are leaves green?",o:["Reflect green light","Absorb green light","Produce green gas","Soil is green"],a:0,e:"Chlorophyll absorbs red and blue, REFLECTS green → we see green"},
-      {q:"Which side of heart pumps to lungs?",o:["Left","Right","Both","Neither"],a:1,e:"Right → lungs (oxygenation). Left → body (delivers O₂)"},
-      {q:"Wound stops bleeding because of?",o:["Red blood cells","White blood cells","Platelets","Plasma"],a:2,e:"Platelets clump at wound and form a clot to stop bleeding"},
-     ]},
-   ]},
-  {id:"break",name:"Lunch Break",icon:"🍎",col:"gold",time:"45 min",xp:0,learned:[],secs:[]},
-  {id:5,name:"IQ Accelerator",icon:"🧠",col:"coral",time:"45 min",xp:90,
-   learned:["Logic grids — systematic elimination","Mental rotation and cube nets","Caesar cipher and mirror code decryption","Venn diagrams and set intersection"],
-   secs:[
-    {col:"coral",icon:"♟️",lbl:"LOGIC — Grid elimination method",
-     teach:`Build a grid. Use clues to mark ✓ (true) or ✗ (impossible).<br><b>Key rule:</b> Once you mark ✓, every other cell in that row AND column gets ✗.<br><b>Always start with the most restrictive clues.</b><span class="fd-ex">Clue: "Arjun does not play chess" → ✗ in (Arjun, Chess)</span><span class="fd-ex">Clue: "Bala plays football" → ✓, then ✗ everywhere else in that row and column</span>`,
-     trick:"If a person can't have A, B, or C out of 4 options → they MUST have D.",
-     qs:[
-      {q:"Arjun, Bala, Charan have cat, dog, fish. Arjun: no cat. Bala: no dog. Charan: no fish. Who has the dog?",o:["Arjun","Bala","Charan","Cannot tell"],a:0,e:"Charan: no fish → cat or dog. Bala: no dog → cat or fish. Arjun: no cat → dog or fish. → Arjun=dog, Charan=cat, Bala=fish"},
-      {q:"All Bloops are Razzles. All Razzles are Lazzles. Therefore?",o:["All Bloops are Lazzles","No Bloops are Lazzles","Some Bloops might be Lazzles","Cannot determine"],a:0,e:"Transitive: Bloops→Razzles→Lazzles → All Bloops are Lazzles"},
-      {q:"20 like cricket, 15 like football, 8 like both. How many like at least one?",o:["35","43","27","33"],a:2,e:"At least one = 20+15−8 = 27 (subtract 'both' to avoid double counting)"},
-      {q:"A is older than B. C is younger than A but older than B. D is older than A. Youngest?",o:["A","B","C","D"],a:1,e:"Order: D > A > C > B. B is youngest"},
-     ]},
-    {col:"indigo",icon:"🔷",lbl:"SPATIAL — Mental rotation & nets",
-     teach:`<b>Mirror reflection:</b><span class="fd-ex">Vertical mirror: flips left-right → b↔d, p↔q</span><span class="fd-ex">Horizontal mirror: flips up-down → b↔p, d↔q</span><b>Rotation:</b><span class="fd-ex">90° clockwise: top→right, right→bottom, bottom→left, left→top</span><span class="fd-ex">180°: upside down | 270° CW = 90° anti-clockwise</span><b>Cube net:</b> 6 squares in cross/T/L shape. Opposite faces are 3 steps apart.`,
-     trick:"Track ONE distinctive feature as you rotate. Where does that feature go?",
-     qs:[
-      {q:"Letter 'b' reflected in a vertical mirror?",o:["d","p","q","b"],a:0,e:"Vertical mirror flips left-right: b → d"},
-      {q:"Square paper folded twice, hole punched in centre. Holes when unfolded?",o:["1","2","4","8"],a:2,e:"Folding twice creates 4 layers. One punch = 4 holes"},
-      {q:"Shape with rotational symmetry order 4 looks same every?",o:["45°","60°","72°","90°"],a:3,e:"360÷4=90°"},
-      {q:"A cube unfolded has how many squares?",o:["4","5","6","8"],a:2,e:"A cube has 6 faces → net has 6 squares"},
-      {q:"Letter 'N' rotated 180°?",o:["N","Z","S","u"],a:0,e:"N rotated 180° still looks like N (it has 180° rotational symmetry)"},
-     ]},
-    {col:"gold",icon:"🔐",lbl:"CODES — Caesar cipher & mirror code",
-     teach:`<b>Caesar Cipher:</b> Shift every letter by a fixed number.<span class="fd-ex">Shift +3: A→D, B→E, C→F... Z→C</span><span class="fd-ex">Encode 'CAT' shift+3: C→F, A→D, T→W = FDW</span><span class="fd-ex">To DECODE: shift back by the same amount</span><b>Mirror code (A↔Z, B↔Y, C↔X...):</b><span class="fd-ex">A=26th mirror, B=25th... find the "opposite" letter</span><b>Number code:</b> A=1, B=2... Z=26<span class="fd-ex">INDIA = 9-14-4-9-1</span>`,
-     trick:"To crack an unknown Caesar: find a 1-letter word (A or I) and test what shift makes it valid.",
-     qs:[
-      {q:"Decode (shift back 3): KHOOR",o:["HELLO","JELLO","WORLD","BRAIN"],a:0,e:"K(-3)=H, H(-3)=E, O(-3)=L, O(-3)=L, R(-3)=O → HELLO"},
-      {q:"A=1,B=2...Z=26: What word is 9-14-4-9-1?",o:["INDIA","CHINA","INNER","INDIE"],a:0,e:"I=9,N=14,D=4,I=9,A=1 → INDIA"},
-      {q:"Mirror code — mirror letter for S (A↔Z, B↔Y...)?",o:["F","G","H","J"],a:2,e:"S is 19th letter. Mirror = 26-19+1 = 8th letter = H"},
-      {q:"Decode (A=1 code): 2-5 8-5-18-15",o:["BE HERO","GO HOME","BE HERE","NO HERO"],a:0,e:"B=2,E=5 → BE. H=8,E=5,R=18,O=15 → HERO → BE HERO"},
-     ]},
-   ]},
-  {id:6,name:"Geometry & Algebra",icon:"📐",col:"indigo",time:"45 min",xp:85,
-   learned:["Solve equations with variables on both sides","Area formulas for all 2D shapes","Lines and rotational symmetry","Composite area — break and calculate"],
-   secs:[
-    {col:"indigo",icon:"⚖️",lbl:"ALGEBRA — Variables on both sides",
-     teach:`Move all variables to one side, numbers to the other.<br><b>Do the SAME thing to BOTH sides.</b><span class="fd-ex">3x + 7 = x + 19 → subtract x: 2x+7=19 → subtract 7: 2x=12 → x=6</span><span class="fd-ex">CHECK: 3(6)+7=25 and 6+19=25 ✓ Always check!</span><b>With brackets:</b><span class="fd-ex">4(n+2)=3(n+6) → 4n+8=3n+18 → n=10</span>`,
-     trick:"Variables LEFT, numbers RIGHT. Always substitute your answer back to verify.",
-     qs:[
-      {q:"Solve: 5x − 3 = 2x + 12",o:["x=4","x=5","x=6","x=3"],a:1,e:"3x=15 → x=5. Check: 25-3=22 and 10+12=22 ✓"},
-      {q:"Solve: 4(n + 2) = 3(n + 6)",o:["n=8","n=10","n=12","n=6"],a:1,e:"4n+8=3n+18 → n=10"},
-      {q:"Two numbers differ by 8. Sum is 46. Larger number?",o:["25","27","29","23"],a:1,e:"n+(n+8)=46 → n=19. Larger = 27"},
-      {q:"Solve: 7 − 2x = 3x − 13",o:["x=3","x=4","x=5","x=2"],a:1,e:"20=5x → x=4. Check: 7-8=-1 and 12-13=-1 ✓"},
-      {q:"3(x−4) = x + 2. Find x.",o:["5","7","9","11"],a:1,e:"3x-12=x+2 → 2x=14 → x=7"},
-     ]},
-    {col:"cyan",icon:"📐",lbl:"GEOMETRY — All area formulas",
-     teach:`<b>Memorise these:</b><span class="fd-ex">Square: side²</span><span class="fd-ex">Rectangle: length × width</span><span class="fd-ex">Triangle: ½ × base × height</span><span class="fd-ex">Parallelogram: base × height</span><span class="fd-ex">Circle: πr² (use π=22/7)</span><span class="fd-ex">Trapezium: ½ × (sum of parallel sides) × height</span><b>Composite shapes:</b> Break into simpler shapes → add or subtract.<br><b>Semicircle:</b> Area=πr²/2. Perimeter=πr+2r.`,
-     trick:"For any area problem: draw first, label dimensions, then pick formula.",
-     qs:[
-      {q:"Triangle: base 14cm, height 9cm. Area?",o:["126 cm²","63 cm²","252 cm²","72 cm²"],a:1,e:"½×14×9=63 cm²"},
-      {q:"Circle: radius 14cm. Area? (π=22/7)",o:["616 cm²","308 cm²","154 cm²","88 cm²"],a:0,e:"22/7×14×14=616 cm²"},
-      {q:"Trapezium: parallel sides 8 and 12cm, height 5cm. Area?",o:["50 cm²","60 cm²","100 cm²","40 cm²"],a:0,e:"½×(8+12)×5=50 cm²"},
-      {q:"Square has same area as rectangle 8cm×18cm. Side?",o:["10cm","12cm","13cm","14cm"],a:1,e:"Rectangle area=144. Side=√144=12cm"},
-      {q:"Floor 12m×8m, tiles 50cm×50cm. How many tiles?",o:["192","384","480","768"],a:1,e:"1200cm×800cm÷(50×50)=384 tiles"},
-     ]},
-   ]},
-  {id:7,name:"Cross-Subject Challenge",icon:"🌍",col:"pink",time:"45 min",xp:85,
-   learned:["Speed=Distance÷Time in all three forms","Convert km/h to m/s (×5/18)","Key world GK — India, planets, inventions","Hard multi-step mixed word problems"],
-   secs:[
-    {col:"pink",icon:"🚀",lbl:"MATHS — Speed, Distance & Time",
-     teach:`<b>Three linked formulas:</b><span class="fd-ex">Distance = Speed × Time</span><span class="fd-ex">Speed = Distance ÷ Time</span><span class="fd-ex">Time = Distance ÷ Speed</span><b>Unit conversions:</b><span class="fd-ex">km/h to m/s: multiply by 5/18</span><span class="fd-ex">m/s to km/h: multiply by 18/5</span><b>Relative speed:</b><span class="fd-ex">Same direction: subtract | Opposite: add</span>`,
-     trick:"Triangle trick: D on top, S×T on bottom. Cover what you want → multiply or divide the remaining two.",
-     qs:[
-      {q:"Train travels 450km in 5 hours. Speed?",o:["80 km/h","90 km/h","85 km/h","75 km/h"],a:1,e:"Speed=450÷5=90 km/h"},
-      {q:"Convert 72 km/h to m/s.",o:["15 m/s","20 m/s","25 m/s","30 m/s"],a:1,e:"72×5/18=20 m/s"},
-      {q:"Two trains in opposite directions at 60 and 80 km/h. Distance after 3 hours?",o:["180km","240km","420km","360km"],a:2,e:"Relative speed=60+80=140 km/h. Distance=140×3=420km"},
-      {q:"Train 180m long passes 270m platform at 25 m/s. Time?",o:["12s","18s","20s","25s"],a:1,e:"Total distance=180+270=450m. Time=450÷25=18s"},
-      {q:"Car covers 240km in 4h. Time for 360km same speed?",o:["5h","6h","7h","8h"],a:1,e:"Speed=60 km/h. Time=360÷60=6h"},
-     ]},
-    {col:"coral",icon:"🌍",lbl:"GENERAL KNOWLEDGE",
-     teach:`<b>Key facts:</b><span class="fd-ex">India: 28 states, 8 UTs | Capital: New Delhi | Largest state: Rajasthan</span><span class="fd-ex">National animal: Tiger | Bird: Peacock | Flower: Lotus</span><span class="fd-ex">Smallest planet: Mercury | Largest: Jupiter</span><span class="fd-ex">Speed of light: 3×10⁸ m/s | Speed of sound: 343 m/s</span><span class="fd-ex">Water: boils 100°C, freezes 0°C</span>`,
-     trick:"India borders: Pakistan, China, Nepal, Bhutan, Bangladesh, Myanmar. Sri Lanka is across the sea.",
-     qs:[
-      {q:"Smallest planet in the solar system?",o:["Mars","Mercury","Pluto","Venus"],a:1,e:"Mercury. Pluto was reclassified as dwarf planet in 2006."},
-      {q:"Who invented the telephone?",o:["Thomas Edison","Nikola Tesla","Alexander Graham Bell","Marconi"],a:2,e:"Alexander Graham Bell, 1876"},
-      {q:"What does DNA stand for?",o:["Dynamic Nuclear Acid","Deoxyribonucleic Acid","Detailed Nucleic Acid","Deoxyribose Nucleic Amino"],a:1,e:"Deoxyribonucleic Acid — carries genetic information"},
-      {q:"India's Silicon Valley?",o:["Hyderabad","Pune","Chennai","Bengaluru"],a:3,e:"Bengaluru — home to thousands of tech companies"},
-      {q:"Largest ocean on Earth?",o:["Atlantic","Indian","Arctic","Pacific"],a:3,e:"Pacific Ocean covers more than 30% of Earth's surface"},
-     ]},
-    {col:"teal",icon:"🧮",lbl:"HARD MIXED problems",
-     teach:`<b>Multi-step strategy:</b><span class="fd-ex">1. Read twice — mark GIVEN and FIND</span><span class="fd-ex">2. Draw a diagram if possible</span><span class="fd-ex">3. Pick the right formula</span><span class="fd-ex">4. Solve step by step</span><span class="fd-ex">5. Check: does the answer make sense?</span>`,
-     trick:"If the answer feels too round (exactly 100 or 1000), double-check — it might be right, or you made a circular error.",
-     qs:[
-      {q:"240L tank: fills in 6h, empties in 8h. Both open — time to fill?",o:["20h","24h","18h","16h"],a:1,e:"Net fill rate=1/6−1/8=1/24 per hour. Time=24 hours"},
-      {q:"Boys:girls = 3:2, 30 total. How many girls?",o:["10","12","14","18"],a:1,e:"Girls=2/5×30=12"},
-      {q:"Mark up 40%, then 25% discount. Actual profit or loss %?",o:["5% profit","5% loss","10% profit","10% loss"],a:0,e:"CP=100, Marked=140, After 25%: 140×0.75=105. Profit=5%"},
-      {q:"How many 3-digit numbers divisible by 12?",o:["38","75","150","50"],a:1,e:"First: 108 (12×9). Last: 996 (12×83). Count=83−9+1=75"},
-     ]},
-   ]},
-  {id:8,name:"BOSS LEVEL",icon:"👑",col:"gold",time:"60 min",xp:100,
-   learned:["Classic lateral thinking puzzles solved","Permutations and combinations intro","Geometry — inscribed shapes","Rope burning and water measuring logic"],
-   secs:[
-    {col:"gold",icon:"👑",lbl:"BOSS — Elite problems (no hints!)",
-     teach:`<b>You have reached the BOSS LEVEL.</b><br>These are Grade 7–8 and competition-level problems. They require combining everything from today.<br>Some will make you think hard for 2–3 minutes — that is completely normal.<br>Don't rush. Think on paper. You have got this.`,
-     trick:"No tricks — just your brain. You have already proved yourself through 7 levels.",
-     qs:[
-      {q:"BOSS 1: Number ÷5 leaves remainder 3. ÷7 leaves remainder 4. Smallest such number?",o:["18","53","38","32"],a:0,e:"Numbers rem 3 when ÷5: 3,8,13,18... rem 4 when ÷7: 4,11,18... First common: 18 ✓"},
-      {q:"BOSS 2: 3 students in 3 seats — how many arrangements?",o:["3","6","9","27"],a:1,e:"3×2×1=6 (permutations = 3!)"},
-      {q:"BOSS 3: Square inscribed in circle radius 7cm. Area of square?",o:["49 cm²","98 cm²","196 cm²","77 cm²"],a:1,e:"Diagonal=14cm. s²+s²=196. 2s²=196. s²=98 cm²"},
-      {q:"BOSS 4: Average of 5 consecutive odd numbers is 25. Largest?",o:["27","29","31","23"],a:1,e:"Middle = 25. So: 21,23,25,27,29. Largest=29"},
-      {q:"BOSS 5: A man says 'Brothers and sisters I have none, but that man's father is my father's son.' Who is in the photo?",o:["His son","Himself","His father","His brother"],a:0,e:"My father's son (no siblings) = me. That man's father = me. So photo = my SON."},
-      {q:"BOSS 6: 6 cats catch 6 mice in 6 min. Cats needed for 60 mice in 60 min?",o:["60","10","6","30"],a:2,e:"1 cat catches 1 mouse in 6min. In 60min, 1 cat catches 10 mice. For 60: 60÷10=6 cats. Same 6!"},
-      {q:"BOSS 7: Two ropes each burn in 1 hour (non-uniform). Measure exactly 45 minutes?",o:["Burn one from both ends for 45min","Light rope1 from both ends AND rope2 from one end. When rope1 done (30min), light rope2 other end — 15 more min = 45 total","Burn both from one end for 45min","Fold rope in half"],a:1,e:"Rope1 both ends = 30min. At 30min, rope2 has 30min left. Light other end → 15min. 30+15=45 ✓"},
-      {q:"BOSS 8: A 3×3×3 cube painted red on all faces then cut into 27 small cubes. How many have exactly 2 red faces?",o:["8","12","6","1"],a:1,e:"Edge cubes (not corners, not face centres) have 2 painted faces. 12 edges × 1 cube each = 12"},
-     ]},
-   ]},
+var FD_LEVELS = [
+  { id:1, name:"Warm-up", icon:"⚡", col:"teal", time:"30 min", xp:60,
+    learned:["Multiply any 2-digit number by 11 instantly","Square numbers ending in 5 in 2 seconds","The 9x finger trick and digit-sum rule","Spot Fibonacci, geometric and triangular sequences"],
+    secs:[
+      { col:"teal", icon:"⚡", lbl:"TRICK 1 — Multiply by 11",
+        teach:"<b>Any 2-digit number × 11:</b><br>Split digits, add them, put sum in the middle.<br><span class='fd-ex'>34 × 11 → 3, 4 → 3+4=7 → 374</span><span class='fd-ex'>52 × 11 → 5+2=7 → 572</span><b>If sum > 9, carry the 1:</b><span class='fd-ex'>75 × 11 → 7+5=12 → put 2, carry 1 → 825</span><span class='fd-ex'>99 × 11 → 9+9=18 → 1089</span>",
+        trick:"AB×11: write A, then A+B, then B. If A+B>9 add 1 to A.",
+        qs:[
+          {q:"43 × 11 = ?", o:["473","483","463","453"], a:0, e:"4+3=7 → 473"},
+          {q:"62 × 11 = ?", o:["692","682","672","662"], a:1, e:"6+2=8 → 682"},
+          {q:"85 × 11 = ?", o:["845","855","925","935"], a:3, e:"8+5=13 → put 3, carry 1 → 935"},
+          {q:"67 × 11 = ?", o:["727","737","747","757"], a:1, e:"6+7=13 → put 3, carry 1 → 737"},
+          {q:"99 × 11 = ?", o:["1089","1099","1009","1019"], a:0, e:"9+9=18 → 1089"}
+        ]},
+      { col:"cyan", icon:"🔢", lbl:"TRICK 2 — Square numbers ending in 5",
+        teach:"<b>Any number ending in 5, squared:</b><br><span class='fd-ex'>Step 1: Take digit(s) BEFORE the 5</span><span class='fd-ex'>Step 2: Multiply that number × (itself+1)</span><span class='fd-ex'>Step 3: Put 25 at the end</span><b>Examples:</b><span class='fd-ex'>35² → 3×4=12 → 1225</span><span class='fd-ex'>75² → 7×8=56 → 5625</span><span class='fd-ex'>125² → 12×13=156 → 15625</span>",
+        trick:"n5² = [n×(n+1)] then 25. Works for ANY number ending in 5!",
+        qs:[
+          {q:"25² = ?", o:["425","525","625","725"], a:2, e:"2×3=6 → 625"},
+          {q:"45² = ?", o:["1825","1925","2025","2125"], a:2, e:"4×5=20 → 2025"},
+          {q:"65² = ?", o:["3625","4025","4225","4625"], a:2, e:"6×7=42 → 4225"},
+          {q:"95² = ?", o:["8825","8925","9025","9125"], a:2, e:"9×10=90 → 9025"},
+          {q:"15² = ?", o:["125","215","225","235"], a:2, e:"1×2=2 → 225"}
+        ]},
+      { col:"green", icon:"✋", lbl:"TRICK 3 — Multiply by 9 (finger method)",
+        teach:"Hold 10 fingers numbered 1–10 left to right. To find n×9: bend down finger n.<br><span class='fd-ex'>4×9 → bend finger 4 → 3 left, 6 right → 36</span><span class='fd-ex'>7×9 → bend finger 7 → 6 left, 3 right → 63</span><b>Digit-sum shortcut:</b> Digits of every 9× answer always add to 9.<span class='fd-ex'>9×8=72 → 7+2=9 ✓ | 9×12=108 → 1+0+8=9 ✓</span>",
+        trick:"For 9×n: tens digit = n−1, units digit = 10−n. So 9×6: tens=5, units=4 → 54",
+        qs:[
+          {q:"9 × 6 = ?", o:["45","54","56","63"], a:1, e:"Finger 6 → 5 left, 4 right → 54"},
+          {q:"9 × 8 = ?", o:["63","71","72","81"], a:2, e:"Finger 8 → 7 left, 2 right → 72"},
+          {q:"Which multiple of 9 is WRONG?", o:["9×4=36","9×7=63","9×5=44","9×9=81"], a:2, e:"9×5=45, not 44. Check: 4+4=8 not 9"},
+          {q:"9 × 11 = ?", o:["98","99","100","101"], a:1, e:"99 → 9+9=18 → 1+8=9 ✓"},
+          {q:"Which is a correct multiple of 9?", o:["9×13=115","9×14=126","9×15=125","9×16=153"], a:1, e:"126: 1+2+6=9 ✓"}
+        ]},
+      { col:"gold", icon:"🔮", lbl:"Sequences — crack any pattern",
+        teach:"Always write the GAPS between terms first.<br><span class='fd-ex'>Arithmetic: same gap → 3, 7, 11, 15 (gap +4)</span><span class='fd-ex'>Geometric: multiply by same → 2, 6, 18, 54 (×3)</span><span class='fd-ex'>Square numbers: 1, 4, 9, 16, 25 (gaps: 3,5,7,9...)</span><span class='fd-ex'>Triangular: 1, 3, 6, 10, 15 (gaps: 2,3,4,5...)</span><span class='fd-ex'>Fibonacci-style: each term = sum of two before it</span>",
+        trick:"List the gaps first. Equal gaps = arithmetic. Growing gaps = second-order. Multiplying gaps = geometric.",
+        qs:[
+          {q:"Next: 2, 6, 18, 54, ___", o:["72","108","162","200"], a:2, e:"×3 each time. 54×3=162"},
+          {q:"Next: 1, 4, 9, 16, 25, ___", o:["30","35","36","49"], a:2, e:"Square numbers: 6²=36"},
+          {q:"Next: 1, 3, 6, 10, 15, ___", o:["18","20","21","25"], a:2, e:"Triangular numbers. Gaps +2,+3,+4,+5,+6 → 15+6=21"},
+          {q:"Next: 3, 5, 8, 13, 21, ___", o:["29","32","34","36"], a:2, e:"Fibonacci-style: 13+21=34"},
+          {q:"Sequence type: 100, 50, 25, 12.5?", o:["Arithmetic","Geometric","Fibonacci","Square"], a:1, e:"Dividing by 2 each time = geometric"}
+        ]}
+    ]},
+  { id:2, name:"Number Mastery", icon:"🔢", col:"cyan", time:"45 min", xp:80,
+    learned:["Vedic criss-cross multiplication","BODMAS — correct order for all 6 operations","Indian number system: lakhs and crores","All 7 divisibility rules by heart"],
+    secs:[
+      { col:"cyan", icon:"✖️", lbl:"VEDIC MATHS — Criss-cross multiplication",
+        teach:"Multiply 2-digit numbers instantly:<br><b>Example: 23 × 41</b><span class='fd-ex'>Step 1 — Units: 3×1=3</span><span class='fd-ex'>Step 2 — Cross: (2×1)+(3×4)=14 → write 4, carry 1</span><span class='fd-ex'>Step 3 — Tens: 2×4+carry 1=9 → Answer: 943</span><b>Example: 34 × 52:</b><span class='fd-ex'>Units:4×2=8 | Cross:3×2+4×5=26(write 6,carry 2) | Tens:3×5+2=17 → 1768</span>",
+        trick:"Units×Units | (Outer + Inner cross) | Tens×Tens. Handle carries at each step.",
+        qs:[
+          {q:"21 × 32 = ?", o:["652","662","672","682"], a:2, e:"Units:1×2=2 | Cross:2×2+1×3=7 | Tens:2×3=6 → 672"},
+          {q:"43 × 21 = ?", o:["883","893","903","913"], a:2, e:"Units:3×1=3 | Cross:4×1+3×2=10(0,c1) | Tens:4×2+1=9 → 903"},
+          {q:"Solve (BODMAS): 5 + 3 × 4 − 6 ÷ 2", o:["11","13","14","16"], a:2, e:"×÷ first: 3×4=12, 6÷2=3. Then: 5+12−3=14"},
+          {q:"Solve: (48 ÷ 6 + 4²) × 3 − 15", o:["42","48","57","60"], a:2, e:"4²=16, 48÷6=8, (8+16)×3−15=57"},
+          {q:"First step in BODMAS?", o:["Orders","Brackets","Division","Multiplication"], a:1, e:"Brackets FIRST, then Orders, then Division/Multiplication, then Addition/Subtraction"}
+        ]},
+      { col:"teal", icon:"🇮🇳", lbl:"Indian number system",
+        teach:"<b>Place values (right to left):</b><span class='fd-ex'>Ones → Tens → Hundreds → Thousands → Ten-Thousands → Lakhs → Ten-Lakhs → Crores</span><b>Key values:</b><span class='fd-ex'>1 Lakh = 1,00,000</span><span class='fd-ex'>1 Crore = 1,00,00,000 (= 10 million)</span><b>Comma rule:</b> First comma after 3 digits, then every 2:<span class='fd-ex'>International: 12,345,678 → Indian: 1,23,45,678</span>",
+        trick:"1 million = 10 lakhs. 1 billion = 100 crores. India has ~140 crore people.",
+        qs:[
+          {q:"4,56,78,901 in words?", o:["Four crore fifty-six lakh seventy-eight thousand nine hundred one","Forty-five crore sixty-seven lakh","Four billion","Four hundred fifty-six thousand"], a:0, e:"4 crores + 56 lakhs + 78 thousands + 901"},
+          {q:"How many lakhs in one crore?", o:["10","100","1000","10000"], a:1, e:"1 crore = 100 lakhs"},
+          {q:"25 lakhs = ___ million?", o:["0.25","2.5","25","250"], a:1, e:"10 lakhs = 1 million. 25 lakhs = 2.5 million"},
+          {q:"140 crores = ___ billion?", o:["0.14","1.4","14","140"], a:1, e:"1 billion = 100 crores. 140 crores = 1.4 billion"}
+        ]},
+      { col:"indigo", icon:"🔍", lbl:"Divisibility rules",
+        teach:"<b>Check without dividing:</b><span class='fd-ex'>÷2: last digit even</span><span class='fd-ex'>÷3: sum of digits divisible by 3</span><span class='fd-ex'>÷4: last TWO digits divisible by 4</span><span class='fd-ex'>÷5: ends in 0 or 5</span><span class='fd-ex'>÷6: divisible by BOTH 2 AND 3</span><span class='fd-ex'>÷9: sum of digits divisible by 9</span><span class='fd-ex'>÷11: alternating sum = 0 or ±11</span>",
+        trick:"For ÷11 on 121: 1−2+1=0 ✓. For ÷9: digit sum must equal 9 or 18 etc.",
+        qs:[
+          {q:"Is 7,35,246 divisible by 6?", o:["Yes — by 2 and 3","No — only by 2","No — only by 3","No"], a:0, e:"Ends 6 (÷2 ✓). Digit sum=27 (÷3 ✓). Both → divisible by 6"},
+          {q:"Is 2,34,516 divisible by 4?", o:["Yes","No","Only by 2","Only by 8"], a:0, e:"Last two digits: 16. 16÷4=4 ✓"},
+          {q:"Which is divisible by 11?", o:["121","123","125","127"], a:0, e:"121: 1−2+1=0 ✓. And 11×11=121"},
+          {q:"A number ends in 0. Definitely divisible by?", o:["2 only","2 and 5 only","2, 5 and 10","10 only"], a:2, e:"Ends in 0 → even (÷2), ends 0/5 (÷5), and both → ÷10"},
+          {q:"Is 4,58,913 divisible by 9?", o:["Yes","No — digit sum is 30","Only by 3","Cannot tell"], a:1, e:"4+5+8+9+1+3=30. 30÷9 not whole → NOT ÷9. But 30÷3=10 → IS ÷3"}
+        ]}
+    ]},
+  { id:3, name:"Language Power", icon:"📚", col:"purple", time:"45 min", xp:75,
+    learned:["Active → Passive voice transformation rules","Direct → Indirect speech with tense shifts","Tamil grammar terms in Tamil script","Hindi gender agreement and tenses"],
+    secs:[
+      { col:"purple", icon:"📖", lbl:"ENGLISH — Active and Passive Voice",
+        teach:"<b>Active:</b> Subject DOES the action. 'Priya painted the wall.'<br><b>Passive:</b> Subject RECEIVES the action. 'The wall was painted by Priya.'<br><b>Convert Active to Passive:</b><span class='fd-ex'>1. Object becomes new subject</span><span class='fd-ex'>2. Add was/were + past participle</span><span class='fd-ex'>3. Original subject → by ___</span><b>Examples:</b><span class='fd-ex'>They built the bridge → The bridge was built by them</span><span class='fd-ex'>She writes letters → Letters are written by her</span>",
+        trick:"Pronoun changes: I→me, he→him, she→her, they→them, we→us",
+        qs:[
+          {q:"Convert: 'The teacher explained the lesson.'", o:["The lesson was explained by the teacher","The lesson explained by teacher","The teacher was explained the lesson","The lesson has explained by teacher"], a:0, e:"Object (lesson) → subject. was + explained. by the teacher."},
+          {q:"Convert to active: 'The cake was baked by Priya.'", o:["Priya baked the cake","The cake baked Priya","Priya was baking cake","The cake is baked"], a:0, e:"Priya (doer) + baked + the cake (object)"},
+          {q:"Which sentence is passive?", o:["Dogs bark loudly","She painted the wall","The match was won by India","He writes every day"], a:2, e:"'was won' = passive (was + past participle + by)"},
+          {q:"Convert: 'They will announce the results.'", o:["The results will be announced","Results announced by them","The results are announced","Results will announce"], a:0, e:"Future passive: will be + announced"}
+        ]},
+      { col:"indigo", icon:"💬", lbl:"ENGLISH — Direct and Indirect Speech",
+        teach:"<b>Direct:</b> Exact words in quotes. She said, 'I am hungry.'<br><b>Indirect:</b> No quotes, tense shifts back.<br><b>Tense shifts:</b><span class='fd-ex'>is/am → was | are → were</span><span class='fd-ex'>will → would | can → could | may → might</span><span class='fd-ex'>today → that day | tomorrow → the next day</span><b>Example:</b><span class='fd-ex'>Direct: Ram said, I will come tomorrow.</span><span class='fd-ex'>Indirect: Ram said that he would come the next day.</span>",
+        trick:"Remove quotes, add 'that', shift tense back one step, change pronouns and time words.",
+        qs:[
+          {q:"Convert: She said, I am going to school.", o:["She said that she was going to school","She said she is going to school","She said I am going to school","She told I was going to school"], a:0, e:"am → was. I → she. Add 'that', remove quotes."},
+          {q:"Convert: He said, I can swim.", o:["He said he can swim","He said that he could swim","He told that I could swim","He said I can swim"], a:1, e:"can → could. I → he."},
+          {q:"'We will win,' they said. Indirect speech?", o:["They said that they would win","They said we will win","They told that we would win","They said that we will win"], a:0, e:"will → would. we (speakers) → they"},
+          {q:"Direct uses ___. Indirect uses ___.", o:["past / present","quotation marks / no quotes","indirect / direct words","passive / active"], a:1, e:"Direct = exact words in quotes. Indirect = rephrased without quotes."}
+        ]},
+      { col:"gold", icon:"அ", lbl:"TAMIL — Grammar terms and tenses",
+        teach:"<b>Tamil grammar terms:</b><span class='fd-ex'>பெயர்ச்சொல் = Noun</span><span class='fd-ex'>வினைச்சொல் = Verb</span><span class='fd-ex'>பண்புப்பெயர் = Adjective</span><span class='fd-ex'>வினையடை = Adverb</span><b>Tamil tenses:</b><span class='fd-ex'>இறந்த காலம் = Past tense</span><span class='fd-ex'>நிகழ் காலம் = Present tense</span><span class='fd-ex'>எதிர் காலம் = Future tense</span><b>Compound word:</b><span class='fd-ex'>கால் + பந்து = கால்பந்து (football)</span>",
+        trick:"Tamil verb endings change with tense AND the gender/number of the subject.",
+        qs:[
+          {q:"Tamil word for verb?", o:["பெயர்ச்சொல்","வினைச்சொல்","பண்புப்பெயர்","வினையடை"], a:1, e:"வினைச்சொல் = action/verb word"},
+          {q:"எதிர் காலம் means?", o:["Past tense","Present tense","Future tense","Conditional"], a:2, e:"எதிர் = future. எதிர் காலம் = future tense"},
+          {q:"கால்பந்து is formed from?", o:["கால் + பந்து","கா + ல்பந்து","கால் + வந்து","கால் + மந்து"], a:0, e:"கால் (foot) + பந்து (ball) = கால்பந்து (football)"},
+          {q:"Identify the adverb in: அவன் வேகமாக ஓடினான்", o:["அவன்","வேகமாக","ஓடினான்","வேகம்"], a:1, e:"வேகமாக = quickly (adverb — modifies how he ran)"}
+        ]},
+      { col:"orange", icon:"🗣️", lbl:"HINDI — Tenses and gender rules",
+        teach:"<b>Verb endings change with gender:</b><span class='fd-ex'>Present (male): मैं खाता हूँ</span><span class='fd-ex'>Present (female): मैं खाती हूँ</span><span class='fd-ex'>Past: मैंने खाया</span><span class='fd-ex'>Future (male): मैं खाऊँगा</span><b>Postpositions — come AFTER the noun:</b><span class='fd-ex'>में = in/on | को = to/for | से = from | का/के/की = of</span>",
+        trick:"Male verbs end in -ता है. Female verbs end in -ती है.",
+        qs:[
+          {q:"She goes to school in Hindi?", o:["वह स्कूल जाता है","वह स्कूल जाती है","वह स्कूल जाते है","वह स्कूल जाओ"], a:1, e:"वह (she) = feminine → जाती. Male → जाता"},
+          {q:"The book is on the table in Hindi?", o:["किताब मेज़ पर है","किताब मेज़ में है","मेज़ किताब पर है","किताब पर मेज़ है"], a:0, e:"किताब=book, मेज़=table, पर=on, है=is"},
+          {q:"Hindi postposition meaning from?", o:["में","को","से","का"], a:2, e:"से = from. दिल्ली से = from Delhi"},
+          {q:"Correct (she reads): वह पुस्तक पढ़ता है?", o:["वह पुस्तक पढ़ती है","वह पुस्तक पढ़ते है","वह पुस्तक पढ़ा है","वह पुस्तक पढ़ेगी"], a:0, e:"Feminine subject → पढ़ती (not masculine पढ़ता)"}
+        ]}
+    ]},
+  { id:4, name:"Science Explorer", icon:"🔬", col:"green", time:"45 min", xp:75,
+    learned:["Newton's 3 laws with real-world examples","First 20 elements of the periodic table","Photosynthesis equation explained","Double blood circulation"],
+    secs:[
+      { col:"green", icon:"⚡", lbl:"PHYSICS — Newton's Three Laws",
+        teach:"<b>Law 1 — Inertia:</b> Objects stay still or keep moving unless a force acts.<span class='fd-ex'>You lurch forward when a bus brakes — your body wants to keep moving</span><b>Law 2 — F = ma:</b> Force = mass × acceleration<span class='fd-ex'>A cricket ball is easier to throw than a shot put</span><b>Law 3 — Action-Reaction:</b> Every action has an equal and opposite reaction.<span class='fd-ex'>Rocket pushes gas DOWN → gas pushes rocket UP</span><span class='fd-ex'>You push a wall → wall pushes you back equally</span>",
+        trick:"LAW 1: Objects are lazy. LAW 2: F=ma. LAW 3: You push, the universe pushes back equally.",
+        qs:[
+          {q:"Why do you lurch forward when a bus brakes?", o:["Brakes push you forward","Your body has inertia and wants to keep moving (Law 1)","Driver accelerates","Air resistance"], a:1, e:"Law 1 — Inertia: your body was moving and resists the change"},
+          {q:"Truck vs bicycle at same speed — which needs MORE force to stop?", o:["Bicycle","Truck — more mass means more force needed (F=ma)","Both need same force","Depends on driver"], a:1, e:"F=ma: same deceleration, but truck has far more mass → far more braking force"},
+          {q:"Swimmer pushes water backward. What happens?", o:["Nothing","Swimmer moves forward (Law 3)","Swimmer sinks","Water pushes sideways"], a:1, e:"Law 3: push water back → water pushes swimmer forward equally"},
+          {q:"Earth pulls Moon toward it. Moon does what to Earth?", o:["Nothing","Pulls Earth equally toward it (Law 3)","Pushes Earth away","Has no effect"], a:1, e:"Law 3 — equal and opposite. Moon pulls Earth with same force Earth pulls Moon"}
+        ]},
+      { col:"teal", icon:"⚗️", lbl:"CHEMISTRY — First 20 elements",
+        teach:"<b>First 20 elements:</b><span class='fd-ex'>1H 2He 3Li 4Be 5B 6C 7N 8O 9F 10Ne</span><span class='fd-ex'>11Na 12Mg 13Al 14Si 15P 16S 17Cl 18Ar 19K 20Ca</span><b>Memory trick for 1-10:</b><span class='fd-ex'>HaHa LiBe BeCaN OFfNeah</span><span class='fd-ex'>H-He-Li-Be-B-C-N-O-F-Ne</span><b>Key facts:</b><span class='fd-ex'>Na = Sodium (Latin Natrium) | K = Potassium (Latin Kalium)</span><span class='fd-ex'>Noble gases (He,Ne,Ar) — full outer shell — do not react</span>",
+        trick:"Atomic number = number of protons = number of electrons in a neutral atom.",
+        qs:[
+          {q:"Symbol for Sodium?", o:["So","Sd","Na","Sm"], a:2, e:"Na from Latin Natrium"},
+          {q:"Element with atomic number 8?", o:["Nitrogen","Oxygen","Fluorine","Carbon"], a:1, e:"H(1)He(2)Li(3)Be(4)B(5)C(6)N(7)O(8) — Oxygen"},
+          {q:"Why are Noble gases unreactive?", o:["Too small","Outer electron shell is completely full","Too expensive","Only exist in space"], a:1, e:"Full outer shell = no need to gain or lose electrons"},
+          {q:"K stands for which element?", o:["Krypton","Potassium","Kryptonite","Kelsium"], a:1, e:"K = Kalium (Latin for Potassium). Atomic number 19"}
+        ]},
+      { col:"pink", icon:"🌿", lbl:"BIOLOGY — Photosynthesis and circulation",
+        teach:"<b>Photosynthesis:</b><span class='fd-ex'>CO2 + H2O → (sunlight + chlorophyll) → Glucose + O2</span><span class='fd-ex'>Where: chloroplasts in leaf cells</span><span class='fd-ex'>Why leaves are green: chlorophyll REFLECTS green light</span><b>Double blood circulation:</b><span class='fd-ex'>Right heart → Lungs (get O2) → Left heart → Body</span><b>Blood components:</b><span class='fd-ex'>Red cells (O2) | White cells (fight infection) | Platelets (clotting) | Plasma (liquid)</span>",
+        trick:"Arteries Always leave the heart. Veins return. Arteries = thick walls. Veins = valves.",
+        qs:[
+          {q:"Two raw materials for photosynthesis?", o:["O2 and glucose","CO2 and water","Nitrogen and sunlight","Glucose and chlorophyll"], a:1, e:"CO2 from air + H2O from roots. Sunlight is energy, not a raw material."},
+          {q:"Why are leaves green?", o:["Reflect green light","Absorb green light","Produce green gas","Soil is green"], a:0, e:"Chlorophyll absorbs red and blue but REFLECTS green"},
+          {q:"Which side of the heart pumps to the lungs?", o:["Left","Right","Both","Neither"], a:1, e:"Right → lungs (oxygenation). Left → body (delivers O2)"},
+          {q:"Wound stops bleeding because of?", o:["Red blood cells","White blood cells","Platelets","Plasma"], a:2, e:"Platelets clump at wound and form a clot"}
+        ]}
+    ]},
+  { id:"break", name:"Lunch Break", icon:"🍎", col:"gold", time:"45 min", xp:0, learned:[], secs:[] },
+  { id:5, name:"IQ Accelerator", icon:"🧠", col:"coral", time:"45 min", xp:90,
+    learned:["Logic grids — systematic elimination method","Mental rotation and cube nets","Caesar cipher and mirror code","Venn diagrams and set intersection"],
+    secs:[
+      { col:"coral", icon:"♟️", lbl:"LOGIC — Grid elimination method",
+        teach:"Build a grid. Use clues to mark correct (true) or wrong (impossible).<br><b>Key rule:</b> Once you mark correct in a cell, every other cell in that row AND column is wrong.<br><b>Always start with the most restrictive clues.</b><span class='fd-ex'>Clue: Arjun does not play chess → mark wrong in (Arjun, Chess)</span><span class='fd-ex'>Clue: Bala plays football → mark correct, then wrong everywhere else in that row and column</span>",
+        trick:"If a person cannot have A, B, or C out of 4 options then they MUST have D.",
+        qs:[
+          {q:"Arjun, Bala, Charan have cat, dog, fish. Arjun: no cat. Bala: no dog. Charan: no fish. Who has the dog?", o:["Arjun","Bala","Charan","Cannot tell"], a:0, e:"Charan: no fish → cat or dog. Bala: no dog → cat or fish. Arjun: no cat → dog or fish. → Arjun=dog, Charan=cat, Bala=fish"},
+          {q:"All Bloops are Razzles. All Razzles are Lazzles. Therefore?", o:["All Bloops are Lazzles","No Bloops are Lazzles","Some Bloops might be Lazzles","Cannot determine"], a:0, e:"Transitive: Bloops→Razzles→Lazzles → All Bloops are Lazzles"},
+          {q:"20 like cricket, 15 like football, 8 like both. How many like at least one?", o:["35","43","27","33"], a:2, e:"At least one = 20+15-8 = 27 (subtract both to avoid double counting)"},
+          {q:"A is older than B. C is younger than A but older than B. D is older than A. Youngest?", o:["A","B","C","D"], a:1, e:"Order: D > A > C > B. B is youngest"}
+        ]},
+      { col:"indigo", icon:"🔷", lbl:"SPATIAL — Mental rotation and nets",
+        teach:"<b>Mirror reflection:</b><span class='fd-ex'>Vertical mirror flips left-right → b becomes d, p becomes q</span><span class='fd-ex'>Horizontal mirror flips up-down → b becomes p, d becomes q</span><b>Rotation:</b><span class='fd-ex'>90 degrees clockwise: top goes right, right goes down</span><span class='fd-ex'>180 degrees = upside down | 270 CW = 90 anti-clockwise</span><b>Cube net:</b> 6 squares in cross or T or L shape.",
+        trick:"Track ONE distinctive feature as you rotate. Where does that feature go?",
+        qs:[
+          {q:"Letter b reflected in a vertical mirror?", o:["d","p","q","b"], a:0, e:"Vertical mirror flips left-right: b → d"},
+          {q:"Square paper folded twice, hole punched in centre. Holes when unfolded?", o:["1","2","4","8"], a:2, e:"Folding twice creates 4 layers. One punch = 4 holes"},
+          {q:"Shape with rotational symmetry order 4 looks same every?", o:["45 degrees","60 degrees","72 degrees","90 degrees"], a:3, e:"360 divided by 4 = 90 degrees"},
+          {q:"A cube unfolded has how many squares?", o:["4","5","6","8"], a:2, e:"A cube has 6 faces so its net has 6 squares"},
+          {q:"Letter N rotated 180 degrees?", o:["N","Z","S","u"], a:0, e:"N rotated 180 degrees still looks like N — it has rotational symmetry order 2"}
+        ]},
+      { col:"gold", icon:"🔐", lbl:"CODES — Caesar cipher and mirror code",
+        teach:"<b>Caesar Cipher:</b> Shift every letter by a fixed number.<span class='fd-ex'>Shift +3: A→D, B→E, C→F ... Z→C</span><span class='fd-ex'>Encode CAT with shift+3: C→F, A→D, T→W = FDW</span><span class='fd-ex'>To DECODE: shift back by the same amount</span><b>Mirror code (A to Z, B to Y, C to X...):</b><span class='fd-ex'>A is the 26th from the end, B is 25th...</span><b>Number code:</b><span class='fd-ex'>A=1, B=2 ... Z=26. INDIA = 9-14-4-9-1</span>",
+        trick:"To crack an unknown Caesar: spot a 1-letter word like A or I and test what shift makes it valid.",
+        qs:[
+          {q:"Decode (shift back 3): KHOOR", o:["HELLO","JELLO","WORLD","BRAIN"], a:0, e:"K(-3)=H, H(-3)=E, O(-3)=L, O(-3)=L, R(-3)=O → HELLO"},
+          {q:"A=1,B=2...Z=26: What word is 9-14-4-9-1?", o:["INDIA","CHINA","INNER","INDIE"], a:0, e:"I=9, N=14, D=4, I=9, A=1 → INDIA"},
+          {q:"Mirror code: mirror letter for S (A to Z, B to Y...)?", o:["F","G","H","J"], a:2, e:"S is 19th letter. Mirror = 26-19+1 = 8th letter = H"},
+          {q:"Decode (A=1 code): 2-5 8-5-18-15", o:["BE HERO","GO HOME","BE HERE","NO HERO"], a:0, e:"B=2, E=5 → BE. H=8, E=5, R=18, O=15 → HERO → BE HERO"}
+        ]}
+    ]},
+  { id:6, name:"Geometry & Algebra", icon:"📐", col:"indigo", time:"45 min", xp:85,
+    learned:["Solve equations with variables on both sides","Area formulas for all 2D shapes","Lines and rotational symmetry","Composite area — break and calculate"],
+    secs:[
+      { col:"indigo", icon:"⚖️", lbl:"ALGEBRA — Variables on both sides",
+        teach:"Move all variables to one side, numbers to the other.<br><b>Do the SAME thing to BOTH sides.</b><span class='fd-ex'>3x + 7 = x + 19</span><span class='fd-ex'>Subtract x from both sides: 2x + 7 = 19</span><span class='fd-ex'>Subtract 7: 2x = 12</span><span class='fd-ex'>Divide by 2: x = 6</span><span class='fd-ex'>CHECK: 3(6)+7=25 and 6+19=25 ✓ Always check!</span><b>With brackets:</b><span class='fd-ex'>4(n+2) = 3(n+6) → 4n+8=3n+18 → n=10</span>",
+        trick:"Variables LEFT, numbers RIGHT. Always substitute your answer back to verify.",
+        qs:[
+          {q:"Solve: 5x − 3 = 2x + 12", o:["x=4","x=5","x=6","x=3"], a:1, e:"3x=15 → x=5. Check: 25-3=22 and 10+12=22 ✓"},
+          {q:"Solve: 4(n + 2) = 3(n + 6)", o:["n=8","n=10","n=12","n=6"], a:1, e:"4n+8=3n+18 → n=10"},
+          {q:"Two numbers differ by 8. Sum is 46. Larger number?", o:["25","27","29","23"], a:1, e:"n+(n+8)=46 → n=19. Larger = 27"},
+          {q:"Solve: 7 − 2x = 3x − 13", o:["x=3","x=4","x=5","x=2"], a:1, e:"20=5x → x=4. Check: 7-8=-1 and 12-13=-1 ✓"},
+          {q:"3(x−4) = x + 2. Find x.", o:["5","7","9","11"], a:1, e:"3x-12=x+2 → 2x=14 → x=7"}
+        ]},
+      { col:"cyan", icon:"📐", lbl:"GEOMETRY — All area formulas",
+        teach:"<b>Memorise these formulas:</b><span class='fd-ex'>Square: side squared</span><span class='fd-ex'>Rectangle: length times width</span><span class='fd-ex'>Triangle: half times base times height</span><span class='fd-ex'>Circle: pi times r squared (use pi = 22/7)</span><span class='fd-ex'>Trapezium: half times (sum of parallel sides) times height</span><b>Composite shapes:</b> Break into simpler shapes and add or subtract areas.<br><b>Semicircle:</b> Area = pi r squared divided by 2. Perimeter = pi r + 2r.",
+        trick:"For any area problem: draw first, label dimensions, then pick formula.",
+        qs:[
+          {q:"Triangle: base 14cm, height 9cm. Area?", o:["126 cm sq","63 cm sq","252 cm sq","72 cm sq"], a:1, e:"half times 14 times 9 = 63 cm sq"},
+          {q:"Circle: radius 14cm. Area? (pi=22/7)", o:["616 cm sq","308 cm sq","154 cm sq","88 cm sq"], a:0, e:"22/7 times 14 times 14 = 616 cm sq"},
+          {q:"Trapezium: parallel sides 8 and 12cm, height 5cm. Area?", o:["50 cm sq","60 cm sq","100 cm sq","40 cm sq"], a:0, e:"half times (8+12) times 5 = 50 cm sq"},
+          {q:"Square has same area as rectangle 8cm times 18cm. Side?", o:["10cm","12cm","13cm","14cm"], a:1, e:"Rectangle area = 144. Side = square root of 144 = 12cm"},
+          {q:"Floor 12m times 8m, tiles 50cm times 50cm. How many tiles?", o:["192","384","480","768"], a:1, e:"1200cm times 800cm divided by (50 times 50) = 384 tiles"}
+        ]}
+    ]},
+  { id:7, name:"Cross-Subject Challenge", icon:"🌍", col:"pink", time:"45 min", xp:85,
+    learned:["Speed = Distance divided by Time in all three forms","Convert km/h to m/s by multiplying by 5/18","Key world GK — India, planets, inventions","Hard multi-step word problems"],
+    secs:[
+      { col:"pink", icon:"🚀", lbl:"MATHS — Speed, Distance and Time",
+        teach:"<b>Three linked formulas:</b><span class='fd-ex'>Distance = Speed times Time</span><span class='fd-ex'>Speed = Distance divided by Time</span><span class='fd-ex'>Time = Distance divided by Speed</span><b>Unit conversions:</b><span class='fd-ex'>km/h to m/s: multiply by 5/18</span><span class='fd-ex'>m/s to km/h: multiply by 18/5</span><b>Relative speed:</b><span class='fd-ex'>Same direction: subtract | Opposite directions: add</span>",
+        trick:"Triangle trick: D on top, S times T on bottom. Cover what you want and multiply or divide the other two.",
+        qs:[
+          {q:"Train travels 450km in 5 hours. Speed?", o:["80 km/h","90 km/h","85 km/h","75 km/h"], a:1, e:"Speed = 450 divided by 5 = 90 km/h"},
+          {q:"Convert 72 km/h to m/s.", o:["15 m/s","20 m/s","25 m/s","30 m/s"], a:1, e:"72 times 5/18 = 20 m/s"},
+          {q:"Two trains in opposite directions at 60 and 80 km/h. Distance after 3 hours?", o:["180km","240km","420km","360km"], a:2, e:"Relative speed = 60+80 = 140 km/h. Distance = 140 times 3 = 420km"},
+          {q:"Train 180m long passes 270m platform at 25 m/s. Time?", o:["12s","18s","20s","25s"], a:1, e:"Total distance = 180+270 = 450m. Time = 450 divided by 25 = 18s"},
+          {q:"Car covers 240km in 4h. Time for 360km at same speed?", o:["5h","6h","7h","8h"], a:1, e:"Speed = 60 km/h. Time = 360 divided by 60 = 6h"}
+        ]},
+      { col:"coral", icon:"🌍", lbl:"GENERAL KNOWLEDGE",
+        teach:"<b>Key facts:</b><span class='fd-ex'>India: 28 states, 8 UTs | Capital: New Delhi | Largest state: Rajasthan</span><span class='fd-ex'>National animal: Tiger | Bird: Peacock | Flower: Lotus</span><span class='fd-ex'>Smallest planet: Mercury | Largest: Jupiter</span><span class='fd-ex'>Speed of light: 3 times 10 to the power 8 m/s</span><span class='fd-ex'>Water: boils at 100 degrees C, freezes at 0 degrees C</span>",
+        trick:"India borders: Pakistan, China, Nepal, Bhutan, Bangladesh, Myanmar. Sri Lanka is across the sea.",
+        qs:[
+          {q:"Smallest planet in the solar system?", o:["Mars","Mercury","Pluto","Venus"], a:1, e:"Mercury. Pluto was reclassified as dwarf planet in 2006."},
+          {q:"Who invented the telephone?", o:["Thomas Edison","Nikola Tesla","Alexander Graham Bell","Marconi"], a:2, e:"Alexander Graham Bell, 1876"},
+          {q:"What does DNA stand for?", o:["Dynamic Nuclear Acid","Deoxyribonucleic Acid","Detailed Nucleic Acid","Deoxyribose Nucleic Amino"], a:1, e:"Deoxyribonucleic Acid — carries genetic information"},
+          {q:"India's Silicon Valley?", o:["Hyderabad","Pune","Chennai","Bengaluru"], a:3, e:"Bengaluru — home to thousands of tech companies"},
+          {q:"Largest ocean on Earth?", o:["Atlantic","Indian","Arctic","Pacific"], a:3, e:"Pacific Ocean covers more than 30% of Earth's surface"}
+        ]},
+      { col:"teal", icon:"🧮", lbl:"HARD MIXED problems",
+        teach:"<b>Multi-step strategy:</b><span class='fd-ex'>1. Read twice — underline GIVEN and FIND</span><span class='fd-ex'>2. Draw a diagram if possible</span><span class='fd-ex'>3. Pick the right formula</span><span class='fd-ex'>4. Solve step by step</span><span class='fd-ex'>5. Check: does the answer make sense?</span>",
+        trick:"If the answer feels too round like exactly 100 or 1000, double-check — it might be right or you made a circular error.",
+        qs:[
+          {q:"240L tank: fills in 6h, empties in 8h. Both open — time to fill?", o:["20h","24h","18h","16h"], a:1, e:"Net fill rate = 1/6 minus 1/8 = 1/24 per hour. Time = 24 hours"},
+          {q:"Boys to girls ratio = 3:2, 30 total. How many girls?", o:["10","12","14","18"], a:1, e:"Girls = 2/5 times 30 = 12"},
+          {q:"Mark up 40%, then 25% discount. Actual profit or loss %?", o:["5% profit","5% loss","10% profit","10% loss"], a:0, e:"CP=100, Marked=140, After 25%: 140 times 0.75=105. Profit=5%"},
+          {q:"How many 3-digit numbers divisible by 12?", o:["38","75","150","50"], a:1, e:"First: 108 (12 times 9). Last: 996 (12 times 83). Count = 83-9+1 = 75"}
+        ]}
+    ]},
+  { id:8, name:"BOSS LEVEL", icon:"👑", col:"gold", time:"60 min", xp:100,
+    learned:["Classic lateral thinking puzzles solved","Permutations intro — 3 students in 3 seats = 6 ways","Geometry — square inscribed in a circle","Rope burning — measure 45 minutes with two 1-hour ropes"],
+    secs:[
+      { col:"gold", icon:"👑", lbl:"BOSS — Elite problems",
+        teach:"<b>You have reached the BOSS LEVEL.</b><br>These are Grade 7-8 and competition-level problems. They require combining everything from today.<br>Some will make you think hard for 2-3 minutes — that is completely normal and expected.<br>Take your time. Think on paper. You have got this.",
+        trick:"No tricks today — just your brain. You have already proved yourself through 7 levels.",
+        qs:[
+          {q:"BOSS 1: Number divided by 5 leaves remainder 3. Divided by 7 leaves remainder 4. Smallest such number?", o:["18","53","38","32"], a:0, e:"Numbers rem 3 when div 5: 3,8,13,18... rem 4 when div 7: 4,11,18... First common: 18"},
+          {q:"BOSS 2: 3 students arranged in 3 seats — how many ways?", o:["3","6","9","27"], a:1, e:"3 times 2 times 1 = 6 (permutations, also written 3 factorial)"},
+          {q:"BOSS 3: Square inscribed in circle of radius 7cm. Area of square?", o:["49 cm sq","98 cm sq","196 cm sq","77 cm sq"], a:1, e:"Diagonal = diameter = 14cm. s squared + s squared = 196. 2s squared = 196. s squared = 98 cm sq"},
+          {q:"BOSS 4: Average of 5 consecutive odd numbers is 25. Largest number?", o:["27","29","31","23"], a:1, e:"Middle number = average = 25. So: 21, 23, 25, 27, 29. Largest = 29"},
+          {q:"BOSS 5: A man says Brothers and sisters I have none, but that mans father is my fathers son. Who is in the photo?", o:["His son","Himself","His father","His brother"], a:0, e:"My fathers son with no siblings = me. That mans father = me. So photo = my SON."},
+          {q:"BOSS 6: 6 cats catch 6 mice in 6 minutes. Cats needed for 60 mice in 60 minutes?", o:["60","10","6","30"], a:2, e:"1 cat catches 1 mouse in 6min. In 60min, 1 cat catches 10 mice. For 60: 60 divided by 10 = 6 cats. Same 6!"},
+          {q:"BOSS 7: Two ropes each burn in 1 hour (non-uniform). Measure exactly 45 minutes?", o:["Burn one from both ends for 45min","Light rope 1 from both ends AND rope 2 from one end. When rope 1 burns out at 30min, light rope 2 other end — 15 more min = 45 total","Burn both from one end for 45min","Fold rope in half"], a:1, e:"Rope 1 from both ends burns in 30min. At 30min rope 2 has 30min left. Light other end → 15min. 30+15=45"},
+          {q:"BOSS 8: 3x3x3 cube painted red on all faces, cut into 27 small cubes. How many have exactly 2 red faces?", o:["8","12","6","1"], a:1, e:"Edge cubes (not corners, not face centres) have 2 painted faces. 12 edges times 1 cube each = 12"}
+        ]}
+    ]}
 ];
 
-function fdColVal(col){
-  return {teal:'#14b8a6',cyan:'var(--j-cyan)',purple:'var(--j-purple)',green:'var(--j-green)',
-          gold:'var(--j-gold)',coral:'var(--j-coral)',indigo:'#6366f1',pink:'#f472b6',
-          orange:'var(--j-orange)'}[col]||'#fff';
+function fdColVal(col) {
+  var m = {teal:'#14b8a6',cyan:'var(--j-cyan)',purple:'var(--j-purple)',green:'var(--j-green)',
+           gold:'var(--j-gold)',coral:'var(--j-coral)',indigo:'#6366f1',pink:'#f472b6',
+           orange:'var(--j-orange)'};
+  return m[col] || '#fff';
 }
-function fdUpdateBar(){
-  const pct=Math.min(100,(fdXP/FD_TOTAL_XP)*100);
-  const bar=document.getElementById('fd-bar');
-  const txt=document.getElementById('fd-bar-txt');
-  const xpEl=document.getElementById('fd-day-xp');
-  if(bar)bar.style.width=pct+'%';
-  if(txt)txt.textContent=fdXP+' / '+FD_TOTAL_XP+' XP';
-  if(xpEl)xpEl.textContent=fdXP+' XP';
+
+function fdUpdateBar() {
+  var pct = Math.min(100, (fdXP / FD_TOTAL_XP) * 100);
+  var bar = document.getElementById('fd-bar');
+  var txt = document.getElementById('fd-bar-txt');
+  var xpEl = document.getElementById('fd-day-xp');
+  if (bar) bar.style.width = pct + '%';
+  if (txt) txt.textContent = fdXP + ' / ' + FD_TOTAL_XP + ' XP';
+  if (xpEl) xpEl.textContent = fdXP + ' XP';
 }
-function fdXPPop(n){
-  const el=document.getElementById('fd-xp-pop');
-  if(!el)return;
-  el.textContent='+'+n+' XP ⭐';
+
+function fdXPPop(n) {
+  var el = document.getElementById('fd-xp-pop');
+  if (!el) return;
+  el.textContent = '+' + n + ' XP';
   el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),1400);
+  setTimeout(function() { el.classList.remove('show'); }, 1400);
 }
-function openFullDay(){
-  // Show Full Day nav button only for Jaishnav
-  const btn=document.getElementById('nav-fullday');
-  if(btn) btn.style.display='flex';
+
+function openFullDay() {
+  var btn = document.getElementById('nav-fullday');
+  if (btn) btn.style.display = 'flex';
   fdUpdateBar();
-  fdRenderList();
+  // Debug: write directly first
+  var dbg = document.getElementById('fd-list-body');
+  if (!dbg) { alert('ERROR: fd-list-body not found!'); return; }
+  dbg.innerHTML = '<div style="padding:2rem;color:#00e5ff;font-family:monospace">Loading levels... FD_LEVELS count: ' + FD_LEVELS.length + '</div>';
+  setTimeout(function() { fdRenderList(); }, 100);
   showScreen('fd-screen');
 }
-function fdRenderList(){
-  const body=document.getElementById('fd-list-body');
-  if(!body)return;
-  let prevDone=true;
-  let html=`<div class="fd-body">
-    <div class="fd-intro">
-      <span class="fd-intro-icon">🚀</span>
-      <div class="fd-intro-title">Full Day Academy</div>
-      <div class="fd-intro-sub">8 levels · 6 hours · Learns first, tests after · Gets harder as you go</div>
-    </div>`;
-  FD_LEVELS.forEach((lev,i)=>{
-    const isBreak=lev.id==='break';
-    const isDone=isBreak||Object.keys(fdDone).some(k=>k.startsWith('L'+lev.id+'_'));
-    const isLocked=!prevDone;
-    const col=fdColVal(lev.col);
-    const cls='fd-lev-card'+(isDone?' fd-done':isLocked?' fd-locked':'');
-    const onclick=isLocked||isBreak?'':` onclick="fdOpenLevel(${i})"`;
-    html+=`<div class="${cls}"${onclick}>
-      <div class="fd-lev-icon">${lev.icon}</div>
-      <div class="fd-lev-info">
-        <div class="fd-lev-name" style="color:${col}">${isBreak?'':('Level '+lev.id+' — ')}${lev.name}</div>
-        <div class="fd-lev-meta">${lev.time}${lev.secs.length?' · '+lev.secs.length+' sections':''}${isLocked?' · 🔒 Complete previous level first':''}</div>
-      </div>
-      <div>${isLocked?'🔒':isDone?'✅':'▶️'}</div>
-      ${!isBreak?`<div class="fd-lev-xp">+${lev.xp} XP</div>`:''}
-    </div>`;
-    if(!isBreak)prevDone=isDone;
-  });
-  body.innerHTML=html+'</div>';
+
+function fdRenderList() {
+  var body = document.getElementById('fd-list-body');
+  if (!body) return;
+  var prevDone = true;
+  var html = '<div class="fd-body">';
+  html += '<div class="fd-intro">';
+  html += '<span class="fd-intro-icon">🚀</span>';
+  html += '<div class="fd-intro-title">Full Day Academy</div>';
+  html += '<div class="fd-intro-sub">8 levels · 6 hours · Teaches first, tests after · Gets harder as you go</div>';
+  html += '</div>';
+  for (var i = 0; i < FD_LEVELS.length; i++) {
+    var lev = FD_LEVELS[i];
+    var isBreak = lev.id === 'break';
+    var isDone = isBreak || (fdDone['L' + lev.id + '_done'] === 1);
+    var isLocked = !prevDone;
+    var col = fdColVal(lev.col);
+    var cls = 'fd-lev-card' + (isDone ? ' fd-done' : isLocked ? ' fd-locked' : '');
+    var clickAttr = (!isLocked && !isBreak) ? ' onclick="fdOpenLevel(' + i + ')"' : '';
+    html += '<div class="' + cls + '"' + clickAttr + '>';
+    html += '<div class="fd-lev-icon">' + lev.icon + '</div>';
+    html += '<div class="fd-lev-info">';
+    html += '<div class="fd-lev-name" style="color:' + col + '">' + (isBreak ? '' : 'Level ' + lev.id + ' — ') + lev.name + '</div>';
+    var metaTxt = lev.time + (lev.secs.length ? ' · ' + lev.secs.length + ' sections' : '') + (isLocked ? ' · 🔒 Complete previous level first' : '');
+    html += '<div class="fd-lev-meta">' + metaTxt + '</div>';
+    html += '</div>';
+    html += '<div>' + (isLocked ? '🔒' : isDone ? '✅' : '▶️') + '</div>';
+    if (!isBreak) html += '<div class="fd-lev-xp">+' + lev.xp + ' XP</div>';
+    html += '</div>';
+    if (!isBreak) prevDone = isDone;
+  }
+  html += '</div>';
+  body.innerHTML = html;
 }
-function fdOpenLevel(idx){
-  const lev=FD_LEVELS[idx];
-  if(!lev||lev.id==='break')return;
-  document.getElementById('fd-plev').textContent='LEVEL '+lev.id;
-  document.getElementById('fd-ptitle').textContent=lev.icon+' '+lev.name;
-  document.getElementById('fd-pxp').textContent='+'+lev.xp+' XP';
-  window._fdLIdx=idx;
-  window._fdSIdx=0;
+
+function fdOpenLevel(idx) {
+  var lev = FD_LEVELS[idx];
+  if (!lev || lev.id === 'break') return;
+  document.getElementById('fd-plev').textContent = 'LEVEL ' + lev.id;
+  document.getElementById('fd-ptitle').textContent = lev.icon + ' ' + lev.name;
+  document.getElementById('fd-pxp').textContent = '+' + lev.xp + ' XP';
+  window._fdLIdx = idx;
+  window._fdSIdx = 0;
   fdRenderSection();
   showScreen('fd-player');
 }
-function fdRenderSection(){
-  const lev=FD_LEVELS[window._fdLIdx];
-  const si=window._fdSIdx;
-  const body=document.getElementById('fd-pbody');
-  if(!body)return;
-  window.scrollTo(0,0);
-  if(si>=lev.secs.length){fdLevelDone();return;}
-  const sec=lev.secs[si];
-  const col=fdColVal(sec.col);
-  const totalQs=lev.secs.reduce((s,x)=>s+x.qs.length,0);
-  const xpPerQ=Math.max(2,Math.floor(lev.xp/totalQs));
-  body.innerHTML=`
-    <div class="fd-teach c-${sec.col}">
-      <div class="fd-teach-lbl c-${sec.col}">${sec.icon} ${sec.lbl}</div>
-      <div class="fd-content">${sec.teach}</div>
-    </div>
-    ${sec.trick?`<div class="fd-trick"><div class="fd-trick-lbl">💡 TRICK / SHORTCUT</div>${sec.trick}</div>`:''}
-    <div class="fd-div"><div class="fd-div-line"></div><div class="fd-div-txt">NOW TEST YOURSELF</div><div class="fd-div-line"></div></div>
-    <div id="fd-quiz-wrap"></div>`;
-  fdRunQuiz(document.getElementById('fd-quiz-wrap'), sec.qs, sec.col, col, xpPerQ);
+
+function fdRenderSection() {
+  var lev = FD_LEVELS[window._fdLIdx];
+  var si = window._fdSIdx;
+  var body = document.getElementById('fd-pbody');
+  if (!body) return;
+  window.scrollTo(0, 0);
+  if (si >= lev.secs.length) { fdLevelDone(); return; }
+  var sec = lev.secs[si];
+  var totalQs = 0;
+  for (var i = 0; i < lev.secs.length; i++) totalQs += lev.secs[i].qs.length;
+  var xpPerQ = Math.max(2, Math.floor(lev.xp / totalQs));
+  var trickHtml = sec.trick ? '<div class="fd-trick"><div class="fd-trick-lbl">💡 TRICK / SHORTCUT</div>' + sec.trick + '</div>' : '';
+  body.innerHTML = '<div class="fd-teach c-' + sec.col + '"><div class="fd-teach-lbl c-' + sec.col + '">' + sec.icon + ' ' + sec.lbl + '</div><div class="fd-content">' + sec.teach + '</div></div>' + trickHtml + '<div class="fd-div"><div class="fd-div-line"></div><div class="fd-div-txt">NOW TEST YOURSELF</div><div class="fd-div-line"></div></div><div id="fd-quiz-wrap"></div>';
+  fdRunQuiz(document.getElementById('fd-quiz-wrap'), sec.qs, sec.col, xpPerQ);
 }
-function fdRunQuiz(wrap, qs, col, colVal, xpPerQ){
-  let qi=0, score=0;
-  const total=qs.length;
-  function render(){
-    if(qi>=total){
-      window._fdSIdx++;
-      fdRenderSection();
-      return;
+
+function fdRunQuiz(wrap, qs, col, xpPerQ) {
+  var qi = 0, score = 0;
+  var total = qs.length;
+  var colVal = fdColVal(col);
+  function render() {
+    if (qi >= total) { window._fdSIdx++; fdRenderSection(); return; }
+    var q = qs[qi];
+    var optsHtml = '';
+    for (var i = 0; i < q.o.length; i++) {
+      optsHtml += '<button class="fd-opt" onclick="fdAns(' + i + ',' + q.a + ',this)">' + q.o[i] + '</button>';
     }
-    const q=qs[qi];
-    wrap.innerHTML=`
-      <div class="fd-qprog">
-        <div class="fd-qpb"><div class="fd-qpb-fill" style="width:${(qi/total)*100}%;background:${colVal}"></div></div>
-        <div class="fd-qlabel">${qi+1}/${total}</div>
-      </div>
-      <div class="fd-qcard">
-        <div class="fd-qnum">QUESTION ${qi+1}</div>
-        <div class="fd-qtext">${q.q}</div>
-      </div>
-      <div class="fd-opts" id="fd-opts">
-        ${q.o.map((o,i)=>`<button class="fd-opt" onclick="fdAns(${i},${q.a},this)">${o}</button>`).join('')}
-      </div>
-      <div id="fd-fb"></div>`;
+    var pct = Math.round((qi / total) * 100);
+    wrap.innerHTML = '<div class="fd-qprog"><div class="fd-qpb"><div class="fd-qpb-fill" style="width:' + pct + '%;background:' + colVal + '"></div></div><div class="fd-qlabel">' + (qi+1) + '/' + total + '</div></div><div class="fd-qcard"><div class="fd-qnum">QUESTION ' + (qi+1) + '</div><div class="fd-qtext">' + q.q + '</div></div><div class="fd-opts" id="fd-opts">' + optsHtml + '</div><div id="fd-fb"></div>';
   }
-  window.fdAns=(chosen,correct,btn)=>{
-    document.querySelectorAll('.fd-opt').forEach(b=>b.disabled=true);
-    const isLast=qi+1>=total;
-    const nb=`<button class="fd-nxt" style="background:linear-gradient(135deg,${isLast?'var(--j-gold),var(--j-orange)':'var(--j-cyan),var(--j-purple)'})" onclick="fdNext()">${isLast?'See Results 🎉':'Next →'}</button>`;
-    if(chosen===correct){
-      btn.classList.add('correct'); score++;
-      fdXP+=xpPerQ; fdXPPop(xpPerQ); fdUpdateBar();
-      state.xp+=xpPerQ; saveState();
-      document.getElementById('fd-fb').innerHTML=`<div class="fd-fb good">⭐ Correct! ${q.e||''}${nb}</div>`;
+  window.fdAns = function(chosen, correct, btn) {
+    var opts = document.querySelectorAll('.fd-opt');
+    for (var i = 0; i < opts.length; i++) opts[i].disabled = true;
+    var isLast = (qi + 1) >= total;
+    var nbBg = isLast ? 'linear-gradient(135deg,var(--j-gold),var(--j-orange))' : 'linear-gradient(135deg,var(--j-cyan),var(--j-purple))';
+    var nbTxt = isLast ? 'See Results 🎉' : 'Next →';
+    var nbHtml = '<button class="fd-nxt" style="background:' + nbBg + '" onclick="fdNext()">' + nbTxt + '</button>';
+    var fb = document.getElementById('fd-fb');
+    if (chosen === correct) {
+      btn.classList.add('correct');
+      score++;
+      fdXP += xpPerQ;
+      fdXPPop(xpPerQ);
+      fdUpdateBar();
+      state.xp += xpPerQ;
+      saveState();
+      fb.innerHTML = '<div class="fd-fb good">⭐ Correct! ' + (qs[qi].e || '') + nbHtml + '</div>';
     } else {
       btn.classList.add('wrong');
-      document.querySelectorAll('.fd-opt')[correct].classList.add('correct');
-      document.getElementById('fd-fb').innerHTML=`<div class="fd-fb bad">Not quite — <b>${q.o[correct]}</b><br><span style="font-size:.78rem;color:#8ba3cc">${q.e||''}</span>${nb}</div>`;
+      opts[correct].classList.add('correct');
+      fb.innerHTML = '<div class="fd-fb bad">Not quite — <b>' + qs[qi].o[correct] + '</b><br><span style="font-size:.78rem;color:#8ba3cc">' + (qs[qi].e || '') + '</span>' + nbHtml + '</div>';
     }
   };
-  window.fdNext=()=>{qi++;render();};
+  window.fdNext = function() { qi++; render(); };
+  window._fdScore = function() { return score; };
   render();
 }
-function fdLevelDone(){
-  const lev=FD_LEVELS[window._fdLIdx];
-  const body=document.getElementById('fd-pbody');
-  const totalQ=lev.secs.reduce((s,x)=>s+x.qs.length,0);
-  const correct=Object.keys(fdDone).filter(k=>k.startsWith('L'+lev.id+'_')).reduce((s,k)=>s+fdDone[k],0);
-  fdDone['L'+lev.id+'_done']=1;
-  const pct=totalQ?Math.round((correct/totalQ)*100):100;
-  const earned=Math.round(lev.xp*(pct/100));
-  const medal=pct>=80?'🏆':pct>=60?'🥈':'🌟';
-  const allDone=FD_LEVELS.filter(l=>l.id!=='break').every(l=>fdDone['L'+l.id+'_done']);
-  syncToSheet({subj:'fullday',actId:'L'+lev.id,score:correct,total:totalQ,pct,earned,date:new Date().toLocaleDateString()});
-  body.innerHTML=`
-    <div class="fd-scomp">
-      <span class="fd-scomp-icon">${medal}</span>
-      <div class="fd-scomp-title">${pct>=80?'Outstanding!':pct>=60?'Great work!':'Good effort!'}</div>
-      <div class="fd-scomp-score">Level ${lev.id} complete!</div>
-      <div class="fd-scomp-xp">+${earned} XP earned ⭐</div>
-      <div class="fd-learned">
-        <div class="fd-learned-title">🧠 WHAT YOU JUST LEARNED</div>
-        ${lev.learned.map(f=>`<div class="fd-learned-item">✓ ${f}</div>`).join('')}
-      </div>
-      ${allDone?fdFinalHTML():`<button class="fd-cont-btn" onclick="showScreen('fd-screen');fdRenderList()">Back to levels →</button>`}
-    </div>`;
+
+function fdLevelDone() {
+  var lev = FD_LEVELS[window._fdLIdx];
+  var body = document.getElementById('fd-pbody');
+  var totalQ = 0;
+  for (var i = 0; i < lev.secs.length; i++) totalQ += lev.secs[i].qs.length;
+  var correct = window._fdScore ? window._fdScore() : 0;
+  fdDone['L' + lev.id + '_done'] = 1;
+  var pct = totalQ ? Math.round((correct / totalQ) * 100) : 100;
+  var earned = Math.round(lev.xp * (pct / 100));
+  var medal = pct >= 80 ? '🏆' : pct >= 60 ? '🥈' : '🌟';
+  var title = pct >= 80 ? 'Outstanding!' : pct >= 60 ? 'Great work!' : 'Good effort!';
+  syncToSheet({subj:'fullday', actId:'L'+lev.id, score:correct, total:totalQ, pct:pct, earned:earned, date:new Date().toLocaleDateString()});
+  var allDone = true;
+  for (var i = 0; i < FD_LEVELS.length; i++) {
+    if (FD_LEVELS[i].id !== 'break' && !fdDone['L' + FD_LEVELS[i].id + '_done']) { allDone = false; break; }
+  }
+  var learnedHtml = '';
+  for (var i = 0; i < lev.learned.length; i++) {
+    learnedHtml += '<div class="fd-learned-item">✓ ' + lev.learned[i] + '</div>';
+  }
+  var actionBtn = allDone ? fdFinalHTML() : '<button class="fd-cont-btn" onclick="fdBackToList()">Back to levels →</button>';
+  body.innerHTML = '<div class="fd-scomp"><span class="fd-scomp-icon">' + medal + '</span><div class="fd-scomp-title">' + title + '</div><div class="fd-scomp-score">Level ' + lev.id + ' complete!</div><div class="fd-scomp-xp">+' + earned + ' XP earned ⭐</div><div class="fd-learned"><div class="fd-learned-title">🧠 WHAT YOU JUST LEARNED</div>' + learnedHtml + '</div>' + actionBtn + '</div>';
 }
-function fdFinalHTML(){
-  return `<div class="fd-final">
-    <span class="fd-final-icon">🏆</span>
-    <div class="fd-final-title">FULL DAY COMPLETE!</div>
-    <div class="fd-stat-grid">
-      <div class="fd-stat"><div class="fd-stat-n" style="color:var(--j-gold)">${fdXP}</div><div class="fd-stat-l">TOTAL XP</div></div>
-      <div class="fd-stat"><div class="fd-stat-n" style="color:var(--j-cyan)">8</div><div class="fd-stat-l">LEVELS DONE</div></div>
-      <div class="fd-stat"><div class="fd-stat-n" style="color:var(--j-green)">6h</div><div class="fd-stat-l">STUDIED</div></div>
-      <div class="fd-stat"><div class="fd-stat-n" style="color:var(--j-coral)">100+</div><div class="fd-stat-l">QUESTIONS</div></div>
-    </div>
-    <div class="fd-cert">
-      <div class="fd-cert-lbl">🎖️ CERTIFICATE OF ACHIEVEMENT</div>
-      <div class="fd-cert-name">JAISHNAV</div>
-      <div class="fd-cert-txt">Completed the Full Day Academy — 8 levels, 6 hours, 100+ questions across Maths, IQ, Science, English, Tamil and Hindi.</div>
-    </div>
-    <button class="fd-cont-btn" onclick="showScreen('home-screen');setActiveNav('nav-home');renderHomeForProfile()">Back to Home 🚀</button>
-  </div>`;
+
+function fdBackToList() {
+  showScreen('fd-screen');
+  fdRenderList();
 }
-// Show Full Day button only when Jaishnav is logged in
-// (called from renderHomeForProfile which already runs on login)
+
+function fdGoHome() {
+  showScreen('home-screen');
+  setActiveNav('nav-home');
+  renderHomeForProfile();
+}
+
+function fdFinalHTML() {
+  var statsHtml = '<div class="fd-stat-grid">';
+  statsHtml += '<div class="fd-stat"><div class="fd-stat-n" style="color:var(--j-gold)">' + fdXP + '</div><div class="fd-stat-l">TOTAL XP</div></div>';
+  statsHtml += '<div class="fd-stat"><div class="fd-stat-n" style="color:var(--j-cyan)">8</div><div class="fd-stat-l">LEVELS DONE</div></div>';
+  statsHtml += '<div class="fd-stat"><div class="fd-stat-n" style="color:var(--j-green)">6h</div><div class="fd-stat-l">STUDIED</div></div>';
+  statsHtml += '<div class="fd-stat"><div class="fd-stat-n" style="color:var(--j-coral)">100+</div><div class="fd-stat-l">QUESTIONS</div></div>';
+  statsHtml += '</div>';
+  var certHtml = '<div class="fd-cert"><div class="fd-cert-lbl">🎖️ CERTIFICATE OF ACHIEVEMENT</div><div class="fd-cert-name">JAISHNAV</div><div class="fd-cert-txt">Completed the Full Day Academy — 8 levels, 6 hours, 100+ questions across Maths, IQ, Science, English, Tamil and Hindi.</div></div>';
+  return '<div class="fd-final"><span class="fd-final-icon">🏆</span><div class="fd-final-title">FULL DAY COMPLETE!</div>' + statsHtml + certHtml + '<button class="fd-cont-btn" onclick="fdGoHome()">Back to Home 🚀</button></div>';
+}
+// ════════════════════════════════════════
+// END FULL DAY ACADEMY
+// ════════════════════════════════════════
 
 </script>
 
