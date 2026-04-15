@@ -1968,13 +1968,9 @@ function fdXPPop(n) {
 function openFullDay() {
   var btn = document.getElementById('nav-fullday');
   if (btn) btn.style.display = 'flex';
-  fdUpdateBar();
-  // Debug: write directly first
-  var dbg = document.getElementById('fd-list-body');
-  if (!dbg) { alert('ERROR: fd-list-body not found!'); return; }
-  dbg.innerHTML = '<div style="padding:2rem;color:#00e5ff;font-family:monospace">Loading levels... FD_LEVELS count: ' + FD_LEVELS.length + '</div>';
-  setTimeout(function() { fdRenderList(); }, 100);
   showScreen('fd-screen');
+  fdUpdateBar();
+  fdRenderList();
 }
 
 function fdRenderList() {
