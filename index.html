@@ -319,7 +319,7 @@ html,body{width:100%;min-height:100vh;background:#050a1a;color:#fff;font-family:
 @media(min-width:700px){.home-body,.activity-list,.player-body{max-width:600px;margin-left:auto;margin-right:auto;}}
 
   /* ══ FULL DAY SCREEN ══ */
-  #fullday-screen{padding-bottom:5rem;}
+
   .fd-header{padding:1rem 1.5rem;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);border-bottom:1px solid var(--card-border);}
   .fd-header-j{background:rgba(5,10,26,.95);}
   .fd-header-s{background:rgba(10,0,0,.95);}
@@ -2127,27 +2127,6 @@ function fdFinalHTML() {
 // ════════════════════════════════════════
 
 </script>
-
-<!-- ═══════════════════ FULL DAY SCREEN ═══════════════════ -->
-<div id="fullday-screen" class="screen">
-  <div class="fd-header" id="fd-header">
-    <div class="fd-toprow">
-      <button class="back-btn" onclick="showScreen('home-screen');setActiveNav('nav-home')">‹</button>
-      <div id="fd-screen-title" class="fd-title-j">⚡ Full Day Academy</div>
-      <div id="fd-screen-xp" class="fd-xp">0 XP</div>
-    </div>
-    <div class="fd-daybar">
-      <div class="fd-daybar-label"><span>Day Progress</span><span id="fd-bar-text">0 / 650 XP</span></div>
-      <div class="fd-daybar-outer"><div class="fd-daybar-inner" id="fd-bar" style="width:0%"></div></div>
-    </div>
-  </div>
-  <div id="fd-list-body"></div>
-  <nav class="bottom-nav" id="fd-list-nav">
-    <button class="nav-btn" onclick="showScreen('home-screen');setActiveNav('nav-home')"><span class="nav-icon">🏠</span>HOME</button>
-    <button class="nav-btn active" onclick="openFullDay()"><span class="nav-icon">⚡</span>FULL DAY</button>
-    <button class="nav-btn" onclick="showScreen('progress-screen');renderProgress()"><span class="nav-icon">📊</span>PROGRESS</button>
-  </nav>
-</div>
 
 
 <!-- ═══════════════════ FULL DAY SCREEN ═══════════════════ -->
